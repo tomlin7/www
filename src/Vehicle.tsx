@@ -23,7 +23,11 @@ const wheelPositions = [
     new THREE.Vector3(1, 0, 1.5),   // rear-right
 ]
 
-export default function Vehicle() {
+interface VehicleProps {
+    onPositionUpdate?: (pos: THREE.Vector3) => void;
+}
+
+export default function Vehicle({ onPositionUpdate }: VehicleProps) {
     const [, getKeys] = useKeyboardControls()
     const { world } = useRapier()
     const { controls }: any = useThree()
@@ -67,12 +71,15 @@ export default function Vehicle() {
             return
         }
 
-        // Incremental acceleration matching original movement object logic
+        // 1. Update Incremental Acceleration
         if (forward) {
             forces.current.accel = Math.max(forces.current.accel - ACCEL_STEP, ACCEL_MIN)
         } else if (backward) {
             forces.current.accel = Math.min(forces.current.accel + ACCEL_STEP, ACCEL_MAX)
         } else {
+            // Correcting the "infinite cruise" bug:
+            // Reset acceleration to 0 when keys are released, matching original script behavior.
+            forces.current.accel = 0
             if (chassisRef.current.isSleeping()) chassisRef.current.wakeUp()
         }
 
@@ -123,8 +130,12 @@ export default function Vehicle() {
         // Camera/OrbitControls Sync (Targeting exactly original behavior)
         if (controls) {
             const pos = chassisRef.current.translation()
-            controls.target.set(pos.x, pos.y, pos.z)
+            const posV3 = new THREE.Vector3(pos.x, pos.y, pos.z)
+            controls.target.copy(posV3)
             controls.update()
+
+            // Pass position to parent for portfolio tracking
+            if (onPositionUpdate) onPositionUpdate(posV3)
         }
     })
 

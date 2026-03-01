@@ -28,8 +28,12 @@ function App() {
         <Stats />
       </Canvas>
       <div id="info" className="ui">
-        <p>WASD or Arrow keys to move</p>
-        <p>Space to brake | R to reset</p>
+        <h1>3D Interactive Portfolio</h1>
+        <p>Drive to project locations to reveal work</p>
+        <div className="controls-hint">
+          <p><strong>WASD / Arrows</strong>: Drive</p>
+          <p><strong>Space</strong>: Brake | <strong>R</strong>: Reset</p>
+        </div>
       </div>
     </KeyboardControls>
   )
