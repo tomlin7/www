@@ -1,0 +1,156 @@
+import { useRef, useEffect, useState } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
+import { RigidBody, useRapier, CuboidCollider, RapierRigidBody } from '@react-three/rapier'
+import { useKeyboardControls } from '@react-three/drei'
+import * as THREE from 'three'
+
+const WHEEL_RADIUS = 0.3
+const WHEEL_WIDTH = 0.4
+const SUSPENSION_REST_LENGTH = 0.8
+const SUSPENSION_STIFFNESS = 24.0
+const FRICTION = 1000.0
+
+const ACCEL_STEP = 1
+const ACCEL_MIN = -30
+const ACCEL_MAX = 30
+const BRAKE_STEP = 0.05
+const BRAKE_MAX = 1
+
+const wheelPositions = [
+    new THREE.Vector3(-1, 0, -1.5), // front-left
+    new THREE.Vector3(1, 0, -1.5),  // front-right
+    new THREE.Vector3(-1, 0, 1.5),  // rear-left
+    new THREE.Vector3(1, 0, 1.5),   // rear-right
+]
+
+export default function Vehicle() {
+    const [, getKeys] = useKeyboardControls()
+    const { world } = useRapier()
+    const { controls }: any = useThree()
+    const chassisRef = useRef<RapierRigidBody>(null!)
+    const [vehicleController, setVehicleController] = useState<any>(null)
+
+    const forces = useRef({ accel: 0, brake: 0 })
+    const wheelRefs = useRef<THREE.Group[]>([])
+
+    useEffect(() => {
+        if (!chassisRef.current) return
+        const chassis = world.getRigidBody(chassisRef.current.handle)
+        if (!chassis) return
+
+        const controller = world.createVehicleController(chassis)
+        const wheelDirection = { x: 0, y: -1, z: 0 }
+        const wheelAxle = { x: -1, y: 0, z: 0 }
+
+        wheelPositions.forEach((pos, index) => {
+            controller.addWheel(pos, wheelDirection, wheelAxle, SUSPENSION_REST_LENGTH, WHEEL_RADIUS)
+            controller.setWheelSuspensionStiffness(index, SUSPENSION_STIFFNESS)
+            controller.setWheelFrictionSlip(index, FRICTION)
+        })
+
+        setVehicleController(controller)
+        return () => world.removeVehicleController(controller)
+    }, [world])
+
+    useFrame((_state, delta) => {
+        if (!vehicleController || !chassisRef.current) return
+
+        const { forward, backward, left, right, brake, reset }: any = getKeys()
+
+        if (reset) {
+            chassisRef.current.setTranslation({ x: 0, y: 2, z: 0 }, true)
+            chassisRef.current.setRotation({ x: 0, y: 0, z: 0, w: 1 }, true)
+            chassisRef.current.setLinvel({ x: 0, y: 0, z: 0 }, true)
+            chassisRef.current.setAngvel({ x: 0, y: 0, z: 0 }, true)
+            forces.current.accel = 0
+            forces.current.brake = 0
+            return
+        }
+
+        // Incremental acceleration matching original movement object logic
+        if (forward) {
+            forces.current.accel = Math.max(forces.current.accel - ACCEL_STEP, ACCEL_MIN)
+        } else if (backward) {
+            forces.current.accel = Math.min(forces.current.accel + ACCEL_STEP, ACCEL_MAX)
+        } else {
+            if (chassisRef.current.isSleeping()) chassisRef.current.wakeUp()
+        }
+
+        if (brake) {
+            forces.current.brake = Math.min(forces.current.brake + BRAKE_STEP, BRAKE_MAX)
+        } else {
+            forces.current.brake = 0
+        }
+
+        vehicleController.setWheelEngineForce(0, forces.current.accel)
+        vehicleController.setWheelEngineForce(1, forces.current.accel)
+
+        const steerDirection = (left ? 1 : 0) + (right ? -1 : 0)
+        const steerAngle = Math.PI / 4
+        const currentSteering = vehicleController.wheelSteering(0)
+        const steering = THREE.MathUtils.lerp(currentSteering, steerAngle * steerDirection, 0.25)
+
+        vehicleController.setWheelSteering(0, steering)
+        vehicleController.setWheelSteering(1, steering)
+
+        const wheelBrake = (brake ? 1 : 0) * forces.current.brake
+        vehicleController.setWheelBrake(0, wheelBrake)
+        vehicleController.setWheelBrake(1, wheelBrake)
+        vehicleController.setWheelBrake(2, wheelBrake)
+        vehicleController.setWheelBrake(3, wheelBrake)
+
+        vehicleController.updateVehicle(delta)
+
+        // Visual Updates
+        const wheelSteeringQuat = new THREE.Quaternion()
+        const wheelRotationQuat = new THREE.Quaternion()
+        const up = new THREE.Vector3(0, 1, 0)
+
+        wheelPositions.forEach((_, index) => {
+            const wheelMesh = wheelRefs.current[index]
+            if (!wheelMesh) return
+            const axleCs = vehicleController.wheelAxleCs(index)
+            const connection = (vehicleController.wheelChassisConnectionPointCs(index) as any).y || 0
+            const suspension = vehicleController.wheelSuspensionLength(index) || 0
+            const steering = vehicleController.wheelSteering(index) || 0
+            const rotationRad = vehicleController.wheelRotation(index) || 0
+            wheelMesh.position.y = connection - suspension
+            wheelSteeringQuat.setFromAxisAngle(up, steering)
+            wheelRotationQuat.setFromAxisAngle(axleCs, rotationRad)
+            wheelMesh.quaternion.multiplyQuaternions(wheelSteeringQuat, wheelRotationQuat)
+        })
+
+        // Camera/OrbitControls Sync (Targeting exactly original behavior)
+        if (controls) {
+            const pos = chassisRef.current.translation()
+            controls.target.set(pos.x, pos.y, pos.z)
+            controls.update()
+        }
+    })
+
+    return (
+        <RigidBody
+            ref={chassisRef}
+            colliders={false}
+            position={[0, 2, 0]}
+            mass={10}
+            restitution={0.8}
+        >
+            <mesh castShadow>
+                <boxGeometry args={[2, 1, 4]} />
+                <meshStandardMaterial color="red" />
+            </mesh>
+
+            {wheelPositions.map((pos, index) => (
+                <group key={index} ref={(el) => (wheelRefs.current[index] = el!)} position={pos}>
+                    <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[WHEEL_RADIUS, WHEEL_RADIUS, WHEEL_WIDTH, 16]} />
+                        <meshStandardMaterial color="#111" />
+                    </mesh>
+                </group>
+            ))}
+
+            <CuboidCollider args={[1, 0.5, 2]} />
+        </RigidBody>
+    )
+}

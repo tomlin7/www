@@ -1,34 +1,37 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { Canvas } from '@react-three/fiber'
+import { KeyboardControls, Sky, Environment, Stats } from '@react-three/drei'
+import { Physics } from '@react-three/rapier'
+import Experience from './Experience'
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const keyboardMap = [
+  { name: 'forward', keys: ['ArrowUp', 'KeyW'] },
+  { name: 'backward', keys: ['ArrowDown', 'KeyS'] },
+  { name: 'left', keys: ['ArrowLeft', 'KeyA'] },
+  { name: 'right', keys: ['ArrowRight', 'KeyD'] },
+  { name: 'brake', keys: ['Space'] },
+  { name: 'reset', keys: ['KeyR'] },
+]
 
+function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <KeyboardControls map={keyboardMap}>
+      <Canvas shadows camera={{ position: [0, 4, 10], fov: 60 }}>
+        <color attach="background" args={['#bfd1e5']} />
+        <Sky sunPosition={[100, 20, 100]} />
+
+        <Physics gravity={[0, -9.81, 0]}>
+          <Experience />
+        </Physics>
+
+        <Environment preset="city" />
+        <Stats />
+      </Canvas>
+      <div id="info" className="ui">
+        <p>WASD or Arrow keys to move</p>
+        <p>Space to brake | R to reset</p>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    </KeyboardControls>
   )
 }
 
