@@ -56,7 +56,7 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
         return () => world.removeVehicleController(controller)
     }, [world])
 
-    useFrame((_state, delta) => {
+    useFrame((state, delta) => {
         if (!vehicleController || !chassisRef.current) return
 
         const { forward, backward, left, right, brake, reset }: any = getKeys()
@@ -71,14 +71,11 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
             return
         }
 
-        // 1. Update Incremental Acceleration
         if (forward) {
             forces.current.accel = Math.max(forces.current.accel - ACCEL_STEP, ACCEL_MIN)
         } else if (backward) {
             forces.current.accel = Math.min(forces.current.accel + ACCEL_STEP, ACCEL_MAX)
         } else {
-            // Correcting the "infinite cruise" bug:
-            // Reset acceleration to 0 when keys are released, matching original script behavior.
             forces.current.accel = 0
             if (chassisRef.current.isSleeping()) chassisRef.current.wakeUp()
         }
@@ -127,15 +124,22 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
             wheelMesh.quaternion.multiplyQuaternions(wheelSteeringQuat, wheelRotationQuat)
         })
 
-        // Camera/OrbitControls Sync (Targeting exactly original behavior)
+        // Camera/OrbitControls Hybrid Sync
         if (controls) {
-            const pos = chassisRef.current.translation()
-            const posV3 = new THREE.Vector3(pos.x, pos.y, pos.z)
-            controls.target.copy(posV3)
+            const carPos = chassisRef.current.translation()
+            const newTarget = new THREE.Vector3(carPos.x, carPos.y, carPos.z)
+
+            // Calculate the current offset from the target to the camera
+            const currentOffset = new THREE.Vector3().subVectors(state.camera.position, controls.target)
+
+            // Move camera to maintain the SAME relative offset from the car
+            state.camera.position.addVectors(newTarget, currentOffset)
+
+            // Update the control's target to stay locked on the car
+            controls.target.copy(newTarget)
             controls.update()
 
-            // Pass position to parent for portfolio tracking
-            if (onPositionUpdate) onPositionUpdate(posV3)
+            if (onPositionUpdate) onPositionUpdate(newTarget)
         }
     })
 

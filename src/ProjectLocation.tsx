@@ -90,17 +90,15 @@ export default function ProjectLocation({ project, carPosition }: ProjectLocatio
                 </Html>
             )}
 
-            {/* Text on the ground - lifted and offset */}
+            {/* Label on the ground */}
             <Text
-                position={[0, 0.3, 3.5]}
+                position={[0, 0.4, 3.5]}
                 rotation-x={-Math.PI / 2}
                 fontSize={0.5}
                 color="#fff"
                 maxWidth={4}
                 textAlign="center"
                 renderOrder={101}
-                polygonOffset
-                polygonOffsetFactor={-10}
             >
                 {project.title}
             </Text>
