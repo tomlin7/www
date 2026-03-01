@@ -103,7 +103,8 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
         vehicleController.setWheelBrake(2, wheelBrake)
         vehicleController.setWheelBrake(3, wheelBrake)
 
-        vehicleController.updateVehicle(delta)
+        // Update physical simulation with a clamped delta to prevent "explosion" after tab switching
+        vehicleController.updateVehicle(Math.min(delta, 0.1))
 
         // Visual Updates
         const wheelSteeringQuat = new THREE.Quaternion()
