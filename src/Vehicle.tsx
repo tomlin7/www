@@ -4,10 +4,10 @@ import { RigidBody, useRapier, CuboidCollider, RapierRigidBody } from '@react-th
 import { useKeyboardControls } from '@react-three/drei'
 import * as THREE from 'three'
 
-const WHEEL_RADIUS = 0.7
+const WHEEL_RADIUS = 0.8
 const WHEEL_WIDTH = 0.8
-const SUSPENSION_REST_LENGTH = 0.5
-const SUSPENSION_STIFFNESS = 30.0
+const SUSPENSION_REST_LENGTH = 0.7
+const SUSPENSION_STIFFNESS = 50.0
 const FRICTION = 2000.0
 
 const ACCEL_STEP = 1
@@ -36,6 +36,7 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
 
     const forces = useRef({ accel: 0, brake: 0 })
     const wheelRefs = useRef<THREE.Group[]>([])
+    const visualRotation = useRef(0)
 
     useEffect(() => {
         if (!chassisRef.current) return
@@ -106,6 +107,26 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
         // Update physical simulation with a clamped delta to prevent "explosion" after tab switching
         vehicleController.updateVehicle(Math.min(delta, 0.1))
 
+        // Calculate "faked" rotation based on actual velocity
+        const linvel = chassisRef.current.linvel()
+        const velocity = new THREE.Vector3(linvel.x, linvel.y, linvel.z)
+
+        // Get the forward direction of the car
+        const carWorldQuat = new THREE.Quaternion(
+            chassisRef.current.rotation().x,
+            chassisRef.current.rotation().y,
+            chassisRef.current.rotation().z,
+            chassisRef.current.rotation().w
+        )
+        const carForward = new THREE.Vector3(0, 0, 1).applyQuaternion(carWorldQuat)
+
+        // Projection to get forward speed (dot product)
+        const speed = velocity.dot(carForward)
+
+        // Update accumulated visual rotation
+        // omega = v / r
+        visualRotation.current -= (speed / WHEEL_RADIUS) * delta
+
         // Visual Updates
         const wheelSteeringQuat = new THREE.Quaternion()
         const wheelRotationQuat = new THREE.Quaternion()
@@ -118,8 +139,11 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
             const connection = (vehicleController.wheelChassisConnectionPointCs(index) as any).y || 0
             const suspension = vehicleController.wheelSuspensionLength(index) || 0
             const steering = vehicleController.wheelSteering(index) || 0
-            const rotationRad = vehicleController.wheelRotation(index) || 0
-            wheelMesh.position.y = connection - suspension
+
+            // Use the faked rotation instead of the potentially buggy physics rotation
+            const rotationRad = visualRotation.current
+
+            wheelMesh.position.y = connection - suspension + 0.1
             wheelSteeringQuat.setFromAxisAngle(up, steering)
             wheelRotationQuat.setFromAxisAngle(axleCs, rotationRad)
             wheelMesh.quaternion.multiplyQuaternions(wheelSteeringQuat, wheelRotationQuat)
