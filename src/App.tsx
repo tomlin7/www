@@ -1,5 +1,5 @@
 import { Canvas } from '@react-three/fiber'
-import { KeyboardControls, Sky, Environment, Stats } from '@react-three/drei'
+import { KeyboardControls, Sky, Environment } from '@react-three/drei'
 import { Physics } from '@react-three/rapier'
 import Experience from './Experience'
 import './App.css'
@@ -25,16 +25,7 @@ function App() {
         </Physics>
 
         <Environment preset="city" />
-        <Stats />
       </Canvas>
-      <div id="info" className="ui">
-        <h1>3D Interactive Portfolio</h1>
-        <p>Drive to project locations to reveal work</p>
-        <div className="controls-hint">
-          <p><strong>WASD / Arrows</strong>: Drive</p>
-          <p><strong>Space</strong>: Brake | <strong>R</strong>: Reset</p>
-        </div>
-      </div>
     </KeyboardControls>
   )
 }

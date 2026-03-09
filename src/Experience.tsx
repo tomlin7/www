@@ -1,23 +1,12 @@
-import { OrbitControls, Stars } from '@react-three/drei'
-import { RigidBody, CuboidCollider } from '@react-three/rapier'
-import { useState, useMemo } from 'react'
-import * as THREE from 'three'
+import { Suspense } from 'react'
+import { OrbitControls } from '@react-three/drei'
 import Vehicle from './Vehicle'
-import ProjectLocation from './ProjectLocation'
-import Road from './Road'
-import Scenery from './Scenery'
-import { projects } from './projects'
+import Terrain from './Terrain'
 
 export default function Experience() {
-    const [carPos, setCarPos] = useState(new THREE.Vector3())
-    const memoizedPoints = useMemo(() => projects, [])
-
     return (
-        <>
+        <Suspense fallback={null}>
             <OrbitControls makeDefault target={[0, 2, 0]} />
-
-            {/* Visual background */}
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
 
             {/* Lights */}
             <ambientLight intensity={0.5} />
@@ -34,35 +23,11 @@ export default function Experience() {
                 shadow-normalBias={0.02}
             />
 
-            {/* Environment Helpers */}
-            <axesHelper args={[5]} />
-
-            {/* Ground */}
-            <RigidBody type="fixed" colliders={false}>
-                <mesh receiveShadow position={[0, -0.5, 0]}>
-                    <boxGeometry args={[400, 1, 400]} />
-                    <meshStandardMaterial color="#fff" />
-                </mesh>
-                <CuboidCollider args={[200, 0.5, 200]} position={[0, -0.5, 0]} />
-            </RigidBody>
-
-            {/* Road Layout */}
-            <Road />
-
-            {/* Scenery (Trees, clouds) */}
-            <Scenery />
-
-            {/* Portfolio Projects */}
-            {memoizedPoints.map((project) => (
-                <ProjectLocation
-                    key={project.id}
-                    project={project}
-                    carPosition={carPos}
-                />
-            ))}
+            {/* Terrain */}
+            <Terrain />
 
             {/* The Vehicle */}
-            <Vehicle onPositionUpdate={setCarPos} />
-        </>
+            <Vehicle />
+        </Suspense>
     )
 }

@@ -4,11 +4,11 @@ import { RigidBody, useRapier, CuboidCollider, RapierRigidBody } from '@react-th
 import { useKeyboardControls } from '@react-three/drei'
 import * as THREE from 'three'
 
-const WHEEL_RADIUS = 0.3
-const WHEEL_WIDTH = 0.4
-const SUSPENSION_REST_LENGTH = 0.8
-const SUSPENSION_STIFFNESS = 24.0
-const FRICTION = 1000.0
+const WHEEL_RADIUS = 0.7
+const WHEEL_WIDTH = 0.8
+const SUSPENSION_REST_LENGTH = 0.5
+const SUSPENSION_STIFFNESS = 30.0
+const FRICTION = 2000.0
 
 const ACCEL_STEP = 1
 const ACCEL_MIN = -30
@@ -17,10 +17,10 @@ const BRAKE_STEP = 0.05
 const BRAKE_MAX = 1
 
 const wheelPositions = [
-    new THREE.Vector3(-1, 0, -1.5), // front-left
-    new THREE.Vector3(1, 0, -1.5),  // front-right
-    new THREE.Vector3(-1, 0, 1.5),  // rear-left
-    new THREE.Vector3(1, 0, 1.5),   // rear-right
+    new THREE.Vector3(-1.4, 0, -1.8), // front-left
+    new THREE.Vector3(1.4, 0, -1.8),  // front-right
+    new THREE.Vector3(-1.4, 0, 1.8),  // rear-left
+    new THREE.Vector3(1.4, 0, 1.8),   // rear-right
 ]
 
 interface VehicleProps {
@@ -152,9 +152,15 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
             mass={10}
             restitution={0.8}
         >
-            <mesh castShadow>
-                <boxGeometry args={[2, 1, 4]} />
-                <meshStandardMaterial color="red" />
+            {/* Main Chassis Base */}
+            <mesh castShadow position={[0, -0.2, 0]}>
+                <boxGeometry args={[2, 0.6, 4]} />
+                <meshStandardMaterial color="#c0392b" />
+            </mesh>
+            {/* Top Cabin / Roll Cage area */}
+            <mesh castShadow position={[0, 0.4, 0]}>
+                <boxGeometry args={[1.6, 0.8, 2]} />
+                <meshStandardMaterial color="#222" metalness={0.9} roughness={0.1} />
             </mesh>
 
             {wheelPositions.map((pos, index) => (
@@ -162,6 +168,11 @@ export default function Vehicle({ onPositionUpdate }: VehicleProps) {
                     <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
                         <cylinderGeometry args={[WHEEL_RADIUS, WHEEL_RADIUS, WHEEL_WIDTH, 16]} />
                         <meshStandardMaterial color="#111" />
+                    </mesh>
+                    {/* Interior Rim */}
+                    <mesh rotation={[0, 0, Math.PI / 2]}>
+                        <cylinderGeometry args={[WHEEL_RADIUS * 0.7, WHEEL_RADIUS * 0.7, WHEEL_WIDTH + 0.05, 16]} />
+                        <meshStandardMaterial color="#444" metalness={0.8} roughness={0.2} />
                     </mesh>
                 </group>
             ))}
