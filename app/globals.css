@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@1,500;1,600&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -12,15 +13,125 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  margin: 0;
+  overflow: hidden;
+  background-image: url('/marketing.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  user-select: none;
+  font-family: 'Inter', sans-serif;
+  color: #1a1a1a;
+  height: 100vh;
+  width: 100vw;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+.glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.glass-darker {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+}
+
+.dock-item {
+  transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: bottom;
+}
+
+.dock-item:hover {
+  transform: scale(1.4) translateY(-10px);
+  margin: 0 12px;
+  z-index: 50;
+}
+
+.dock-item-tooltip {
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.dock-item:hover .dock-item-tooltip {
+  opacity: 1;
+}
+
+.desktop-folder {
+  transition: transform 0.1s ease-in-out;
+  cursor: pointer;
+}
+
+.desktop-folder:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+}
+
+.desktop-folder:active {
+  opacity: 0.7;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.traffic-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+}
+
+.tl-red {
+  background-color: #ff5f56;
+  border: 1px solid #e0443e;
+}
+
+.tl-yellow {
+  background-color: #ffbd2e;
+  border: 1px solid #dea123;
+}
+
+.tl-green {
+  background-color: #27c93f;
+  border: 1px solid #1aab29;
+}
+
+.mac-window {
+  position: absolute;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(0, 0, 0, 0.05);      
+}
+
+.mac-window.active {
+  box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);      
+}
+
+.font-serif-italic {
+  font-family: 'Playfair Display', serif;
+  font-style: italic;
+  font-weight: 600;
+}
+
+.font-mono-custom {
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
 }
