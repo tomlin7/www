@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { DraggableWindow } from './components/Window';
-import { Dock, DockItem } from './components/Dock';
-import { DesktopFolder } from './components/DesktopIcon';
+import { DraggableWindow } from '@/components/Window';
+import { Dock, DockItem } from '@/components/Dock';
+import { DesktopFolder } from '@/components/DesktopIcon';
 
 // Project Card Component
 const ProjectCard = ({ name, description, language, languageColor, stars, forks, isFeatured }: any) => (
@@ -194,8 +194,8 @@ const ProjectsWindowContent = ({ searchQuery }: { searchQuery: string }) => {
   );
 };
 
-import { DropdownMenu } from './components/DropdownMenu';
-import { ControlPanel, ControlItem } from './components/ControlPanel';
+import { DropdownMenu } from '@/components/DropdownMenu';
+import { ControlPanel, ControlItem } from '@/components/ControlPanel';
 
 export default function Home() {
   const [clockText, setClockText] = useState('');
@@ -203,6 +203,8 @@ export default function Home() {
   const [activeWindow, setActiveWindow] = useState('profile');
   const [zIndexMap, setZIndexMap] = useState<Record<string, number>>({ profile: 40, projects: 39 });
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({ profile: true, projects: false });
+  const [minimizedWindows, setMinimizedWindows] = useState<Record<string, boolean>>({ profile: false, projects: false });
   const zCounter = useRef(40);
 
   const finderMenuItems = [
@@ -293,7 +295,17 @@ export default function Home() {
     zCounter.current += 1;
     setZIndexMap(prev => ({ ...prev, [id]: zCounter.current }));
     setActiveWindow(id);
+    setMinimizedWindows(prev => ({ ...prev, [id]: false }));
+    setOpenWindows(prev => ({ ...prev, [id]: true }));
   }, []);
+
+  const closeWindow = (id: string) => {
+    setOpenWindows(prev => ({ ...prev, [id]: false }));
+  };
+
+  const minimizeWindow = (id: string) => {
+    setMinimizedWindows(prev => ({ ...prev, [id]: true }));
+  };
 
   const bringProjectsToFront = () => {
     activateWindow('projects');
@@ -317,7 +329,7 @@ export default function Home() {
   );
 
   return (
-    <div className="text-gray-800 h-screen w-screen overflow-hidden flex flex-col">
+    <div className="text-gray-800 h-screen w-screen overflow-hidden flex flex-col font-sans">
       {/* Menu Bar */}
       <nav className="glass w-full h-7 flex items-center justify-between px-4 text-xs font-medium z-50 fixed top-0">
         <div className="flex items-center space-x-1">
@@ -458,72 +470,80 @@ export default function Home() {
       {/* Desktop Area */}
       <main className="flex-1 relative w-full h-full pt-7 pb-20 overflow-hidden">
         {/* Desktop Folders */}
-        <DesktopFolder label="projects" style={{ top: '15%', right: '15%' }} onDoubleClick={bringProjectsToFront} />
-        <DesktopFolder label="about me" style={{ top: '35%', right: '25%' }} />
-        <DesktopFolder label="resume" style={{ top: '55%', left: '45%' }} />
-        <DesktopFolder label="graphic design" style={{ top: '15%', left: '40%' }} />
+        <DesktopFolder label="projects" initialPos={{ top: '15%', left: '80%' }} onDoubleClick={() => activateWindow('projects')} />
+        <DesktopFolder label="about me" initialPos={{ top: '35%', left: '75%' }} onDoubleClick={() => activateWindow('profile')} />
+        <DesktopFolder label="resume" initialPos={{ top: '55%', left: '45%' }} />
+        <DesktopFolder label="graphic design" initialPos={{ top: '15%', left: '40%' }} />
 
         {/* Profile Window */}
-        <DraggableWindow
-          id="win-profile"
-          initialPos={{ x: 80, y: 100 }}
-          width="w-[550px]"
-          zIndex={zIndexMap['profile']}
-          isActive={activeWindow === 'profile'}
-          onActivate={() => activateWindow('profile')}
-          title="tomlin.jpg"
-          titleIcon={
-            <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <polyline points="21 15 16 10 5 21" />
-            </svg>
-          }
-        >
-          <ProfileWindowContent />
-        </DraggableWindow>
+        {openWindows['profile'] && !minimizedWindows['profile'] && (
+          <DraggableWindow
+            id="win-profile"
+            initialPos={{ x: 80, y: 100 }}
+            width="w-[550px]"
+            zIndex={zIndexMap['profile']}
+            isActive={activeWindow === 'profile'}
+            onActivate={() => activateWindow('profile')}
+            onClose={() => closeWindow('profile')}
+            onMinimize={() => minimizeWindow('profile')}
+            title="tomlin.jpg"
+            titleIcon={
+              <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <circle cx="8.5" cy="8.5" r="1.5" />
+                <polyline points="21 15 16 10 5 21" />
+              </svg>
+            }
+          >
+            <ProfileWindowContent />
+          </DraggableWindow>
+        )}
 
         {/* Projects Window */}
-        <DraggableWindow
-          id="win-projects"
-          initialPos={{ x: 550, y: 150 }}
-          width="w-[800px]"
-          zIndex={zIndexMap['projects']}
-          isActive={activeWindow === 'projects'}
-          onActivate={() => activateWindow('projects')}
-          title="some of his major projects"
-          headerCenter={
-            <div className="flex items-center space-x-1">
-              <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
-              </svg>
-              <span>some of his major projects</span>
-            </div>
-          }
-          headerRight={
-            <div className="relative">
-              <svg className="w-4 h-4 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search"
-                value={searchQuery}
-                onChange={e => setSearchQuery(e.target.value)}
-                className="pl-8 pr-2 py-1 bg-white/50 border border-gray-300/50 rounded-md text-xs w-28 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
-                onMouseDown={e => e.stopPropagation()}
-              />
-            </div>
-          }
-        >
-          <ProjectsWindowContent searchQuery={searchQuery} />
-        </DraggableWindow>
+        {openWindows['projects'] && !minimizedWindows['projects'] && (
+          <DraggableWindow
+            id="win-projects"
+            initialPos={{ x: 350, y: 150 }}
+            width="w-[850px]"
+            zIndex={zIndexMap['projects']}
+            isActive={activeWindow === 'projects'}
+            onActivate={() => activateWindow('projects')}
+            onClose={() => closeWindow('projects')}
+            onMinimize={() => minimizeWindow('projects')}
+            title="some of his major projects"
+            headerCenter={
+              <div className="flex items-center space-x-1">
+                <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
+                </svg>
+                <span>some of his major projects</span>
+              </div>
+            }
+            headerRight={
+              <div className="relative">
+                <svg className="w-4 h-4 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={e => setSearchQuery(e.target.value)}
+                  className="pl-8 pr-2 py-1 bg-white/50 border border-gray-300/50 rounded-md text-xs w-28 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
+                  onMouseDown={e => e.stopPropagation()}
+                />
+              </div>
+            }
+          >
+            <ProjectsWindowContent searchQuery={searchQuery} />
+          </DraggableWindow>
+        )}
       </main>
 
       {/* Dock */}
       <Dock>
         {/* Finder */}
-        <DockItem tooltip="Finder" dot>
+        <DockItem tooltip="Finder" dot={activeWindow === 'Finder'}>
           <div className="w-full h-full bg-gradient-to-b from-blue-400 to-blue-600 rounded-xl shadow-sm flex items-center justify-center relative overflow-hidden">
             <div className="absolute inset-0 flex">
               <div className="w-1/2 bg-blue-400"></div>
@@ -550,15 +570,6 @@ export default function Home() {
           </div>
         </DockItem>
 
-        {/* Messages */}
-        <DockItem tooltip="Messages">
-          <div className="w-full h-full bg-gradient-to-b from-green-400 to-green-500 rounded-xl shadow-sm flex items-center justify-center">
-            <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-            </svg>
-          </div>
-        </DockItem>
-
         {/* Safari */}
         <DockItem tooltip="Safari">
           <div className="w-full h-full bg-white rounded-xl shadow-sm flex items-center justify-center border border-gray-100">
@@ -569,11 +580,40 @@ export default function Home() {
           </div>
         </DockItem>
 
-        {/* Separator */}
+        {/* Messages */}
+        <DockItem tooltip="Messages">
+          <div className="w-full h-full bg-gradient-to-b from-green-400 to-green-500 rounded-xl shadow-sm flex items-center justify-center">
+            <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
+            </svg>
+          </div>
+        </DockItem>
+
+        <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
+
+        {/* Profile */}
+        <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
+          <div className="w-full h-full bg-slate-100 rounded-xl shadow-sm flex items-center justify-center border border-slate-200 text-slate-600">
+            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+        </DockItem>
+
+        {/* Projects */}
+        <DockItem tooltip="Projects" dot={openWindows['projects']} onClick={() => activateWindow('projects')}>
+          <div className="w-full h-full bg-blue-100 rounded-xl shadow-sm flex items-center justify-center border border-blue-200 text-blue-500">
+            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
+            </svg>
+          </div>
+        </DockItem>
+
         <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
 
         {/* Notion */}
-        <DockItem tooltip="Notion" dot>
+        <DockItem tooltip="Notion">
           <div className="w-full h-full bg-white rounded-xl shadow-sm flex items-center justify-center border border-gray-200">
             <svg className="w-8 h-8 text-black" viewBox="0 0 24 24" fill="currentColor">
               <path d="M4.459 4.208c.746-.062 1.487-.042 2.221.055.679.083 1.157.491 1.472 1.051l3.528 7.359 4.398-8.139c.264-.469.77-.732 1.291-.767.876-.057 1.761-.061 2.646-.011.233.013.385.16.368.398-.052.75-.027 1.503.047 2.253.04.423-.191.737-.504.939l-4.218 2.636v8.283c.01.272.164.444.425.503.626.142 1.258.261 1.889.375.312.056.495.234.502.553.012.569.006 1.139.002 1.708-.002.32-.206.522-.518.524-1.196.006-2.392-.04-3.582-.249-.785-.138-1.554-.368-2.321-.58-.337-.094-.522-.321-.532-.676-.021-.715-.008-1.431-.005-2.146.002-.34.198-.568.528-.669.585-.179 1.163-.382 1.745-.572.338-.11.498-.328.5-.688.012-3.149.009-6.297.009-9.446 0-.083-.017-.165-.026-.25L8.514 15.68c-.146.289-.357.485-.682.527-1.077.139-2.152.3-3.23.435-.347.043-.591-.07-.723-.404-.668-1.693-1.32-3.39-1.996-5.078-.175-.436-.37-1.134-.37-1.134l-.066 6.551c-.006.492.203.778.683.948.513.181 1.022.373 1.528.572.355.139.539.387.525.766-.023.639-.015 1.278-.013 1.917.001.378-.184.629-.569.704-.982.193-1.981.3-2.977.375-.631.047-1.265.053-1.895-.018-.322-.036-.506-.243-.505-.573.003-.701.018-1.402.016-2.103-.001-.326.17-.532.485-.615.656-.174 1.305-.373 1.954-.572.378-.116.558-.363.555-.764-.02-3.878-.008-7.756-.008-11.634 0-.486-.239-.775-.712-.942-.423-.15-.843-.311-1.258-.481-.301-.124-.462-.35-.443-.681.026-.452.012-.906.012-1.359 0-.251.146-.382.392-.401z" />
@@ -581,16 +621,6 @@ export default function Home() {
           </div>
         </DockItem>
 
-        {/* Spotify */}
-        <DockItem tooltip="Spotify">
-          <div className="w-full h-full bg-[#1DB954] rounded-xl shadow-sm flex items-center justify-center">
-            <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.35-1.434-5.305-1.76-8.786-.963-.335.077-.67-.133-.746-.467-.077-.334.132-.67.466-.745 3.822-.876 7.077-.496 9.715 1.115.294.18.388.563.208.853zm1.2-3.197c-.227.367-.7.482-1.066.255-2.68-1.646-6.786-2.128-9.965-1.164-.405.122-.827-.106-.95-.51-.122-.405.106-.827.51-.95 3.636-1.1 8.163-.563 11.217 1.314.366.226.48.698.254 1.055zm.114-3.344c-3.21-1.905-8.5-2.08-11.58-1.148-.485.147-.992-.128-1.138-.614-.147-.486.128-.992.614-1.138 3.515-1.063 9.35-.86 13.044 1.332.433.257.576.817.318 1.25-.257.434-.816.577-1.25.318z" />
-            </svg>
-          </div>
-        </DockItem>
-
-        {/* Separator */}
         <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
 
         {/* Trash */}

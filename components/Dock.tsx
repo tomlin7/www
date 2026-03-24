@@ -5,13 +5,15 @@ import React from 'react';
 export const DockItem = ({ 
   tooltip, 
   children, 
-  dot 
+  dot,
+  onClick
 }: { 
   tooltip: string; 
   children: React.ReactNode; 
-  dot?: boolean 
+  dot?: boolean;
+  onClick?: () => void;
 }) => (
-  <div className="dock-item relative group w-12 h-12 cursor-pointer">
+  <div className="dock-item relative group w-12 h-12 cursor-pointer" onClick={onClick}>
     <div className="dock-item-tooltip absolute -top-10 left-1/2 transform -translate-x-1/2 bg-black/70 text-white text-[11px] px-2 py-1 rounded shadow-lg whitespace-nowrap">
       {tooltip}
     </div>
