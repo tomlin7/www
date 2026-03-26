@@ -7,6 +7,7 @@ import { DesktopFolder } from '@/components/DesktopIcon';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { DropdownMenu } from '@/components/DropdownMenu';
 import { ControlPanel, ControlItem } from '@/components/ControlPanel';
+import { Keyboard, type KeyboardInteractionEvent } from "@/components/ui/keyboard";
 
 // Project Card Component
 const ProjectCard = ({ name, description, language, languageColor, stars, forks, isFeatured }: any) => (
@@ -210,7 +211,7 @@ export default function Home() {
   const zCounter = useRef(40);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
-  
+
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end end"]
@@ -219,11 +220,11 @@ export default function Home() {
   const scale = useTransform(scrollYProgress, [0, 0.4, 1], [1, 0.85, 0.85]);
   const borderRadius = useTransform(scrollYProgress, [0, 0.4, 1], [0, 40, 40]);
   const bezelRing = useTransform(scrollYProgress, [0, 0.3, 1], [0, 16, 16]);
-  
+
   // Smooth BG blend values
   const pageBg = useTransform(scrollYProgress, [0.4, 0.7], ["#050505", "#000000"]);
   const dotOpacity = useTransform(scrollYProgress, [0.4, 0.75], [0, 0.15]);
-  
+
   const finderMenuItems = [
     { label: 'About Finder' },
     { label: '', isSeparator: true },
@@ -342,17 +343,17 @@ export default function Home() {
   );
 
   return (
-    <motion.div 
-      ref={containerRef} 
+    <motion.div
+      ref={containerRef}
       style={{ backgroundColor: pageBg }}
       className="relative font-sans selection:bg-blue-500/30 overflow-x-hidden"
     >
       {/* Hero Section Container */}
       <div ref={heroRef} className="h-[130vh] relative w-full overflow-visible">
         <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
-          <motion.div 
-            style={{ 
-              scale, 
+          <motion.div
+            style={{
+              scale,
               borderRadius,
               boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5)",
               padding: bezelRing,
@@ -373,7 +374,7 @@ export default function Home() {
                         <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
                       </svg>
                       <div className="relative">
-                        <span 
+                        <span
                           className={`font-bold cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Finder' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                           onMouseDown={() => setActiveMenu(activeMenu === 'Finder' ? null : 'Finder')}
                         >
@@ -382,9 +383,9 @@ export default function Home() {
                         <DropdownMenu isOpen={activeMenu === 'Finder'} items={finderMenuItems} onClose={() => setActiveMenu(null)} />
                       </div>
                     </div>
-                    
+
                     <div className="relative">
-                      <span 
+                      <span
                         className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'File' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'File' ? null : 'File')}
                       >
@@ -394,7 +395,7 @@ export default function Home() {
                     </div>
 
                     <div className="relative">
-                      <span 
+                      <span
                         className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Edit' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'Edit' ? null : 'Edit')}
                       >
@@ -404,7 +405,7 @@ export default function Home() {
                     </div>
 
                     <div className="relative">
-                      <span 
+                      <span
                         className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'View' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'View' ? null : 'View')}
                       >
@@ -414,7 +415,7 @@ export default function Home() {
                     </div>
 
                     <div className="relative">
-                      <span 
+                      <span
                         className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Window' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'Window' ? null : 'Window')}
                       >
@@ -423,20 +424,20 @@ export default function Home() {
                       <DropdownMenu isOpen={activeMenu === 'Window'} items={windowMenuItems} onClose={() => setActiveMenu(null)} />
                     </div>
 
-                  <div className="relative">
-                    <span 
-                      className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Help' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-                      onMouseDown={() => setActiveMenu(activeMenu === 'Help' ? null : 'Help')}
-                    >
-                      Help
-                    </span>
-                    <DropdownMenu isOpen={activeMenu === 'Help'} items={helpMenuItems} onClose={() => setActiveMenu(null)} />
-                  </div>
+                    <div className="relative">
+                      <span
+                        className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Help' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                        onMouseDown={() => setActiveMenu(activeMenu === 'Help' ? null : 'Help')}
+                      >
+                        Help
+                      </span>
+                      <DropdownMenu isOpen={activeMenu === 'Help'} items={helpMenuItems} onClose={() => setActiveMenu(null)} />
+                    </div>
                   </div>
 
                   <div className="flex items-center space-x-1">
                     <div className="relative">
-                      <button 
+                      <button
                         className={`p-1.5 rounded-md ${activeMenu === 'Wifi' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'Wifi' ? null : 'Wifi')}
                       >
@@ -460,7 +461,7 @@ export default function Home() {
                     </div>
 
                     <div className="relative">
-                      <button 
+                      <button
                         className={`p-1.5 rounded-md ${activeMenu === 'Power' ? 'bg-black/5' : 'hover:bg-black/5'}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'Power' ? null : 'Power')}
                       >
@@ -473,7 +474,7 @@ export default function Home() {
                         </div>
                         <div className="text-[11px] text-gray-500 mb-4 bg-black/[0.03] p-2 rounded-lg">Power Source: Power Adapter</div>
                         <div className="space-y-1">
-                          <ControlItem icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>} label="Low Power Mode" />
+                          <ControlItem icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>} label="Low Power Mode" />
                         </div>
                         <div className="h-[1px] bg-gray-200/60 my-3" />
                         <button className="text-[12px] text-gray-500 hover:text-black hover:underline px-2">Battery Settings...</button>
@@ -481,7 +482,7 @@ export default function Home() {
                     </div>
 
                     <div className="relative">
-                      <span 
+                      <span
                         className={`cursor-pointer px-2 py-1 rounded-md text-[13px] hover:bg-black/5 ${activeMenu === 'Clock' ? 'bg-black/5' : ''}`}
                         onMouseDown={() => setActiveMenu(activeMenu === 'Clock' ? null : 'Clock')}
                       >
@@ -672,20 +673,20 @@ export default function Home() {
           </motion.div>
         </div>
       </div>
-      
+
       {/* About Me Section (Dark Mode) */}
       <div className="relative z-20 bg-transparent py-16 flex items-center justify-center overflow-hidden">
         {/* Subtle dot grid with scroll-driven reveal */}
-        <motion.div 
-          className="absolute inset-0" 
-          style={{ 
-            backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)', 
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
             backgroundSize: '32px 32px',
             opacity: dotOpacity
           }}
         ></motion.div>
-        
-        <motion.section 
+
+        <motion.section
           variants={{
             hidden: { opacity: 0 },
             show: {
@@ -702,10 +703,10 @@ export default function Home() {
           className="max-w-4xl mx-auto px-6 text-center relative z-10"
         >
           {/* Headline with spotlight blur */}
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               filter: hoveredAboutIcon !== null ? 'blur(24px)' : 'blur(0px)',
-              opacity: hoveredAboutIcon !== null ? 0.15 : 1 
+              opacity: hoveredAboutIcon !== null ? 0.15 : 1
             }}
             transition={{ duration: 0.2 }}
             style={{ willChange: 'filter, opacity' }}
@@ -724,7 +725,7 @@ export default function Home() {
               { label: 'logic', color: 'bg-purple-500/5', accent: 'bg-purple-500/40', icon: '🧩' },
               { label: 'collab', color: 'bg-white/5', accent: 'bg-white/20', icon: '✉️' },
             ].map((item, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 onMouseEnter={() => setHoveredAboutIcon(i)}
                 onMouseLeave={() => setHoveredAboutIcon(null)}
@@ -733,7 +734,7 @@ export default function Home() {
                 {/* Bouncy Hover Reveal (Mockups) */}
                 <motion.div
                   initial={{ opacity: 0, scale: 0.5, y: 0 }}
-                  animate={{ 
+                  animate={{
                     opacity: hoveredAboutIcon === i ? 1 : 0,
                     scale: hoveredAboutIcon === i ? 1 : 0.5,
                     y: hoveredAboutIcon === i ? -140 : 0
@@ -748,12 +749,12 @@ export default function Home() {
                 </motion.div>
 
                 {/* Main Icon */}
-                <motion.div 
+                <motion.div
                   variants={{
                     hidden: { opacity: 0, scale: 0.5, y: 100 },
                     show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 400, damping: 25 } }
                   }}
-                  animate={{ 
+                  animate={{
                     filter: (hoveredAboutIcon !== null && hoveredAboutIcon !== i) ? 'blur(24px)' : 'blur(0px)',
                     opacity: (hoveredAboutIcon !== null && hoveredAboutIcon !== i) ? 0.1 : 1,
                     scale: hoveredAboutIcon === i ? 1.25 : 1
@@ -775,14 +776,14 @@ export default function Home() {
           </div>
 
           {/* Bio text with spotlight blur */}
-          <motion.div 
+          <motion.div
             variants={{
               hidden: { opacity: 0, y: 20 },
               show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
             }}
-            animate={{ 
+            animate={{
               filter: hoveredAboutIcon !== null ? 'blur(24px)' : 'blur(0px)',
-              opacity: hoveredAboutIcon !== null ? 0.15 : 1 
+              opacity: hoveredAboutIcon !== null ? 0.15 : 1
             }}
             transition={{ duration: 0.2 }}
             style={{ willChange: 'filter, opacity' }}
@@ -794,7 +795,7 @@ export default function Home() {
           </motion.div>
 
           {/* Bouncy Contact Reveal */}
-          <motion.div 
+          <motion.div
             onMouseEnter={() => setHoveredDots(true)}
             onMouseLeave={() => setHoveredDots(false)}
             className="mt-16 flex flex-col items-center relative"
@@ -802,7 +803,7 @@ export default function Home() {
             {/* Dark Mode Contact Panel (The Morph Target) */}
             <motion.div
               initial={false}
-              animate={{ 
+              animate={{
                 opacity: hoveredDots ? 1 : 0,
                 scale: hoveredDots ? 1 : 0.2,
                 y: hoveredDots ? -10 : 0,
@@ -816,28 +817,28 @@ export default function Home() {
                 {/* Reach Out */}
                 <div className="flex flex-col items-center group cursor-pointer transition-all">
                   <div className="w-13 h-13 md:w-14 md:h-14 bg-blue-600 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
-                    <svg className="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                    <svg className="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
                   </div>
                   <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Reach out</span>
                 </div>
                 {/* X (Twitter) */}
                 <div className="flex flex-col items-center group cursor-pointer transition-all">
                   <div className="w-13 h-13 md:w-14 md:h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
-                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
                   </div>
                   <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Twitter (X)</span>
                 </div>
                 {/* GitHub */}
                 <div className="flex flex-col items-center group cursor-pointer transition-all">
                   <div className="w-13 h-13 md:w-14 md:h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
-                    <svg className="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                    <svg className="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12c0-5.523-4.477-10-10-10z" /></svg>
                   </div>
                   <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">GitHub</span>
                 </div>
                 {/* LinkedIn */}
                 <div className="flex flex-col items-center group cursor-pointer transition-all">
                   <div className="w-13 h-13 md:w-14 md:h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
-                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                    <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" /></svg>
                   </div>
                   <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">LinkedIn</span>
                 </div>
@@ -846,8 +847,8 @@ export default function Home() {
             </motion.div>
 
             {/* Three dots (The Morph Origin) */}
-            <motion.div 
-              animate={{ 
+            <motion.div
+              animate={{
                 opacity: hoveredDots ? 0 : (hoveredAboutIcon !== null ? 0.15 : 1),
                 scale: hoveredDots ? 1.2 : 1,
                 filter: hoveredAboutIcon !== null ? 'blur(24px)' : 'blur(0px)',
@@ -859,6 +860,24 @@ export default function Home() {
               <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
               <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
             </motion.div>
+          </motion.div>
+
+          {/* Mechanical Keyboard Interface */}
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.5, duration: 0.8 }}
+            className="mt-32 w-full max-w-5xl mx-auto pb-12 overflow-x-auto custom-scrollbar"
+          >
+            <div className="min-w-[800px] md:min-w-0">
+              <Keyboard
+                theme="classic"
+                enableHaptics={true}
+                enableSound={true}
+                className="scale-[0.85] md:scale-100 origin-center text-[#fffff]"
+              />
+            </div>
           </motion.div>
         </motion.section>
       </div>
