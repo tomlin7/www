@@ -4,6 +4,10 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DraggableWindow } from '@/components/Window';
 import { Dock, DockItem } from '@/components/Dock';
 import { DesktopFolder } from '@/components/DesktopIcon';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { DropdownMenu } from '@/components/DropdownMenu';
+import { ControlPanel, ControlItem } from '@/components/ControlPanel';
+import { Keyboard, type KeyboardInteractionEvent } from "@/components/ui/keyboard";
 
 // Project Card Component
 const ProjectCard = ({ name, description, language, languageColor, stars, forks, isFeatured }: any) => (
@@ -194,10 +198,237 @@ const ProjectsWindowContent = ({ searchQuery }: { searchQuery: string }) => {
   );
 };
 
-import { DropdownMenu } from '@/components/DropdownMenu';
-import { ControlPanel, ControlItem } from '@/components/ControlPanel';
+// Constants for Text Generation
+const WORD_POOL = ["here", "will", "which", "person", "must", "public", "other", "much", "about", "how", "come", "way", "after", "like", "each", "old", "there", "down", "very", "call", "than", "now", "word", "open", "all", "home", "school", "could", "number", "show", "into", "get", "make", "through", "find", "what", "with", "new", "point", "group", "since", "mean", "against", "right", "great"];
+const PUNCTUATION = [".", ",", "!", "?", ";", ":"];
+
+const generateTargetText = (isPunctuation: boolean, isNumbers: boolean) => {
+  let text = [];
+  for (let i = 0; i < 50; i++) {
+    let word = WORD_POOL[Math.floor(Math.random() * WORD_POOL.length)];
+    if (isPunctuation) {
+      if (Math.random() > 0.8) word = word.charAt(0).toUpperCase() + word.slice(1);
+      if (Math.random() > 0.9) word += PUNCTUATION[Math.floor(Math.random() * PUNCTUATION.length)];
+    }
+    if (isNumbers && Math.random() > 0.85) {
+      text.push(Math.floor(Math.random() * 100).toString());
+    }
+    text.push(word);
+  }
+  return text.join(" ");
+};
+
+// Unified Compact Typing Module
+const CompactTypingModule = ({ userInput, setUserInput }: { userInput: string; setUserInput: React.Dispatch<React.SetStateAction<string>> }) => {
+  const [isPunctuation, setIsPunctuation] = useState(false);
+  const [isNumbers, setIsNumbers] = useState(false);
+  const [timeOption, setTimeOption] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [targetText, setTargetText] = useState("");
+  const moduleRef = useRef<HTMLDivElement>(null);
+
+  const restart = useCallback(() => {
+    setTargetText(generateTargetText(isPunctuation, isNumbers));
+    setTimeLeft(timeOption);
+    setUserInput("");
+    setIsActive(false);
+    setIsFinished(false);
+  }, [isPunctuation, isNumbers, timeOption, setUserInput]);
+
+  useEffect(() => {
+    restart();
+  }, [restart]);
+
+  // Click Outside Logic
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moduleRef.current && !moduleRef.current.contains(e.target as Node)) {
+        setIsFocused(false);
+        setIsActive(false);
+      }
+    };
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isActive && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    } else if (timeLeft === 0 && isActive) {
+      setIsActive(false);
+      setIsFinished(true);
+    }
+    return () => clearInterval(timer);
+  }, [isActive, timeLeft]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isFocused) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === 'Backspace') {
+        setUserInput(prev => prev.slice(0, -1));
+      } else if (e.key === 'Escape') {
+        restart();
+      } else if (e.key.length === 1 && !isFinished) {
+        if (!isActive) setIsActive(true);
+        setUserInput(prev => prev + e.key);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFocused, isActive, isFinished, userInput, setUserInput, restart]);
+
+  const results = isFinished ? {
+    wpm: Math.floor((userInput.trim().split(/\s+/).length / timeOption) * 60) || 0,
+    acc: Math.floor((userInput.split("").filter((c, i) => c === targetText[i]).length / (userInput.length || 1)) * 100)
+  } : { wpm: 0, acc: 0 };
+
+  return (
+    <div ref={moduleRef} className="w-full max-w-4xl mx-auto border border-white/10 rounded-[20px] overflow-hidden bg-black/40 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-white/20">
+      {/* Settings Bar */}
+      <div className={`flex items-center justify-between px-8 py-3 border-b border-white/5 text-[10px] uppercase tracking-[0.3em] font-medium transition-opacity duration-500 ${isActive ? 'opacity-0' : 'opacity-100'}`}>
+        <div className="flex space-x-8">
+          <button onClick={() => setIsPunctuation(!isPunctuation)} className={`${isPunctuation ? 'text-white' : 'text-white/20'} cursor-pointer hover:text-white/60 transition-colors`}>punctuation</button>
+          <button onClick={() => setIsNumbers(!isNumbers)} className={`${isNumbers ? 'text-white' : 'text-white/20'} cursor-pointer hover:text-white/60 transition-colors`}>numbers</button>
+        </div>
+        <div className="flex space-x-5">
+          {[15, 30, 60, 120].map(opt => (
+            <button key={opt} onClick={() => setTimeOption(opt)} className={`${timeOption === opt ? 'text-white' : 'text-white/20'} cursor-pointer hover:text-white/60 transition-colors`}>{opt}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Hero Display */}
+      <div className="relative px-12 py-12 bg-white/[0.01]">
+        {isFinished ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center space-x-16">
+            <div className="text-center">
+              <span className="text-white/10 text-[9px] block mb-1">WPM</span>
+              <span className="text-white text-6xl italic font-light tracking-tighter">{results.wpm}</span>
+            </div>
+            <div className="text-center">
+              <span className="text-white/10 text-[9px] block mb-1">ACC</span>
+              <span className="text-white text-6xl italic font-light tracking-tighter">{results.acc}%</span>
+            </div>
+            <button onClick={restart} className="text-white/30 hover:text-white/80 text-[10px] pt-4 tracking-widest uppercase cursor-pointer">Restart</button>
+          </motion.div>
+        ) : (
+          <div className="relative h-14 w-full flex items-center justify-center">
+            {isActive && <div className="absolute top-0 right-0 text-white/20 text-sm italic font-mono">{timeLeft}s</div>}
+
+            <div
+              onClick={() => setIsFocused(true)}
+              className={`text-2xl font-mono leading-none transition-all duration-700 outline-none w-full text-center relative z-10 ${!isFocused ? 'blur-md opacity-20 cursor-pointer scale-95' : 'opacity-100 focus:outline-none'}`}
+              onBlur={() => { setIsFocused(false); setIsActive(false); }}
+              tabIndex={0}
+            >
+              <div className="flex items-center justify-center space-x-[2px] whitespace-nowrap overflow-visible">
+                {targetText.split("").slice(Math.max(0, userInput.length - 20), userInput.length + 30).map((char, index) => {
+                  const absoluteIndex = Math.max(0, userInput.length - 20) + index;
+                  const isCurrent = absoluteIndex === userInput.length;
+                  let color = "text-white/20";
+                  if (absoluteIndex < userInput.length) {
+                    color = userInput[absoluteIndex] === char ? "text-white/95" : "text-red-500/80";
+                  }
+                  return (
+                    <span key={absoluteIndex} className={`inline-block whitespace-pre relative ${color} transition-colors duration-100`}>
+                      {isCurrent && isFocused && (
+                        <motion.div animate={{ opacity: [1, 0, 1] }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="absolute -left-[1px] top-[10%] w-[2px] h-[80%] bg-blue-500 z-10" />
+                      )}
+                      {char}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            {!isFocused && <div onClick={() => setIsFocused(true)} className="absolute inset-0 flex items-center justify-center text-white/10 text-[9px] uppercase tracking-[0.5em] z-20 cursor-pointer">Click to Focus</div>}
+          </div>
+        )}
+      </div>
+
+      {/* Mechanical Keyboard Section */}
+      <div className="p-8 pb-10 bg-white/[0.02] border-t border-white/5 flex justify-center overflow-hidden">
+        <div className="scale-90 md:scale-95 origin-center pointer-events-auto">
+          <Keyboard theme="classic" enableHaptics enableSound onKeyEvent={(e) => {
+            if (isFocused && !isFinished && e.source === 'pointer' && e.phase === 'down') {
+              if (e.code === 'Backspace') {
+                setUserInput(prev => prev.slice(0, -1));
+              } else if (e.code === 'Space') {
+                if (!isActive) setIsActive(true);
+                setUserInput(prev => prev + " ");
+              } else if (e.code.startsWith('Key')) {
+                if (!isActive) setIsActive(true);
+                setUserInput(prev => prev + e.code.slice(3).toLowerCase());
+              } else if (e.code.startsWith('Digit')) {
+                if (!isActive) setIsActive(true);
+                setUserInput(prev => prev + e.code.slice(5));
+              }
+            }
+          }} />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default function Home() {
+  return (
+    <>
+      <PageContent />
+    </>
+  );
+}
+
+import Minecraft from "@/components/Game/Minecraft";
+
+// Dynamic Game Screen Overlay
+const GameScreen = ({ isOpen, onClose }: {
+  isOpen: boolean;
+  onClose: () => void;
+}) => {
+  return (
+    <motion.div
+      initial={false}
+      animate={{
+        clipPath: isOpen ? 'circle(150% at 100% 100%)' : 'circle(0% at 100% 100%)'
+      }}
+      transition={{
+        duration: 1.2,
+        ease: [0.77, 0, 0.175, 1]
+      }}
+      className="fixed inset-0 z-[200] bg-[#050505] overflow-hidden select-none"
+      style={{ pointerEvents: isOpen ? 'auto' : 'none' }}
+    >
+      {/* Voxel Style Exit button */}
+      <div className="absolute top-10 left-10 z-[250]">
+        <motion.button
+          onClick={onClose}
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.9, y: 4, x: 4 }}
+          className="relative w-12 h-12 flex items-center justify-center cursor-pointer pointer-events-auto"
+        >
+          <div className="absolute inset-0 bg-red-600 border-b-4 border-r-4 border-red-900 shadow-[4px_4px_0_rgba(0,0,0,0.5)]" />
+          <span className="relative text-white font-mono text-xl font-bold">X</span>
+        </motion.button>
+      </div>
+
+      <div className="w-full h-full bg-black">
+        {isOpen && (
+          <React.Suspense fallback={<div className="flex items-center justify-center h-full text-white/20 font-mono text-[9px] uppercase tracking-[0.5em]">Loading World...</div>}>
+            <Minecraft onClose={onClose} />
+          </React.Suspense>
+        )}
+      </div>
+
+    </motion.div>
+  );
+};
+
+function PageContent() {
   const [clockText, setClockText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeWindow, setActiveWindow] = useState('profile');
@@ -205,7 +436,26 @@ export default function Home() {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({ profile: true, projects: false });
   const [minimizedWindows, setMinimizedWindows] = useState<Record<string, boolean>>({ profile: false, projects: false });
+  const [hoveredAboutIcon, setHoveredAboutIcon] = useState<number | null>(null);
+  const [hoveredDots, setHoveredDots] = useState(false);
+  const [typingInput, setTypingInput] = useState("");
+  const [showGame, setShowGame] = useState(false);
   const zCounter = useRef(40);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end end"]
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [1, 0.85, 0.85]);
+  const borderRadius = useTransform(scrollYProgress, [0, 0.4, 1], [0, 40, 40]);
+  const bezelRing = useTransform(scrollYProgress, [0, 0.3, 1], [0, 16, 16]);
+
+  // Smooth BG blend values
+  const pageBg = useTransform(scrollYProgress, [0.4, 0.7], ["#050505", "#000000"]);
+  const dotOpacity = useTransform(scrollYProgress, [0.4, 0.75], [0, 0.15]);
 
   const finderMenuItems = [
     { label: 'About Finder' },
@@ -307,10 +557,6 @@ export default function Home() {
     setMinimizedWindows(prev => ({ ...prev, [id]: true }));
   };
 
-  const bringProjectsToFront = () => {
-    activateWindow('projects');
-  };
-
   const WifiIcon = () => (
     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M5 12.55a11 11 0 0 1 14.08 0" />
@@ -329,309 +575,542 @@ export default function Home() {
   );
 
   return (
-    <div className="text-gray-800 h-screen w-screen overflow-hidden flex flex-col font-sans">
-      {/* Menu Bar */}
-      <nav className="glass w-full h-7 flex items-center justify-between px-4 text-xs font-medium z-50 fixed top-0">
-        <div className="flex items-center space-x-1">
-          <div className="flex items-center space-x-4 pr-3">
-            <svg className="w-3.5 h-3.5 fill-current cursor-pointer" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
-              <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
-            </svg>
-            <div className="relative">
-              <span 
-                className={`font-bold cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Finder' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-                onMouseDown={() => setActiveMenu(activeMenu === 'Finder' ? null : 'Finder')}
-              >
-                Finder
-              </span>
-              <DropdownMenu isOpen={activeMenu === 'Finder'} items={finderMenuItems} onClose={() => setActiveMenu(null)} />
-            </div>
-          </div>
-          
-          <div className="relative">
-            <span 
-              className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'File' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'File' ? null : 'File')}
+    <>
+      <GameScreen
+        isOpen={showGame}
+        onClose={() => setShowGame(false)}
+      />
+      <motion.div
+        ref={containerRef}
+        style={{ backgroundColor: pageBg }}
+        className="relative font-sans selection:bg-blue-500/30 overflow-x-hidden"
+      >
+        {/* Hero Section Container */}
+        <div ref={heroRef} className="h-[130vh] relative w-full overflow-visible">
+          <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+            <motion.div
+              style={{
+                scale,
+                borderRadius,
+                boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5)",
+                padding: bezelRing,
+                backgroundColor: "rgba(0,0,0,0.9)",
+                position: 'relative'
+              }}
+              className="w-full h-full desktop-bg"
             >
-              File
-            </span>
-            <DropdownMenu isOpen={activeMenu === 'File'} items={fileMenuItems} onClose={() => setActiveMenu(null)} />
-          </div>
+              {/* Border/Bezel content */}
+              <div className="text-gray-800 h-full w-full flex flex-col relative overflow-hidden bg-white/5 rounded-[inherit]">
+                {/* Inner screen content */}
+                <div className="h-full w-full flex flex-col relative bg-transparent">
+                  {/* Menu Bar */}
+                  <nav className="glass w-full h-7 flex items-center justify-between px-4 text-xs font-medium z-50 absolute top-0 left-0">
+                    <div className="flex items-center space-x-1">
+                      <div className="flex items-center space-x-4 pr-3">
+                        <img
+                          src="https://upload.wikimedia.org/wikipedia/en/8/8e/AppleSiriIcon2017.png"
+                          alt="Siri"
+                          className="w-4 h-4 cursor-pointer"
+                        />
+                        <div className="relative">
+                          <span
+                            className={`font-bold cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Finder' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                            onMouseDown={() => setActiveMenu(activeMenu === 'Finder' ? null : 'Finder')}
+                          >
+                            Finder
+                          </span>
+                          <DropdownMenu isOpen={activeMenu === 'Finder'} items={finderMenuItems} onClose={() => setActiveMenu(null)} />
+                        </div>
+                      </div>
 
-          <div className="relative">
-            <span 
-              className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Edit' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'Edit' ? null : 'Edit')}
-            >
-              Edit
-            </span>
-            <DropdownMenu isOpen={activeMenu === 'Edit'} items={editMenuItems} onClose={() => setActiveMenu(null)} />
-          </div>
+                      <div className="relative">
+                        <span
+                          className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'File' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'File' ? null : 'File')}
+                        >
+                          File
+                        </span>
+                        <DropdownMenu isOpen={activeMenu === 'File'} items={fileMenuItems} onClose={() => setActiveMenu(null)} />
+                      </div>
 
-          <div className="relative">
-            <span 
-              className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'View' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'View' ? null : 'View')}
-            >
-              View
-            </span>
-            <DropdownMenu isOpen={activeMenu === 'View'} items={viewMenuItems} onClose={() => setActiveMenu(null)} />
-          </div>
+                      <div className="relative">
+                        <span
+                          className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Edit' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'Edit' ? null : 'Edit')}
+                        >
+                          Edit
+                        </span>
+                        <DropdownMenu isOpen={activeMenu === 'Edit'} items={editMenuItems} onClose={() => setActiveMenu(null)} />
+                      </div>
 
-          <div className="relative">
-            <span 
-              className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Window' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'Window' ? null : 'Window')}
-            >
-              Window
-            </span>
-            <DropdownMenu isOpen={activeMenu === 'Window'} items={windowMenuItems} onClose={() => setActiveMenu(null)} />
-          </div>
+                      <div className="relative">
+                        <span
+                          className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'View' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'View' ? null : 'View')}
+                        >
+                          View
+                        </span>
+                        <DropdownMenu isOpen={activeMenu === 'View'} items={viewMenuItems} onClose={() => setActiveMenu(null)} />
+                      </div>
 
-          <div className="relative">
-            <span 
-              className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Help' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'Help' ? null : 'Help')}
-            >
-              Help
-            </span>
-            <DropdownMenu isOpen={activeMenu === 'Help'} items={helpMenuItems} onClose={() => setActiveMenu(null)} />
+                      <div className="relative">
+                        <span
+                          className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Window' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'Window' ? null : 'Window')}
+                        >
+                          Window
+                        </span>
+                        <DropdownMenu isOpen={activeMenu === 'Window'} items={windowMenuItems} onClose={() => setActiveMenu(null)} />
+                      </div>
+
+                      <div className="relative">
+                        <span
+                          className={`cursor-pointer px-2 py-0.5 rounded ${activeMenu === 'Help' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'Help' ? null : 'Help')}
+                        >
+                          Help
+                        </span>
+                        <DropdownMenu isOpen={activeMenu === 'Help'} items={helpMenuItems} onClose={() => setActiveMenu(null)} />
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-1">
+                      <div className="relative">
+                        <button
+                          className={`p-1.5 rounded-md ${activeMenu === 'Wifi' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'Wifi' ? null : 'Wifi')}
+                        >
+                          <WifiIcon />
+                        </button>
+                        <ControlPanel isOpen={activeMenu === 'Wifi'} onClose={() => setActiveMenu(null)} title="Wi-Fi">
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-[13px] font-bold">Wi-Fi</span>
+                            <div className="w-10 h-5 bg-blue-500 rounded-full relative p-0.5">
+                              <div className="w-4 h-4 bg-white rounded-full absolute right-0.5 shadow-sm"></div>
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <ControlItem icon={<WifiIcon />} label="Fiber" sublabel="Saved" isActive />
+                            <ControlItem icon={<WifiIcon />} label="Guest_Access" />
+                            <ControlItem icon={<WifiIcon />} label="Starlink_99" />
+                          </div>
+                          <div className="h-[1px] bg-gray-200/60 my-3" />
+                          <button className="text-[12px] text-gray-500 hover:text-black hover:underline px-2">Wi-Fi Settings...</button>
+                        </ControlPanel>
+                      </div>
+
+                      <div className="relative">
+                        <button
+                          className={`p-1.5 rounded-md ${activeMenu === 'Power' ? 'bg-black/5' : 'hover:bg-black/5'}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'Power' ? null : 'Power')}
+                        >
+                          <BatteryIcon />
+                        </button>
+                        <ControlPanel isOpen={activeMenu === 'Power'} onClose={() => setActiveMenu(null)} title="Battery">
+                          <div className="flex items-center justify-between mb-4">
+                            <span className="text-sm font-bold text-gray-800">100% Charged</span>
+                            <BatteryIcon />
+                          </div>
+                          <div className="text-[11px] text-gray-500 mb-4 bg-black/[0.03] p-2 rounded-lg">Power Source: Power Adapter</div>
+                          <div className="space-y-1">
+                            <ControlItem icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>} label="Low Power Mode" />
+                          </div>
+                          <div className="h-[1px] bg-gray-200/60 my-3" />
+                          <button className="text-[12px] text-gray-500 hover:text-black hover:underline px-2">Battery Settings...</button>
+                        </ControlPanel>
+                      </div>
+
+                      <div className="relative">
+                        <span
+                          className={`cursor-pointer px-2 py-1 rounded-md text-[13px] hover:bg-black/5 ${activeMenu === 'Clock' ? 'bg-black/5' : ''}`}
+                          onMouseDown={() => setActiveMenu(activeMenu === 'Clock' ? null : 'Clock')}
+                        >
+                          {clockText}
+                        </span>
+                        <ControlPanel isOpen={activeMenu === 'Clock'} onClose={() => setActiveMenu(null)}>
+                          <div className="flex flex-col items-center">
+                            <div className="text-3xl font-serif-italic mb-2">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                            <div className="text-xs text-gray-500 mb-6">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+                            <div className="w-full h-40 bg-black/5 rounded-2xl flex items-center justify-center text-gray-400">
+                              <div className="text-[11px] uppercase tracking-widest font-bold">No Notifications</div>
+                            </div>
+                          </div>
+                          <div className="h-[1px] bg-gray-200/60 my-4" />
+                          <button className="w-full text-[12px] text-gray-500 hover:text-black py-1">Open Calendar...</button>
+                        </ControlPanel>
+                      </div>
+                    </div>
+                  </nav>
+
+                  {/* Desktop Area */}
+                  <main className="flex-1 relative w-full h-full pt-7 pb-20 overflow-hidden">
+                    {/* Desktop Folders */}
+                    <DesktopFolder label="projects" initialPos={{ top: '15%', left: '80%' }} onDoubleClick={() => activateWindow('projects')} />
+                    <DesktopFolder label="about me" initialPos={{ top: '35%', left: '75%' }} onDoubleClick={() => activateWindow('profile')} />
+                    <DesktopFolder label="resume" initialPos={{ top: '55%', left: '45%' }} />
+                    <DesktopFolder label="graphic design" initialPos={{ top: '15%', left: '40%' }} />
+
+                    {/* Profile Window */}
+                    {openWindows['profile'] && !minimizedWindows['profile'] && (
+                      <DraggableWindow
+                        id="win-profile"
+                        initialPos={{ x: 80, y: 100 }}
+                        width="w-[550px]"
+                        zIndex={zIndexMap['profile']}
+                        isActive={activeWindow === 'profile'}
+                        onActivate={() => activateWindow('profile')}
+                        onClose={() => closeWindow('profile')}
+                        onMinimize={() => minimizeWindow('profile')}
+                        title="tomlin.jpg"
+                        titleIcon={
+                          <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
+                          </svg>
+                        }
+                      >
+                        <ProfileWindowContent />
+                      </DraggableWindow>
+                    )}
+
+                    {/* Projects Window */}
+                    {openWindows['projects'] && !minimizedWindows['projects'] && (
+                      <DraggableWindow
+                        id="win-projects"
+                        initialPos={{ x: 350, y: 150 }}
+                        width="w-[850px]"
+                        zIndex={zIndexMap['projects']}
+                        isActive={activeWindow === 'projects'}
+                        onActivate={() => activateWindow('projects')}
+                        onClose={() => closeWindow('projects')}
+                        onMinimize={() => minimizeWindow('projects')}
+                        title="some of his major projects"
+                        headerCenter={
+                          <div className="flex items-center space-x-1">
+                            <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
+                            </svg>
+                            <span>some of his major projects</span>
+                          </div>
+                        }
+                        headerRight={
+                          <div className="relative">
+                            <svg className="w-4 h-4 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                            <input
+                              type="text"
+                              placeholder="Search"
+                              value={searchQuery}
+                              onChange={e => setSearchQuery(e.target.value)}
+                              className="pl-8 pr-2 py-1 bg-white/50 border border-gray-300/50 rounded-md text-xs w-28 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
+                              onMouseDown={e => e.stopPropagation()}
+                            />
+                          </div>
+                        }
+                      >
+                        <ProjectsWindowContent searchQuery={searchQuery} />
+                      </DraggableWindow>
+                    )}
+                  </main>
+
+                  {/* Dock */}
+                  <Dock>
+                    {/* Projects */}
+                    <DockItem tooltip="Projects" dot={openWindows['projects']} onClick={() => activateWindow('projects')}>
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853981255cc36b3a37af_finder.png" alt="Finder" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    {/* Launchpad */}
+                    <DockItem tooltip="Launchpad">
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853943597517f128b9b4_launchpad.png" alt="Launchpad" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    {/* Safari */}
+                    <DockItem tooltip="Safari">
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ddd826358438eda6d_safari.png" alt="Safari" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    {/* Messages */}
+                    <DockItem tooltip="Messages">
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853a55558a68e192ee08_messages.png" alt="Messages" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    {/* Photos */}
+                    <DockItem tooltip="Photos">
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853c55558a2e1192ee09_photos.png" alt="Photos" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    {/* Music */}
+                    <DockItem tooltip="Music">
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ba0782d6ff2aca6b3_music.png" alt="Music" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
+
+                    {/* Profile (About Me) */}
+                    <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853743597518c528b9b3_contacts.png" alt="About Me" className="w-full h-full object-contain" />
+                    </DockItem>
+
+                    <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
+
+                    {/* Trash */}
+                    <DockItem tooltip="Trash" shake={true}>
+                      <img src="https://findicons.com/files/icons/569/longhorn_objects/128/trash.png" alt="Trash" className="w-full h-full object-contain" />
+                    </DockItem>
+                  </Dock>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
 
-        <div className="flex items-center space-x-1">
-          <div className="relative">
-            <button 
-              className={`p-1.5 rounded-md ${activeMenu === 'Wifi' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'Wifi' ? null : 'Wifi')}
-            >
-              <WifiIcon />
-            </button>
-            <ControlPanel isOpen={activeMenu === 'Wifi'} onClose={() => setActiveMenu(null)} title="Wi-Fi">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-[13px] font-bold">Wi-Fi</span>
-                <div className="w-10 h-5 bg-blue-500 rounded-full relative p-0.5">
-                  <div className="w-4 h-4 bg-white rounded-full absolute right-0.5 shadow-sm"></div>
-                </div>
-              </div>
-              <div className="space-y-1">
-                <ControlItem icon={<WifiIcon />} label="Antigravity_Fiber" sublabel="Saved" isActive />
-                <ControlItem icon={<WifiIcon />} label="Guest_Access" />
-                <ControlItem icon={<WifiIcon />} label="Starlink_99" />
-              </div>
-              <div className="h-[1px] bg-gray-200/60 my-3" />
-              <button className="text-[12px] text-gray-500 hover:text-black hover:underline px-2">Wi-Fi Settings...</button>
-            </ControlPanel>
-          </div>
+        {/* About Me Section (Dark Mode) */}
+        <div className="relative z-20 bg-transparent py-16 flex items-center justify-center overflow-hidden">
+          {/* Subtle dot grid with scroll-driven reveal */}
+          <motion.div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: 'radial-gradient(circle, #ffffff 1px, transparent 1px)',
+              backgroundSize: '32px 32px',
+              opacity: dotOpacity
+            }}
+          ></motion.div>
 
-          <div className="relative">
-            <button 
-              className={`p-1.5 rounded-md ${activeMenu === 'Power' ? 'bg-black/5' : 'hover:bg-black/5'}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'Power' ? null : 'Power')}
-            >
-              <BatteryIcon />
-            </button>
-            <ControlPanel isOpen={activeMenu === 'Power'} onClose={() => setActiveMenu(null)} title="Battery">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm font-bold text-gray-800">100% Charged</span>
-                <BatteryIcon />
-              </div>
-              <div className="text-[11px] text-gray-500 mb-4 bg-black/[0.03] p-2 rounded-lg">Power Source: Power Adapter</div>
-              <div className="space-y-1">
-                <ControlItem icon={<svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>} label="Low Power Mode" />
-              </div>
-              <div className="h-[1px] bg-gray-200/60 my-3" />
-              <button className="text-[12px] text-gray-500 hover:text-black hover:underline px-2">Battery Settings...</button>
-            </ControlPanel>
-          </div>
-
-          <div className="relative">
-            <span 
-              className={`cursor-pointer px-2 py-1 rounded-md text-[13px] hover:bg-black/5 ${activeMenu === 'Clock' ? 'bg-black/5' : ''}`}
-              onMouseDown={() => setActiveMenu(activeMenu === 'Clock' ? null : 'Clock')}
-            >
-              {clockText}
-            </span>
-            <ControlPanel isOpen={activeMenu === 'Clock'} onClose={() => setActiveMenu(null)}>
-              <div className="flex flex-col items-center">
-                <div className="text-3xl font-serif-italic mb-2">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                <div className="text-xs text-gray-500 mb-6">{new Date().toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric' })}</div>
-                <div className="w-full h-40 bg-black/5 rounded-2xl flex items-center justify-center text-gray-400">
-                  <div className="text-[11px] uppercase tracking-widest font-bold">No Notifications</div>
-                </div>
-              </div>
-              <div className="h-[1px] bg-gray-200/60 my-4" />
-              <button className="w-full text-[12px] text-gray-500 hover:text-black py-1">Open Calendar...</button>
-            </ControlPanel>
-          </div>
-        </div>
-      </nav>
-
-      {/* Desktop Area */}
-      <main className="flex-1 relative w-full h-full pt-7 pb-20 overflow-hidden">
-        {/* Desktop Folders */}
-        <DesktopFolder label="projects" initialPos={{ top: '15%', left: '80%' }} onDoubleClick={() => activateWindow('projects')} />
-        <DesktopFolder label="about me" initialPos={{ top: '35%', left: '75%' }} onDoubleClick={() => activateWindow('profile')} />
-        <DesktopFolder label="resume" initialPos={{ top: '55%', left: '45%' }} />
-        <DesktopFolder label="graphic design" initialPos={{ top: '15%', left: '40%' }} />
-
-        {/* Profile Window */}
-        {openWindows['profile'] && !minimizedWindows['profile'] && (
-          <DraggableWindow
-            id="win-profile"
-            initialPos={{ x: 80, y: 100 }}
-            width="w-[550px]"
-            zIndex={zIndexMap['profile']}
-            isActive={activeWindow === 'profile'}
-            onActivate={() => activateWindow('profile')}
-            onClose={() => closeWindow('profile')}
-            onMinimize={() => minimizeWindow('profile')}
-            title="tomlin.jpg"
-            titleIcon={
-              <svg className="w-4 h-4 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                <circle cx="8.5" cy="8.5" r="1.5" />
-                <polyline points="21 15 16 10 5 21" />
-              </svg>
-            }
+          <motion.section
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                  delayChildren: 0.2
+                }
+              }
+            }}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, margin: "-100px" }}
+            className="max-w-4xl mx-auto px-6 text-center relative z-10"
           >
-            <ProfileWindowContent />
-          </DraggableWindow>
-        )}
+            {/* Headline with spotlight blur */}
+            <motion.div
+              animate={{
+                filter: hoveredAboutIcon !== null ? 'blur(24px)' : 'blur(0px)',
+                opacity: hoveredAboutIcon !== null ? 0.15 : 1
+              }}
+              transition={{ duration: 0.2 }}
+              style={{ willChange: 'filter, opacity' }}
+              className="mb-20"
+            >
+              <h2 className="text-5xl md:text-6xl text-white/90 font-caveat tracking-normal mb-2">
+                welcome to my corner
+                <br />
+                on the internet :)
+              </h2>
+            </motion.div>
 
-        {/* Projects Window */}
-        {openWindows['projects'] && !minimizedWindows['projects'] && (
-          <DraggableWindow
-            id="win-projects"
-            initialPos={{ x: 350, y: 150 }}
-            width="w-[850px]"
-            zIndex={zIndexMap['projects']}
-            isActive={activeWindow === 'projects'}
-            onActivate={() => activateWindow('projects')}
-            onClose={() => closeWindow('projects')}
-            onMinimize={() => minimizeWindow('projects')}
-            title="some of his major projects"
-            headerCenter={
-              <div className="flex items-center space-x-1">
-                <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
-                </svg>
-                <span>some of his major projects</span>
-              </div>
-            }
-            headerRight={
-              <div className="relative">
-                <svg className="w-4 h-4 absolute left-2 top-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="Search"
-                  value={searchQuery}
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="pl-8 pr-2 py-1 bg-white/50 border border-gray-300/50 rounded-md text-xs w-28 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:bg-white"
-                  onMouseDown={e => e.stopPropagation()}
-                />
-              </div>
-            }
-          >
-            <ProjectsWindowContent searchQuery={searchQuery} />
-          </DraggableWindow>
-        )}
-      </main>
+            {/* Project Row / Icon Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 md:gap-14 my-24 max-w-3xl mx-auto">
+              {[
+                { label: 'biscuit', color: 'bg-orange-500/5', accent: 'bg-orange-500/40', icon: '🍪' },
+                { label: 'ted.sh', color: 'bg-blue-500/5', accent: 'bg-blue-500/40', icon: '🛠️' },
+                { label: 'logic', color: 'bg-purple-500/5', accent: 'bg-purple-500/40', icon: '🧩' },
+                { label: 'collab', color: 'bg-white/5', accent: 'bg-white/20', icon: '✉️' },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  onMouseEnter={() => setHoveredAboutIcon(i)}
+                  onMouseLeave={() => setHoveredAboutIcon(null)}
+                  className="flex flex-col items-center relative"
+                >
+                  {/* Bouncy Hover Reveal (Mockups) */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.5, y: 0 }}
+                    animate={{
+                      opacity: hoveredAboutIcon === i ? 1 : 0,
+                      scale: hoveredAboutIcon === i ? 1 : 0.5,
+                      y: hoveredAboutIcon === i ? -140 : 0
+                    }}
+                    transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                    className="absolute pointer-events-none z-30"
+                  >
+                    <div className="relative w-40 h-28">
+                      <div className={`absolute inset-0 ${item.accent} backdrop-blur-md rounded-xl shadow-2xl border border-white/10`} />
+                      <div className={`absolute inset-0 translate-x-4 -translate-y-4 ${item.accent} brightness-125 backdrop-blur-md rounded-xl shadow-2xl border border-white/20 rotate-3`} />
+                    </div>
+                  </motion.div>
 
-      {/* Dock */}
-      <Dock>
-        {/* Finder */}
-        <DockItem tooltip="Finder" dot={activeWindow === 'Finder'}>
-          <div className="w-full h-full bg-gradient-to-b from-blue-400 to-blue-600 rounded-xl shadow-sm flex items-center justify-center relative overflow-hidden">
-            <div className="absolute inset-0 flex">
-              <div className="w-1/2 bg-blue-400"></div>
-              <div className="w-1/2 bg-blue-300"></div>
-            </div>
-            <svg className="w-8 h-8 text-white relative z-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-              <circle cx="12" cy="12" r="10" />
-              <path d="M8 14s1.5 2 4 2 4-2 4-2" />
-              <line x1="9" y1="9" x2="9.01" y2="9" />
-              <line x1="15" y1="9" x2="15.01" y2="9" />
-            </svg>
-          </div>
-        </DockItem>
-
-        {/* Launchpad */}
-        <DockItem tooltip="Launchpad">
-          <div className="w-full h-full bg-gradient-to-tr from-gray-200 to-gray-50 rounded-xl shadow-sm border border-gray-200 flex items-center justify-center p-2">
-            <div className="grid grid-cols-3 gap-1 w-full h-full">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="bg-gray-400 rounded-sm"></div>
+                  {/* Main Icon */}
+                  <motion.div
+                    variants={{
+                      hidden: { opacity: 0, scale: 0.5, y: 100 },
+                      show: { opacity: 1, scale: 1, y: 0, transition: { type: "spring", stiffness: 400, damping: 25 } }
+                    }}
+                    animate={{
+                      filter: (hoveredAboutIcon !== null && hoveredAboutIcon !== i) ? 'blur(24px)' : 'blur(0px)',
+                      opacity: (hoveredAboutIcon !== null && hoveredAboutIcon !== i) ? 0.1 : 1,
+                      scale: hoveredAboutIcon === i ? 1.25 : 1
+                    }}
+                    whileHover={{ y: -20, rotate: i % 2 === 0 ? 5 : -5 }}
+                    transition={{ type: "spring", stiffness: 500, damping: 20 }}
+                    style={{ willChange: 'filter, transform, opacity' }}
+                    className="flex flex-col items-center group cursor-pointer"
+                  >
+                    <div className={`w-24 h-24 md:w-28 md:h-28 rounded-3xl border border-white/10 flex items-center justify-center shadow-lg transition-all duration-500 group-hover:shadow-white/10 ${item.color}`}>
+                      <div className="text-4xl">{item.icon}</div>
+                    </div>
+                    <span className="mt-5 text-[11px] font-bold text-white/30 group-hover:text-white/60 transition-colors uppercase tracking-[0.25em]">
+                      {item.label}
+                    </span>
+                  </motion.div>
+                </motion.div>
               ))}
             </div>
-          </div>
-        </DockItem>
 
-        {/* Safari */}
-        <DockItem tooltip="Safari">
-          <div className="w-full h-full bg-white rounded-xl shadow-sm flex items-center justify-center border border-gray-100">
-            <svg className="w-10 h-10 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" fill="#e0f2fe" />
-              <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" fill="white" stroke="#3b82f6" />
-            </svg>
-          </div>
-        </DockItem>
+            {/* Bio text with spotlight blur */}
+            <motion.div
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 200, damping: 20 } }
+              }}
+              animate={{
+                filter: hoveredAboutIcon !== null ? 'blur(24px)' : 'blur(0px)',
+                opacity: hoveredAboutIcon !== null ? 0.15 : 1
+              }}
+              transition={{ duration: 0.2 }}
+              style={{ willChange: 'filter, opacity' }}
+              className="max-w-xl mx-auto"
+            >
+              <p className="text-lg md:text-xl text-white/50 leading-relaxed font-light">
+                hey there! i'm <span className="text-white/90 font-medium tracking-tight">tom</span> — a software engineer with a deep love for systems and performance. i currently build tools for the next generation of developers and occasionally dive into graphics, compilers, and games.
+              </p>
+            </motion.div>
 
-        {/* Messages */}
-        <DockItem tooltip="Messages">
-          <div className="w-full h-full bg-gradient-to-b from-green-400 to-green-500 rounded-xl shadow-sm flex items-center justify-center">
-            <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z" />
-            </svg>
-          </div>
-        </DockItem>
+            {/* Bouncy Contact Reveal */}
+            <motion.div
+              onMouseEnter={() => setHoveredDots(true)}
+              onMouseLeave={() => setHoveredDots(false)}
+              className="mt-16 flex flex-col items-center relative"
+            >
+              {/* Dark Mode Contact Panel (The Morph Target) */}
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: hoveredDots ? 1 : 0,
+                  scale: hoveredDots ? 1 : 0.2,
+                  y: hoveredDots ? -10 : 0,
+                  pointerEvents: hoveredDots ? 'auto' : 'none'
+                }}
+                transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                style={{ originY: 'bottom', willChange: 'transform, opacity' }}
+                className="absolute bottom-0 bg-black border border-white/10 text-white p-8 rounded-[48px] shadow-2xl flex flex-col items-center min-w-[360px] z-50 overflow-hidden"
+              >
+                <div className="flex items-center space-x-9 mb-8 font-sans">
+                  {/* Reach Out */}
+                  <div className="flex flex-col items-center group cursor-pointer transition-all">
+                    <div className="w-13 h-13 md:w-14 md:h-14 bg-blue-600 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
+                      <svg className="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Reach out</span>
+                  </div>
+                  {/* X (Twitter) */}
+                  <div className="flex flex-col items-center group cursor-pointer transition-all">
+                    <div className="w-13 h-13 md:w-14 md:h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
+                      <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Twitter (X)</span>
+                  </div>
+                  {/* GitHub */}
+                  <div className="flex flex-col items-center group cursor-pointer transition-all">
+                    <div className="w-13 h-13 md:w-14 md:h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
+                      <svg className="w-6 h-6 md:w-7 md:h-7" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.9-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12c0-5.523-4.477-10-10-10z" /></svg>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">GitHub</span>
+                  </div>
+                  {/* LinkedIn */}
+                  <div className="flex flex-col items-center group cursor-pointer transition-all">
+                    <div className="w-13 h-13 md:w-14 md:h-14 bg-white/5 border border-white/10 rounded-full flex items-center justify-center text-white mb-2 shadow-lg transition-transform group-hover:scale-110">
+                      <svg className="w-5 h-5 md:w-6 md:h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" /></svg>
+                    </div>
+                    <span className="text-[9px] font-bold uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">LinkedIn</span>
+                  </div>
+                </div>
+                <span className="text-[9px] text-white/20 font-medium uppercase tracking-[0.3em] font-mono">© 2026 tomlin7. Built with precision.</span>
+              </motion.div>
 
-        <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
+              {/* Three dots (The Morph Origin) */}
+              <motion.div
+                animate={{
+                  opacity: hoveredDots ? 0 : (hoveredAboutIcon !== null ? 0.15 : 1),
+                  scale: hoveredDots ? 1.2 : 1,
+                  filter: hoveredAboutIcon !== null ? 'blur(24px)' : 'blur(0px)',
+                }}
+                transition={{ duration: 0.2 }}
+                className="flex justify-center items-center space-x-1.5 cursor-pointer px-5 py-3.5 bg-white/[0.03] border border-white/10 rounded-full z-40 relative backdrop-blur-md hover:bg-white/[0.08] transition-colors"
+              >
+                <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+                <div className="w-1.5 h-1.5 rounded-full bg-white/40"></div>
+              </motion.div>
+            </motion.div>
 
-        {/* Profile */}
-        <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
-          <div className="w-full h-full bg-slate-100 rounded-xl shadow-sm flex items-center justify-center border border-slate-200 text-slate-600">
-            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-              <circle cx="12" cy="7" r="4" />
-            </svg>
-          </div>
-        </DockItem>
+            {/* Integrated Typing & Keyboard Module */}
+            <motion.div
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5, duration: 0.8 }}
+              className="mt-32 w-full max-w-5xl mx-auto pb-12 overflow-x-auto custom-scrollbar flex flex-col items-center"
+            >
+              <CompactTypingModule userInput={typingInput} setUserInput={setTypingInput} />
+            </motion.div>
+          </motion.section>
 
-        {/* Projects */}
-        <DockItem tooltip="Projects" dot={openWindows['projects']} onClick={() => activateWindow('projects')}>
-          <div className="w-full h-full bg-blue-100 rounded-xl shadow-sm flex items-center justify-center border border-blue-200 text-blue-500">
-            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
-            </svg>
-          </div>
-        </DockItem>
 
-        <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
 
-        {/* Notion */}
-        <DockItem tooltip="Notion">
-          <div className="w-full h-full bg-white rounded-xl shadow-sm flex items-center justify-center border border-gray-200">
-            <svg className="w-8 h-8 text-black" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M4.459 4.208c.746-.062 1.487-.042 2.221.055.679.083 1.157.491 1.472 1.051l3.528 7.359 4.398-8.139c.264-.469.77-.732 1.291-.767.876-.057 1.761-.061 2.646-.011.233.013.385.16.368.398-.052.75-.027 1.503.047 2.253.04.423-.191.737-.504.939l-4.218 2.636v8.283c.01.272.164.444.425.503.626.142 1.258.261 1.889.375.312.056.495.234.502.553.012.569.006 1.139.002 1.708-.002.32-.206.522-.518.524-1.196.006-2.392-.04-3.582-.249-.785-.138-1.554-.368-2.321-.58-.337-.094-.522-.321-.532-.676-.021-.715-.008-1.431-.005-2.146.002-.34.198-.568.528-.669.585-.179 1.163-.382 1.745-.572.338-.11.498-.328.5-.688.012-3.149.009-6.297.009-9.446 0-.083-.017-.165-.026-.25L8.514 15.68c-.146.289-.357.485-.682.527-1.077.139-2.152.3-3.23.435-.347.043-.591-.07-.723-.404-.668-1.693-1.32-3.39-1.996-5.078-.175-.436-.37-1.134-.37-1.134l-.066 6.551c-.006.492.203.778.683.948.513.181 1.022.373 1.528.572.355.139.539.387.525.766-.023.639-.015 1.278-.013 1.917.001.378-.184.629-.569.704-.982.193-1.981.3-2.977.375-.631.047-1.265.053-1.895-.018-.322-.036-.506-.243-.505-.573.003-.701.018-1.402.016-2.103-.001-.326.17-.532.485-.615.656-.174 1.305-.373 1.954-.572.378-.116.558-.363.555-.764-.02-3.878-.008-7.756-.008-11.634 0-.486-.239-.775-.712-.942-.423-.15-.843-.311-1.258-.481-.301-.124-.462-.35-.443-.681.026-.452.012-.906.012-1.359 0-.251.146-.382.392-.401z" />
-            </svg>
-          </div>
-        </DockItem>
+          <motion.div
+            onClick={() => setShowGame(true)}
+            className="absolute bottom-0 right-0 w-24 h-24 pointer-events-auto group z-[50] cursor-pointer overflow-visible"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            whileHover="hover"
+            viewport={{ once: true }}
+          >
+            {/* Handwritten CTA */}
+            <div className="absolute bottom-20 right-25 w-32 pointer-events-none select-none">
+              <div className="font-caveat text-white/50 text-2xl -rotate-12 flex flex-col items-center">
+                <span className="whitespace-nowrap mb-1">Click to open</span>
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 57.31711644535244 67.15526532639706" width="57.31711644535244" height="67.15526532639706">
+                  <rect x="0" y="0" width="57.31711644535244" height="67.15526532639706"></rect><g transform="translate(10 10) rotate(0 16.87751402869253 22.22064661063996)" stroke="none"><path fill="#d3d3d371" d="M 1.77,-0.49 Q 1.77,-0.49 2.28,1.62 2.80,3.73 4.00,7.16 5.21,10.59 7.29,15.09 9.38,19.59 12.26,23.82 15.14,28.06 18.35,31.37 21.57,34.69 24.25,36.76 26.94,38.83 28.83,40.00 30.72,41.16 32.63,42.09 34.54,43.03 34.75,43.19 34.95,43.36 35.09,43.58 35.23,43.80 35.30,44.05 35.36,44.30 35.34,44.56 35.32,44.82 35.22,45.06 35.11,45.30 34.94,45.50 34.76,45.69 34.54,45.82 34.31,45.95 34.05,46.00 33.80,46.05 33.54,46.02 33.28,45.98 33.04,45.87 32.81,45.75 32.62,45.57 32.44,45.38 32.32,45.15 32.21,44.91 32.17,44.65 32.13,44.39 32.18,44.14 32.23,43.88 32.36,43.65 32.49,43.43 32.68,43.25 32.88,43.08 33.12,42.97 33.36,42.87 33.62,42.85 33.88,42.83 34.13,42.89 34.39,42.95 34.61,43.09 34.83,43.23 34.99,43.44 35.16,43.64 35.25,43.88 35.34,44.13 35.34,44.39 35.35,44.65 35.28,44.90 35.20,45.15 35.05,45.36 34.89,45.58 34.68,45.73 34.47,45.88 34.22,45.96 33.97,46.04 33.71,46.03 33.45,46.02 33.20,45.93 32.96,45.84 32.96,45.84 32.96,45.84 31.13,44.67 29.29,43.50 27.27,42.27 25.25,41.04 22.39,38.86 19.53,36.67 16.13,33.19 12.73,29.72 9.69,25.30 6.64,20.89 4.43,16.29 2.21,11.69 0.87,8.17 -0.46,4.65 -1.11,2.57 -1.77,0.49 -1.80,0.27 -1.84,0.05 -1.82,-0.16 -1.80,-0.38 -1.72,-0.59 -1.65,-0.80 -1.53,-0.99 -1.41,-1.17 -1.25,-1.33 -1.09,-1.48 -0.89,-1.59 -0.70,-1.70 -0.49,-1.76 -0.27,-1.82 -0.05,-1.82 0.16,-1.83 0.38,-1.78 0.60,-1.74 0.79,-1.64 0.99,-1.54 1.16,-1.40 1.34,-1.26 1.47,-1.08 1.60,-0.90 1.68,-0.69 1.77,-0.49 1.77,-0.49 L 1.77,-0.49 Z"></path></g><g transform="translate(28.828181479249906 56.81601881325696) rotate(0 9.244467483051267 -7.8874814304945176)" stroke="none"><path fill="#d3d3d379" d="M 0,-2.12 Q 0,-2.12 2.19,-2.01 4.38,-1.90 6.44,-1.84 8.49,-1.78 10.29,-1.79 12.09,-1.80 13.71,-1.80 15.34,-1.79 14.30,-3.45 13.26,-5.10 12.44,-6.73 11.62,-8.35 10.96,-9.51 10.31,-10.67 9.48,-13.10 8.66,-15.54 8.62,-15.90 8.59,-16.27 8.67,-16.62 8.76,-16.98 8.95,-17.29 9.15,-17.60 9.43,-17.84 9.71,-18.07 10.05,-18.20 10.40,-18.33 10.76,-18.34 11.13,-18.36 11.48,-18.26 11.83,-18.15 12.13,-17.94 12.43,-17.73 12.65,-17.44 12.87,-17.14 12.98,-16.79 13.09,-16.44 13.09,-16.07 13.08,-15.71 12.96,-15.36 12.84,-15.02 12.61,-14.73 12.38,-14.44 12.08,-14.24 11.77,-14.04 11.42,-13.94 11.06,-13.85 10.70,-13.88 10.33,-13.90 9.99,-14.04 9.65,-14.19 9.38,-14.43 9.10,-14.67 8.92,-14.99 8.73,-15.30 8.66,-15.66 8.59,-16.02 8.63,-16.39 8.68,-16.75 8.84,-17.08 8.99,-17.41 9.25,-17.67 9.51,-17.93 9.83,-18.10 10.16,-18.27 10.52,-18.32 10.89,-18.38 11.25,-18.31 11.61,-18.25 11.93,-18.07 12.25,-17.89 12.50,-17.62 12.75,-17.35 12.90,-17.02 13.04,-16.68 13.04,-16.68 13.04,-16.68 13.62,-14.68 14.20,-12.67 14.76,-11.49 15.31,-10.31 16.19,-8.73 17.07,-7.15 18.02,-5.45 18.96,-3.76 19.36,-2.13 19.77,-0.50 17.49,0.74 15.22,1.99 13.66,1.89 12.09,1.80 10.29,1.79 8.49,1.78 6.44,1.84 4.38,1.90 2.19,2.01 0,2.12 -0.25,2.09 -0.50,2.05 -0.74,1.96 -0.98,1.87 -1.19,1.73 -1.40,1.58 -1.57,1.39 -1.74,1.20 -1.86,0.97 -1.98,0.75 -2.04,0.50 -2.10,0.25 -2.10,-0.00 -2.10,-0.25 -2.04,-0.50 -1.98,-0.75 -1.86,-0.97 -1.74,-1.20 -1.57,-1.39 -1.40,-1.58 -1.19,-1.73 -0.98,-1.87 -0.74,-1.96 -0.50,-2.05 -0.25,-2.09 0.00,-2.12 0.00,-2.12 L 0,-2.12 Z"></path></g></svg>
+              </div>
+            </div>
 
-        <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
+            {/* Peeling Corner Corner Dog-Ear */}
+            <motion.div
+              className="absolute bottom-0 right-0 w-full h-full bg-white shadow-inner origin-top-left blur"
+              style={{ clipPath: 'polygon(100% 0, 0 100%, 100% 100%)' }}
+              variants={{
+                hover: { width: '140%', height: '140%' }
+              }}
+              transition={{ type: "spring", stiffness: 50, damping: 15 }}
+            />
 
-        {/* Trash */}
-        <DockItem tooltip="Trash">
-          <div className="w-full h-full bg-white/40 backdrop-blur-md rounded-xl shadow-sm border border-white/50 flex items-center justify-center">
-            <svg className="w-7 h-7 text-gray-600 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-            </svg>
-          </div>
-        </DockItem>
-      </Dock>
-    </div>
+            {/* The 'peeled up' triangle pointing towards the center */}
+            <motion.div
+              className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent backdrop-blur-xl shadow-[-15px_-15px_40px_rgba(0,0,0,0.6)] border-b border-r border-white/10 origin-bottom-right"
+              style={{ clipPath: 'polygon(100% 0, 0 100%, 0 0)' }}
+              variants={{
+                hover: { width: '140%', height: '140%', rotate: 0 }
+              }}
+              transition={{ type: "spring", stiffness: 50, damping: 15 }}
+            />
+          </motion.div>
+        </div>
+      </motion.div>
+    </>
   );
 }
+
