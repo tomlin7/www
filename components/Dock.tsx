@@ -25,7 +25,7 @@ export const DockItem = ({
 );
 
 export const Dock = ({ children }: { children: React.ReactNode }) => (
-  <div className="fixed bottom-4 left-0 right-0 flex justify-center z-50 pointer-events-none">
+  <div className="absolute bottom-4 left-0 right-0 flex justify-center z-50 pointer-events-none">
     <div className="glass rounded-2xl p-2 flex items-center space-x-2 pointer-events-auto" style={{ boxShadow: '0 10px 20px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.4) inset' }}>
       {children}
     </div>

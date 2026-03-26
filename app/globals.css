@@ -15,16 +15,18 @@
 
 body {
   margin: 0;
-  overflow: hidden;
+  background-color: #050505;
+  user-select: none;
+  font-family: 'Inter', sans-serif;
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+
+.desktop-bg {
   background-image: url('/marketing.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  user-select: none;
-  font-family: 'Inter', sans-serif;
-  color: #1a1a1a;
-  height: 100vh;
-  width: 100vw;
 }
 
 .glass {

@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { DraggableWindow } from '@/components/Window';
 import { Dock, DockItem } from '@/components/Dock';
 import { DesktopFolder } from '@/components/DesktopIcon';
+import { motion, useScroll, useTransform } from 'framer-motion';
 
 // Project Card Component
 const ProjectCard = ({ name, description, language, languageColor, stars, forks, isFeatured }: any) => (
@@ -206,6 +207,19 @@ export default function Home() {
   const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({ profile: true, projects: false });
   const [minimizedWindows, setMinimizedWindows] = useState<Record<string, boolean>>({ profile: false, projects: false });
   const zCounter = useRef(40);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end end"]
+  });
+
+  const scale = useTransform(scrollYProgress, [0, 0.4, 1], [1, 0.85, 0.85]);
+  const borderRadius = useTransform(scrollYProgress, [0, 0.4, 1], [0, 40, 40]);
+  const bezelRing = useTransform(scrollYProgress, [0, 0.3, 1], [0, 16, 16]);
+  
+  const opacityReveal = useTransform(scrollYProgress, [0.4, 0.6], [1, 1]); // Always visible for now
 
   const finderMenuItems = [
     { label: 'About Finder' },
@@ -329,9 +343,27 @@ export default function Home() {
   );
 
   return (
-    <div className="text-gray-800 h-screen w-screen overflow-hidden flex flex-col font-sans">
+    <div ref={containerRef} className="bg-[#050505] relative font-sans selection:bg-blue-500/30 overflow-x-hidden">
+      {/* Hero Section Container */}
+      <div ref={heroRef} className="h-[200vh] relative w-full overflow-visible">
+        <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+          <motion.div 
+            style={{ 
+              scale, 
+              borderRadius,
+              boxShadow: "0 50px 100px -20px rgba(0,0,0,0.5)",
+              padding: bezelRing,
+              backgroundColor: "rgba(0,0,0,0.9)",
+              position: 'relative'
+            }}
+            className="w-full h-full desktop-bg"
+          >
+            {/* Border/Bezel content */}
+            <div className="text-gray-800 h-full w-full flex flex-col relative overflow-hidden bg-white/5 rounded-[inherit]">
+              {/* Inner screen content */}
+              <div className="h-full w-full flex flex-col relative bg-transparent">
       {/* Menu Bar */}
-      <nav className="glass w-full h-7 flex items-center justify-between px-4 text-xs font-medium z-50 fixed top-0">
+      <nav className="glass w-full h-7 flex items-center justify-between px-4 text-xs font-medium z-50 absolute top-0 left-0">
         <div className="flex items-center space-x-1">
           <div className="flex items-center space-x-4 pr-3">
             <svg className="w-3.5 h-3.5 fill-current cursor-pointer" viewBox="0 0 384 512" xmlns="http://www.w3.org/2000/svg">
@@ -632,6 +664,97 @@ export default function Home() {
           </div>
         </DockItem>
       </Dock>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+      
+      {/* About Section Reveal */}
+      <div className="relative z-20 bg-[#050505]">
+        <motion.section 
+          style={{ opacity: 1 }}
+          className="max-w-5xl mx-auto px-6 py-40"
+        >
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+          <div>
+            <h2 className="text-5xl font-serif-italic text-white mb-8 tracking-tight">Beyond the Screen.</h2>
+            <div className="space-y-6 text-xl text-white/60 leading-relaxed font-light">
+              <p>
+                As a software engineer, I live at the intersection of performance and aesthetics. My work spans the entire stack, from low-level systems and graphics to high-performance web applications.
+              </p>
+              <p>
+                I believe that software should not only function perfectly but feel magical to use. This macOS-inspired interface is a reflection of my philosophy: clean, intuitive, and meticulously crafted.
+              </p>
+              <div className="pt-8">
+                <button className="px-8 py-4 bg-white text-black font-bold rounded-full hover:bg-white/90 transition-all active:scale-95 text-lg">
+                  Read My Full Story
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="relative group">
+            <div className="absolute -inset-4 bg-gradient-to-tr from-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl group-hover:blur-2xl transition-all opacity-50"></div>
+            <div className="relative aspect-[4/5] bg-white/5 border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm flex items-center justify-center">
+              <div className="text-white/20 text-9xl font-serif-italic select-none group-hover:scale-110 transition-transform duration-700">
+                tom.
+              </div>
+              <div className="absolute bottom-8 left-8 right-8">
+                <div className="flex items-center space-x-4 mb-4">
+                  <div className="w-12 h-12 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">T</div>
+                  <div>
+                    <div className="text-white font-bold tracking-tight">Tom Lin</div>
+                    <div className="text-white/40 text-sm">Full-stack Engineer & Tinkerer</div>
+                  </div>
+                </div>
+                <div className="h-[1px] bg-white/10 w-full mb-4"></div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <div className="text-white/30 text-[10px] uppercase font-bold tracking-widest mb-1">Location</div>
+                    <div className="text-white/80 text-sm">San Francisco, CA</div>
+                  </div>
+                  <div>
+                    <div className="text-white/30 text-[10px] uppercase font-bold tracking-widest mb-1">Status</div>
+                    <div className="text-white/80 text-sm flex items-center">
+                      <span className="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                      Open for work
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Stats or Details */}
+        <div className="mt-40 grid grid-cols-1 sm:grid-cols-3 gap-8">
+          {[
+            { label: 'Lines of Code', value: '500K+', description: 'written across various production systems' },
+            { label: 'Open Source', value: '50+', description: 'projects contributed to or maintained' },
+            { label: 'Crafting', value: '8 yrs', description: 'of experience building digital products' }
+          ].map((stat, i) => (
+            <div key={i} className="p-8 bg-white/5 border border-white/10 rounded-3xl hover:bg-white/10 transition-colors">
+              <div className="text-white font-serif-italic text-4xl mb-2">{stat.value}</div>
+              <div className="text-white/40 font-bold text-xs uppercase tracking-widest mb-4">{stat.label}</div>
+              <p className="text-white/50 text-sm leading-relaxed">{stat.description}</p>
+            </div>
+          ))}
+        </div>
+        </motion.section>
+      </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 py-20 px-6 border-t border-white/5 mt-40">
+        <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center space-y-8 md:space-y-0 text-white/30 text-sm font-medium">
+          <div>© 2026 tomlin7. Built with precision.</div>
+          <div className="flex items-center space-x-8">
+            <a href="#" className="hover:text-white transition-colors underline-offset-4 hover:underline">Twitter</a>
+            <a href="#" className="hover:text-white transition-colors underline-offset-4 hover:underline">GitHub</a>
+            <a href="#" className="hover:text-white transition-colors underline-offset-4 hover:underline">LinkedIn</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
