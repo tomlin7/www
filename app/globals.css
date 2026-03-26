@@ -79,24 +79,24 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
-.dock-item {
+.unused-dock-item {
   transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
   transform-origin: bottom;
 }
 
-.dock-item:hover {
+.unused-dock-item-hover {
   transform: scale(1.4) translateY(-10px);
   margin: 0 12px;
   z-index: 50;
 }
 
-.dock-item-tooltip {
+.unused-dock-item-tooltip {
   opacity: 0;
   transition: opacity 0.2s;
   pointer-events: none;
 }
 
-.dock-item:hover .dock-item-tooltip {
+.unused-dock-item-hover-tooltip {
   opacity: 1;
 }
 

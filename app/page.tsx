@@ -319,8 +319,8 @@ const CompactTypingModule = ({ userInput, setUserInput }: { userInput: string; s
         ) : (
           <div className="relative h-14 w-full flex items-center justify-center">
             {isActive && <div className="absolute top-0 right-0 text-white/20 text-sm italic font-mono">{timeLeft}s</div>}
-            
-            <div 
+
+            <div
               onClick={() => setIsFocused(true)}
               className={`text-2xl font-mono leading-none transition-all duration-700 outline-none w-full text-center relative z-10 ${!isFocused ? 'blur-md opacity-20 cursor-pointer scale-95' : 'opacity-100 focus:outline-none'}`}
               onBlur={() => { setIsFocused(false); setIsActive(false); }}
@@ -376,6 +376,23 @@ const CompactTypingModule = ({ userInput, setUserInput }: { userInput: string; s
 };
 
 export default function Home() {
+  return (
+    <>
+      <style dangerouslySetInnerHTML={{
+        __html: `
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Michroma&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Press+Start+2P&family=Single+Day&display=swap');
+        .single-day-regular {
+          font-family: "Single Day", cursive;
+          font-weight: 400;
+          font-style: normal;
+        }
+      `}} />
+      <PageContent />
+    </>
+  );
+}
+
+function PageContent() {
   const [clockText, setClockText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeWindow, setActiveWindow] = useState('profile');
@@ -629,7 +646,7 @@ export default function Home() {
                           </div>
                         </div>
                         <div className="space-y-1">
-                          <ControlItem icon={<WifiIcon />} label="Antigravity_Fiber" sublabel="Saved" isActive />
+                          <ControlItem icon={<WifiIcon />} label="Fiber" sublabel="Saved" isActive />
                           <ControlItem icon={<WifiIcon />} label="Guest_Access" />
                           <ControlItem icon={<WifiIcon />} label="Starlink_99" />
                         </div>
@@ -890,7 +907,7 @@ export default function Home() {
             style={{ willChange: 'filter, opacity' }}
             className="mb-20"
           >
-            <h2 className="text-3xl md:text-4xl text-white/90 font-handwriting tracking-tight mb-2">
+            <h2 className="text-4xl md:text-5xl text-white/90 single-day-regular tracking-normal mb-2">
               welcome to my corner on the internet :)
             </h2>
           </motion.div>
