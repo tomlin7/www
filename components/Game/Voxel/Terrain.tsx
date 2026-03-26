@@ -45,16 +45,20 @@ const ChunkMesh = memo(function ChunkMesh({
 }) {
   const groups = useMemo(() => {
     const g = new Map<string, { positions: number[]; color: string }>();
+    const chunkBlocks = chunk.blocks;
 
-    chunk.blocks.forEach((block) => {
+    chunkBlocks.forEach((block) => {
       const { x, y, z, type } = block;
+      
+      // Optimization: Avoid 6 world Map lookups if possible.
+      // 1. Air check (standard exposure)
       const hasExposed =
-        isExposed(world, x + 1, y, z) ||
-        isExposed(world, x - 1, y, z) ||
-        isExposed(world, x, y + 1, z) ||
-        isExposed(world, x, y - 1, z) ||
-        isExposed(world, x, y, z + 1) ||
-        isExposed(world, x, y, z - 1);
+        !chunkBlocks.has(`${x+1},${y},${z}`) && isExposed(world, x + 1, y, z) ||
+        !chunkBlocks.has(`${x-1},${y},${z}`) && isExposed(world, x - 1, y, z) ||
+        !chunkBlocks.has(`${x},${y+1},${z}`) && isExposed(world, x, y + 1, z) ||
+        !chunkBlocks.has(`${x},${y-1},${z}`) && isExposed(world, x, y - 1, z) ||
+        !chunkBlocks.has(`${x},${y},${z+1}`) && isExposed(world, x, y, z + 1) ||
+        !chunkBlocks.has(`${x},${y},${z-1}`) && isExposed(world, x, y, z - 1);
 
       if (!hasExposed) return;
 
@@ -89,10 +93,11 @@ const ChunkMesh = memo(function ChunkMesh({
 });
 
 export default function Terrain({ world, chunks, version }: TerrainProps) {
-  const chunkArray = useMemo(() => Array.from(chunks.values()), [chunks]);
+  // MUST include version here to re-run Array.from when Map mutations happen in the store
+  const chunkArray = useMemo(() => Array.from(chunks.values()), [chunks, version]);
 
   return (
-    <>
+    <group>
       {chunkArray.map((chunk) => (
         <ChunkMesh
           key={chunk.key}
@@ -101,6 +106,6 @@ export default function Terrain({ world, chunks, version }: TerrainProps) {
           version={version}
         />
       ))}
-    </>
+    </group>
   );
 }

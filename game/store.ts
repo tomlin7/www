@@ -23,17 +23,15 @@ function worldToChunk(x: number) {
   return Math.floor(x / CHUNK_SIZE);
 }
 
-const RENDER_DISTANCE = 4;
+const RENDER_DISTANCE = 0;
 
 export function useGameStore() {
   const [activeBlock, setActiveBlock] = useState<BlockType>('grass');
   const worldRef = useRef<WorldBlocks>(new Map());
   const chunksRef = useRef<Map<string, ChunkData>>(new Map());
   const [chunkVersion, setChunkVersion] = useState(0);
-  const pendingLoads = useRef<Array<{ cx: number; cz: number }>>([]);
-  const loadingFrame = useRef<number | null>(null);
 
-  // Generates a single chunk synchronously and stores it
+  // Generates a single chunk synchronously
   const generateChunk = useCallback((cx: number, cz: number) => {
     const key = chunkKeyStr(cx, cz);
     if (chunksRef.current.has(key)) return;
@@ -49,81 +47,18 @@ export function useGameStore() {
     chunksRef.current.set(key, { key, cx, cz, blocks: chunkBlocks, dirty: true });
   }, []);
 
-  // Process pending chunk loads - one chunk per frame to avoid jank
-  const processPendingLoads = useCallback(() => {
-    if (pendingLoads.current.length === 0) {
-      loadingFrame.current = null;
-      return;
-    }
-
-    // Load up to 2 chunks per frame
-    const batch = pendingLoads.current.splice(0, 2);
-    batch.forEach(({ cx, cz }) => generateChunk(cx, cz));
-    setChunkVersion((v) => v + 1);
-
-    loadingFrame.current = requestAnimationFrame(processPendingLoads);
-  }, [generateChunk]);
-
-  const loadChunksAround = useCallback((playerX: number, playerZ: number) => {
-    const pcx = worldToChunk(playerX);
-    const pcz = worldToChunk(playerZ);
-    const needed: Array<{ cx: number; cz: number; dist: number }> = [];
-
-    for (let cx = pcx - RENDER_DISTANCE; cx <= pcx + RENDER_DISTANCE; cx++) {
-      for (let cz = pcz - RENDER_DISTANCE; cz <= pcz + RENDER_DISTANCE; cz++) {
-        const key = chunkKeyStr(cx, cz);
-        if (!chunksRef.current.has(key)) {
-          const dist = Math.abs(cx - pcx) + Math.abs(cz - pcz);
-          needed.push({ cx, cz, dist });
-        }
-      }
-    }
-
-    // Sort by distance - load closest chunks first
-    needed.sort((a, b) => a.dist - b.dist);
-
-    // Queue for staggered loading
-    if (needed.length > 0) {
-      pendingLoads.current = needed;
-      if (!loadingFrame.current) {
-        loadingFrame.current = requestAnimationFrame(processPendingLoads);
-      }
-    }
-
-    // Unload distant chunks
-    const toRemove: string[] = [];
-    chunksRef.current.forEach((chunk, key) => {
-      if (
-        Math.abs(chunk.cx - pcx) > RENDER_DISTANCE + 2 ||
-        Math.abs(chunk.cz - pcz) > RENDER_DISTANCE + 2
-      ) {
-        toRemove.push(key);
-        chunk.blocks.forEach((_, bk) => worldRef.current.delete(bk));
-      }
-    });
-    if (toRemove.length > 0) {
-      toRemove.forEach((k) => chunksRef.current.delete(k));
-      setChunkVersion((v) => v + 1);
-    }
-  }, [processPendingLoads, generateChunk]);
+  const loadChunksAround = useCallback(() => {
+    // DO NOTHING (One chunk only)
+  }, []);
 
   const initWorld = useCallback(() => {
     worldRef.current = new Map();
     chunksRef.current = new Map();
-    pendingLoads.current = [];
-    if (loadingFrame.current) cancelAnimationFrame(loadingFrame.current);
 
-    // Pre-generate immediate area synchronously for instant start
-    for (let cx = -2; cx <= 2; cx++) {
-      for (let cz = -2; cz <= 2; cz++) {
-        generateChunk(cx, cz);
-      }
-    }
+    // Generate central chunk synchronously
+    generateChunk(0, 0);
     setChunkVersion((v) => v + 1);
-
-    // Queue remaining chunks for async loading
-    setTimeout(() => loadChunksAround(8, 8), 100);
-  }, [generateChunk, loadChunksAround]);
+  }, [generateChunk]);
 
   const addBlock = useCallback((x: number, y: number, z: number, type: BlockType) => {
     const key = blockKey(x, y, z);

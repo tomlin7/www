@@ -24,7 +24,7 @@ export default function PlayerControls({ hasBlock, onPositionChange }: PlayerCon
   const lastChunkCheck = useRef({ x: 0, z: 0 });
 
   useEffect(() => {
-    camera.position.set(8, 21, 8);
+    camera.position.set(32, 21, 32);
 
     const onKeyDown = (e: KeyboardEvent) => keys.current.add(e.code);
     const onKeyUp = (e: KeyboardEvent) => keys.current.delete(e.code);

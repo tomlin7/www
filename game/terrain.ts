@@ -23,7 +23,7 @@ export function getBlockColor(type: BlockType): string {
   return BLOCK_COLORS[type];
 }
 
-export const CHUNK_SIZE = 16;
+export const CHUNK_SIZE = 64;
 export const WORLD_HEIGHT = 20;
 
 function seededRandom(seed: number): () => number {
