@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@1,500;1,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@1,500;1,600&family=Architects+Daughter&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -136,4 +136,8 @@ body {
 
 .font-mono-custom {
   font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+}
+
+.font-handwriting {
+  font-family: 'Architects Daughter', cursive;
 }
