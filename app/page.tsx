@@ -198,6 +198,183 @@ const ProjectsWindowContent = ({ searchQuery }: { searchQuery: string }) => {
   );
 };
 
+// Constants for Text Generation
+const WORD_POOL = ["here", "will", "which", "person", "must", "public", "other", "much", "about", "how", "come", "way", "after", "like", "each", "old", "there", "down", "very", "call", "than", "now", "word", "open", "all", "home", "school", "could", "number", "show", "into", "get", "make", "through", "find", "what", "with", "new", "point", "group", "since", "mean", "against", "right", "great"];
+const PUNCTUATION = [".", ",", "!", "?", ";", ":"];
+
+const generateTargetText = (isPunctuation: boolean, isNumbers: boolean) => {
+  let text = [];
+  for (let i = 0; i < 50; i++) {
+    let word = WORD_POOL[Math.floor(Math.random() * WORD_POOL.length)];
+    if (isPunctuation) {
+      if (Math.random() > 0.8) word = word.charAt(0).toUpperCase() + word.slice(1);
+      if (Math.random() > 0.9) word += PUNCTUATION[Math.floor(Math.random() * PUNCTUATION.length)];
+    }
+    if (isNumbers && Math.random() > 0.85) {
+      text.push(Math.floor(Math.random() * 100).toString());
+    }
+    text.push(word);
+  }
+  return text.join(" ");
+};
+
+// Unified Compact Typing Module
+const CompactTypingModule = ({ userInput, setUserInput }: { userInput: string; setUserInput: React.Dispatch<React.SetStateAction<string>> }) => {
+  const [isPunctuation, setIsPunctuation] = useState(false);
+  const [isNumbers, setIsNumbers] = useState(false);
+  const [timeOption, setTimeOption] = useState(15);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [isFocused, setIsFocused] = useState(false);
+  const [isActive, setIsActive] = useState(false);
+  const [isFinished, setIsFinished] = useState(false);
+  const [targetText, setTargetText] = useState("");
+  const moduleRef = useRef<HTMLDivElement>(null);
+
+  const restart = useCallback(() => {
+    setTargetText(generateTargetText(isPunctuation, isNumbers));
+    setTimeLeft(timeOption);
+    setUserInput("");
+    setIsActive(false);
+    setIsFinished(false);
+  }, [isPunctuation, isNumbers, timeOption, setUserInput]);
+
+  useEffect(() => {
+    restart();
+  }, [restart]);
+
+  // Click Outside Logic
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (moduleRef.current && !moduleRef.current.contains(e.target as Node)) {
+        setIsFocused(false);
+        setIsActive(false);
+      }
+    };
+    window.addEventListener("mousedown", handleClickOutside);
+    return () => window.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (isActive && timeLeft > 0) {
+      timer = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+    } else if (timeLeft === 0 && isActive) {
+      setIsActive(false);
+      setIsFinished(true);
+    }
+    return () => clearInterval(timer);
+  }, [isActive, timeLeft]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isFocused) return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.key === 'Backspace') {
+        setUserInput(prev => prev.slice(0, -1));
+      } else if (e.key === 'Escape') {
+        restart();
+      } else if (e.key.length === 1 && !isFinished) {
+        if (!isActive) setIsActive(true);
+        setUserInput(prev => prev + e.key);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isFocused, isActive, isFinished, userInput, setUserInput, restart]);
+
+  const results = isFinished ? {
+    wpm: Math.floor((userInput.trim().split(/\s+/).length / timeOption) * 60) || 0,
+    acc: Math.floor((userInput.split("").filter((c, i) => c === targetText[i]).length / (userInput.length || 1)) * 100)
+  } : { wpm: 0, acc: 0 };
+
+  return (
+    <div ref={moduleRef} className="w-full max-w-4xl mx-auto border border-white/10 rounded-[20px] overflow-hidden bg-black/40 backdrop-blur-xl shadow-2xl transition-all duration-500 hover:border-white/20">
+      {/* Settings Bar */}
+      <div className={`flex items-center justify-between px-8 py-3 border-b border-white/5 text-[10px] uppercase tracking-[0.3em] font-medium transition-opacity duration-500 ${isActive ? 'opacity-0' : 'opacity-100'}`}>
+        <div className="flex space-x-8">
+          <button onClick={() => setIsPunctuation(!isPunctuation)} className={`${isPunctuation ? 'text-white' : 'text-white/20'} cursor-pointer hover:text-white/60 transition-colors`}>punctuation</button>
+          <button onClick={() => setIsNumbers(!isNumbers)} className={`${isNumbers ? 'text-white' : 'text-white/20'} cursor-pointer hover:text-white/60 transition-colors`}>numbers</button>
+        </div>
+        <div className="flex space-x-5">
+          {[15, 30, 60, 120].map(opt => (
+            <button key={opt} onClick={() => setTimeOption(opt)} className={`${timeOption === opt ? 'text-white' : 'text-white/20'} cursor-pointer hover:text-white/60 transition-colors`}>{opt}</button>
+          ))}
+        </div>
+      </div>
+
+      {/* Hero Display */}
+      <div className="relative px-12 py-12 bg-white/[0.01]">
+        {isFinished ? (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center space-x-16">
+            <div className="text-center">
+              <span className="text-white/10 text-[9px] block mb-1">WPM</span>
+              <span className="text-white text-6xl italic font-light tracking-tighter">{results.wpm}</span>
+            </div>
+            <div className="text-center">
+              <span className="text-white/10 text-[9px] block mb-1">ACC</span>
+              <span className="text-white text-6xl italic font-light tracking-tighter">{results.acc}%</span>
+            </div>
+            <button onClick={restart} className="text-white/30 hover:text-white/80 text-[10px] pt-4 tracking-widest uppercase cursor-pointer">Restart</button>
+          </motion.div>
+        ) : (
+          <div className="relative h-14 w-full flex items-center justify-center">
+            {isActive && <div className="absolute top-0 right-0 text-white/20 text-sm italic font-mono">{timeLeft}s</div>}
+            
+            <div 
+              onClick={() => setIsFocused(true)}
+              className={`text-2xl font-mono leading-none transition-all duration-700 outline-none w-full text-center relative z-10 ${!isFocused ? 'blur-md opacity-20 cursor-pointer scale-95' : 'opacity-100 focus:outline-none'}`}
+              onBlur={() => { setIsFocused(false); setIsActive(false); }}
+              tabIndex={0}
+            >
+              <div className="flex items-center justify-center space-x-[2px] whitespace-nowrap overflow-visible">
+                {targetText.split("").slice(Math.max(0, userInput.length - 20), userInput.length + 30).map((char, index) => {
+                  const absoluteIndex = Math.max(0, userInput.length - 20) + index;
+                  const isCurrent = absoluteIndex === userInput.length;
+                  let color = "text-white/20";
+                  if (absoluteIndex < userInput.length) {
+                    color = userInput[absoluteIndex] === char ? "text-white/95" : "text-red-500/80";
+                  }
+                  return (
+                    <span key={absoluteIndex} className={`inline-block whitespace-pre relative ${color} transition-colors duration-100`}>
+                      {isCurrent && isFocused && (
+                        <motion.div animate={{ opacity: [1, 0, 1] }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }} className="absolute -left-[1px] top-[10%] w-[2px] h-[80%] bg-blue-500 z-10" />
+                      )}
+                      {char}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+            {!isFocused && <div onClick={() => setIsFocused(true)} className="absolute inset-0 flex items-center justify-center text-white/10 text-[9px] uppercase tracking-[0.5em] z-20 cursor-pointer">Click to Focus</div>}
+          </div>
+        )}
+      </div>
+
+      {/* Mechanical Keyboard Section */}
+      <div className="p-8 pb-10 bg-white/[0.02] border-t border-white/5 flex justify-center overflow-hidden">
+        <div className="scale-90 md:scale-95 origin-center pointer-events-auto">
+          <Keyboard theme="classic" enableHaptics enableSound onKeyEvent={(e) => {
+            if (isFocused && !isFinished && e.source === 'pointer' && e.phase === 'down') {
+              if (e.code === 'Backspace') {
+                setUserInput(prev => prev.slice(0, -1));
+              } else if (e.code === 'Space') {
+                if (!isActive) setIsActive(true);
+                setUserInput(prev => prev + " ");
+              } else if (e.code.startsWith('Key')) {
+                if (!isActive) setIsActive(true);
+                setUserInput(prev => prev + e.code.slice(3).toLowerCase());
+              } else if (e.code.startsWith('Digit')) {
+                if (!isActive) setIsActive(true);
+                setUserInput(prev => prev + e.code.slice(5));
+              }
+            }
+          }} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function Home() {
   const [clockText, setClockText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -208,6 +385,7 @@ export default function Home() {
   const [minimizedWindows, setMinimizedWindows] = useState<Record<string, boolean>>({ profile: false, projects: false });
   const [hoveredAboutIcon, setHoveredAboutIcon] = useState<number | null>(null);
   const [hoveredDots, setHoveredDots] = useState(false);
+  const [typingInput, setTypingInput] = useState("");
   const zCounter = useRef(40);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -862,22 +1040,15 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Mechanical Keyboard Interface */}
+          {/* Integrated Typing & Keyboard Module */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="mt-32 w-full max-w-5xl mx-auto pb-12 overflow-x-auto custom-scrollbar"
+            className="mt-32 w-full max-w-5xl mx-auto pb-12 overflow-x-auto custom-scrollbar flex flex-col items-center"
           >
-            <div className="min-w-[800px] md:min-w-0">
-              <Keyboard
-                theme="classic"
-                enableHaptics={true}
-                enableSound={true}
-                className="scale-[0.85] md:scale-100 origin-center text-[#fffff]"
-              />
-            </div>
+            <CompactTypingModule userInput={typingInput} setUserInput={setTypingInput} />
           </motion.div>
         </motion.section>
       </div>
