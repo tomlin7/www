@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useRef } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, MotionValue } from 'framer-motion';
+import React, { useRef, useState } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, MotionValue, useAnimation, useMotionValueEvent } from 'framer-motion';
 
 interface DockItemProps {
   tooltip: string;
@@ -9,6 +9,7 @@ interface DockItemProps {
   dot?: boolean;
   onClick?: () => void;
   mouseX?: MotionValue<number>;
+  shake?: boolean;
 }
 
 export const DockItem = ({ 
@@ -16,9 +17,12 @@ export const DockItem = ({
   children, 
   dot,
   onClick,
-  mouseX
+  mouseX,
+  shake
 }: DockItemProps) => {
   const ref = useRef<HTMLDivElement>(null);
+  const controls = useAnimation();
+  const [hasShaken, setHasShaken] = useState(false);
 
   const defaultMouseX = useMotionValue(Infinity);
   const distance = useTransform(mouseX || defaultMouseX, (val: number) => {
@@ -44,19 +48,33 @@ export const DockItem = ({
     damping: 12 
   });
 
+  // Trigger shake when mouse is very close to center
+  useMotionValueEvent(distance, "change", (latest) => {
+    if (shake && Math.abs(latest) < 10 && !hasShaken) {
+      setHasShaken(true);
+      controls.start({
+        rotate: [0, -5, 5, -5, 5, 0],
+        transition: { duration: 0.4, ease: "easeInOut" }
+      });
+    } else if (Math.abs(latest) > 60) {
+      setHasShaken(false);
+    }
+  });
+
   return (
     <div className="relative flex flex-col items-center justify-end" style={{ width: '44px', height: '44px' }}>
       <motion.div
         ref={ref}
-        style={{ scale, y }}
-        className="dock-item group w-full h-full cursor-pointer flex items-center justify-center relative origin-bottom will-change-transform"
+        style={{ scale, y, backfaceVisibility: "hidden" }}
+        animate={controls}
+        className="dock-item group w-full h-full cursor-pointer flex items-center justify-center relative origin-bottom"
         onClick={onClick}
       >
         <div className="dock-item-tooltip absolute -top-14 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-xl text-white text-[12px] px-3 py-1.5 rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 font-medium border border-white/10 whitespace-nowrap scale-90 group-hover:scale-100">
           {tooltip}
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/80 border-b border-r border-white/10 rotate-45" />
         </div>
-        <div className="w-full h-full rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300">
+        <div className="w-full h-full rounded-[13px] overflow-hidden" style={{ transform: "translateZ(0)" }}>
           {children}
         </div>
       </motion.div>
@@ -73,15 +91,12 @@ export const Dock = ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="absolute bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
       <motion.div 
-        className="flex items-end space-x-3 px-4 py-3 rounded-[2.2rem] pointer-events-auto border border-white/20 relative shadow-2xl group/dock"
+        className="glass flex items-end space-x-3 px-4 py-4 rounded-[32px] pointer-events-auto relative shadow-2xl group/dock"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
         style={{ 
-          // The glass effect
-          background: 'rgba(255, 255, 255, 0.35)',
-          backdropFilter: 'blur(40px) saturate(210%)',
-          WebkitBackdropFilter: 'blur(40px) saturate(210%)',
-          boxShadow: '0 20px 50px rgba(0,0,0,0.1), 0 0 0 1px rgba(255,255,255,0.4) inset, 0 1px 0 rgba(255,255,255,0.3) inset',
+          // Match the top bar's specific glass tone but with our premium shadows
+          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
         }}
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

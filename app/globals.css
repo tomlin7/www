@@ -49,14 +49,21 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+body {
   background-color: #050505;
   user-select: none;
   font-family: 'Inter', sans-serif;
   color: #1a1a1a;
-  min-height: 100vh;
 }
+
 
 .desktop-bg {
   background-image: url('/marketing.png');
@@ -115,22 +122,14 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+* {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
 
 .traffic-light {
   width: 12px;
@@ -177,6 +176,21 @@ body {
 .font-handwriting {
   font-family: 'Architects Daughter', cursive;
 }
+
+.single-day-regular {
+  font-family: "Single Day", cursive;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.font-caveat {
+  font-family: "Caveat", cursive;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
+
+
 
 :root {
   --background: oklch(1 0 0);
