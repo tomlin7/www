@@ -78,7 +78,7 @@ function InteractionHandler({
 }
 
 export default function GameScene() {
-  const { world, chunks, version, activeBlock, setActiveBlock, initWorld, addBlock, removeBlock, hasBlock, loadChunksAround } = useGameStore();
+  const { world, chunks, version, activeBlock, setActiveBlock, initWorld, addBlock, removeBlock, hasBlock, loadChunksAround, exportWorld, importWorld } = useGameStore();
 
   useEffect(() => {
     initWorld();
@@ -86,7 +86,12 @@ export default function GameScene() {
 
   return (
     <div className="w-full h-full bg-[#1a1a2e]" onContextMenu={(e) => e.preventDefault()}>
-      <HUD activeBlock={activeBlock} onSelectBlock={setActiveBlock} />
+      <HUD 
+        activeBlock={activeBlock} 
+        onSelectBlock={setActiveBlock} 
+        exportWorld={exportWorld}
+        importWorld={importWorld}
+      />
       <Canvas
         shadows
         gl={{ antialias: false, powerPreference: 'high-performance' }}
