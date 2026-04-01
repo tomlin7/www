@@ -146,95 +146,95 @@ const ProfileWindowContent = ({ isLinkedIn }: { isLinkedIn: boolean }) => (
 
 // Experience Window Content
 const ExperienceWindowContent = () => {
-    const experiences = [
-        {
-            title: "Full-Stack Developer Intern",
-            company: "Morvion– ZH, Switzerland (Remote)",
-            period: "Nov 2025– Feb 2026",
-            description: [
-                "Architected and deployed a full-scale CRM from scratch using NestJS and Drizzle, implementing multi-workspace collaboration, Kanban pipelines, and Gmail API sync for automated contact management.",
-                "Engineered production-ready SaaS features including Stripe-integrated subscription/credit systems and administrative dashboards, while developing high-fidelity interactive UIs with Three.js, R3F."
-            ]
-        },
-        {
-            title: "Full-Stack Developer Intern",
-            company: "Hooman Digital– India (Remote)",
-            period: "July 2025– Sept 2025",
-            description: [
-                "Architected chartor.ai, an agentic trading platform with multimodal LLM layers to interpret live financial charts; managed a monorepo for cross-platform deployment across web, desktop, and browser extensions.",
-                "Standardized internal company infrastructure by engineering provider-agnostic Agent SDKs in Python for cross-team LLM orchestration."
-            ]
-        },
-        {
-            title: "Deep Learning Research Intern",
-            company: "NIT Calicut– Calicut, India",
-            period: "May 2025– July 2025",
-            description: [
-                "Developed CNN-Transformer fusion models classifying EEG motor imagery across 2, 3, and 4-class tasks under cross-subject validation; generated attention topographic maps for interpretability"
-            ]
-        },
-        {
-            title: "Founding Software Engineer Intern",
-            company: "OZi– Gurugram, India (Remote)",
-            period: "Oct 2024– Jan 2025",
-            description: [
-                "Architected the zero-to-one MVP for a specialized quick-commerce platform, designing the core data models and business logic required to support high-concurrency ordering and real-time inventory tracking.",
-                "Engineered the foundational full-stack infrastructure in Flutter and NodeJS, establishing the technical baseline that powered the startup’s growth."
-            ]
-        }
-    ];
+  const experiences = [
+    {
+      title: "Full-Stack Developer Intern",
+      company: "Morvion– ZH, Switzerland (Remote)",
+      period: "Nov 2025– Feb 2026",
+      description: [
+        "Architected and deployed a full-scale CRM from scratch using NestJS and Drizzle, implementing multi-workspace collaboration, Kanban pipelines, and Gmail API sync for automated contact management.",
+        "Engineered production-ready SaaS features including Stripe-integrated subscription/credit systems and administrative dashboards, while developing high-fidelity interactive UIs with Three.js, R3F."
+      ]
+    },
+    {
+      title: "Full-Stack Developer Intern",
+      company: "Hooman Digital– India (Remote)",
+      period: "July 2025– Sept 2025",
+      description: [
+        "Architected chartor.ai, an agentic trading platform with multimodal LLM layers to interpret live financial charts; managed a monorepo for cross-platform deployment across web, desktop, and browser extensions.",
+        "Standardized internal company infrastructure by engineering provider-agnostic Agent SDKs in Python for cross-team LLM orchestration."
+      ]
+    },
+    {
+      title: "Deep Learning Research Intern",
+      company: "NIT Calicut– Calicut, India",
+      period: "May 2025– July 2025",
+      description: [
+        "Developed CNN-Transformer fusion models classifying EEG motor imagery across 2, 3, and 4-class tasks under cross-subject validation; generated attention topographic maps for interpretability"
+      ]
+    },
+    {
+      title: "Founding Software Engineer Intern",
+      company: "OZi– Gurugram, India (Remote)",
+      period: "Oct 2024– Jan 2025",
+      description: [
+        "Architected the zero-to-one MVP for a specialized quick-commerce platform, designing the core data models and business logic required to support high-concurrency ordering and real-time inventory tracking.",
+        "Engineered the foundational full-stack infrastructure in Flutter and NodeJS, establishing the technical baseline that powered the startup’s growth."
+      ]
+    }
+  ];
 
-    return (
-        <div className="flex h-[550px] bg-white rounded-b-xl overflow-hidden">
-            {/* Finder-style Sidebar */}
-            <div className="w-[180px] bg-[#EBEBEB]/80 backdrop-blur-xl p-4 flex flex-col border-r border-gray-200/50">
-                <div className="space-y-6 flex-1 overflow-y-auto">
-                    <div>
-                        <h4 className="text-[11px] font-bold text-gray-500/80 mb-2 px-2 uppercase tracking-tight">Timeline</h4>
-                        <div className="space-y-1">
-                            <button className="w-full text-left px-2 py-1.5 text-[13px] font-medium bg-gray-200/60 rounded-lg flex items-center">
-                                <span className="w-4 h-4 mr-2 text-blue-500 flex items-center justify-center">💼</span> Internships
-                            </button>
-                            <button className="w-full text-left px-2 py-1.5 text-[13px] font-medium text-gray-600 hover:bg-gray-200/40 rounded-lg flex items-center transition-colors">
-                                <span className="w-4 h-4 mr-2 opacity-70 flex items-center justify-center">🎓</span> Education
-                            </button>
-                        </div>
-                    </div>
-                </div>
+  return (
+    <div className="flex h-[550px] bg-white rounded-b-xl overflow-hidden">
+      {/* Finder-style Sidebar */}
+      <div className="w-[180px] bg-[#EBEBEB]/80 backdrop-blur-xl p-4 flex flex-col border-r border-gray-200/50">
+        <div className="space-y-6 flex-1 overflow-y-auto">
+          <div>
+            <h4 className="text-[11px] font-bold text-gray-500/80 mb-2 px-2 uppercase tracking-tight">Timeline</h4>
+            <div className="space-y-1">
+              <button className="w-full text-left px-2 py-1.5 text-[13px] font-medium bg-gray-200/60 rounded-lg flex items-center">
+                <span className="w-4 h-4 mr-2 text-blue-500 flex items-center justify-center">💼</span> Internships
+              </button>
+              <button className="w-full text-left px-2 py-1.5 text-[13px] font-medium text-gray-600 hover:bg-gray-200/40 rounded-lg flex items-center transition-colors">
+                <span className="w-4 h-4 mr-2 opacity-70 flex items-center justify-center">🎓</span> Education
+              </button>
             </div>
-
-            {/* Main Content Area */}
-            <div className="flex-1 overflow-y-auto p-8 bg-[#FAFAFA]/50 custom-scrollbar">
-                <div className="mb-10">
-                    <h2 className="text-4xl font-serif-italic mb-2 tracking-tight">Experience</h2>
-                    <p className="text-gray-500 text-[14px] font-medium max-w-lg">
-                        My professional journey and roles i've undertaken.
-                    </p>
-                </div>
-
-                <div className="space-y-10">
-                    {experiences.map((exp, i) => (
-                        <div key={i} className="relative pl-6 border-l-2 border-blue-500/20">
-                            <div className="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm" />
-                            <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
-                                <h3 className="text-[17px] font-bold text-gray-900 tracking-tight">{exp.title}</h3>
-                                <span className="text-[12px] font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{exp.period}</span>
-                            </div>
-                            <p className="text-[14px] font-bold text-blue-600 mb-3">{exp.company}</p>
-                            <ul className="space-y-2">
-                                {exp.description.map((bullet, j) => (
-                                    <li key={j} className="text-[14px] text-gray-600 leading-relaxed flex items-start">
-                                        <span className="mr-2 mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
-                                        {bullet}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
-            </div>
+          </div>
         </div>
-    );
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-8 bg-[#FAFAFA]/50 custom-scrollbar">
+        <div className="mb-10">
+          <h2 className="text-4xl font-serif-italic mb-2 tracking-tight">Experience</h2>
+          <p className="text-gray-500 text-[14px] font-medium max-w-lg">
+            My professional journey and roles i've undertaken.
+          </p>
+        </div>
+
+        <div className="space-y-10">
+          {experiences.map((exp, i) => (
+            <div key={i} className="relative pl-6 border-l-2 border-blue-500/20">
+              <div className="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm" />
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                <h3 className="text-[17px] font-bold text-gray-900 tracking-tight">{exp.title}</h3>
+                <span className="text-[12px] font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{exp.period}</span>
+              </div>
+              <p className="text-[14px] font-bold text-blue-600 mb-3">{exp.company}</p>
+              <ul className="space-y-2">
+                {exp.description.map((bullet, j) => (
+                  <li key={j} className="text-[14px] text-gray-600 leading-relaxed flex items-start">
+                    <span className="mr-2 mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 // Projects Window Content
@@ -998,22 +998,24 @@ function PageContent() {
                       <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853981255cc36b3a37af_finder.png" alt="Finder" className="w-full h-full object-contain" />
                     </DockItem>
 
-                    {/* Launchpad */}
-                    <DockItem tooltip="Launchpad">
-                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853943597517f128b9b4_launchpad.png" alt="Launchpad" className="w-full h-full object-contain" />
+                    {/* Experience (Conditional) */}
+                    {isLinkedIn && (
+                      <DockItem tooltip="Experience" dot={openWindows['experience']} onClick={() => activateWindow('experience')}>
+                        <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853943597517f128b9b4_launchpad.png" alt="Launchpad" className="w-full h-full object-contain" />
+                      </DockItem>
+                    )}
+
+                    {/* Profile (About Me) */}
+                    <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853743597518c528b9b3_contacts.png" alt="About Me" className="w-full h-full object-contain" />
                     </DockItem>
+
+                    <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
 
                     {/* Safari */}
                     <DockItem tooltip="Safari">
                       <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ddd826358438eda6d_safari.png" alt="Safari" className="w-full h-full object-contain" />
                     </DockItem>
-
-                    {/* Experience (Conditional) */}
-                    {isLinkedIn && (
-                      <DockItem tooltip="Experience" dot={openWindows['experience']} onClick={() => activateWindow('experience')}>
-                        <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f708537c3548849fcac9764_pages.png" alt="Experience" className="w-full h-full object-contain" />
-                      </DockItem>
-                    )}
 
                     {/* Messages */}
                     <DockItem tooltip="Messages">
@@ -1028,13 +1030,6 @@ function PageContent() {
                     {/* Music */}
                     <DockItem tooltip="Music">
                       <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ba0782d6ff2aca6b3_music.png" alt="Music" className="w-full h-full object-contain" />
-                    </DockItem>
-
-                    <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
-
-                    {/* Profile (About Me) */}
-                    <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
-                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853743597518c528b9b3_contacts.png" alt="About Me" className="w-full h-full object-contain" />
                     </DockItem>
 
                     <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
