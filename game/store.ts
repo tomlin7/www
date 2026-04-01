@@ -96,6 +96,42 @@ export function useGameStore() {
     }
   }, []);
 
+  const exportWorld = useCallback(() => {
+    const data = Array.from(worldRef.current.values());
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `voxel-world-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }, []);
+
+  const importWorld = useCallback((json: string) => {
+    try {
+      const data = JSON.parse(json) as Block[];
+      worldRef.current = new Map();
+      chunksRef.current = new Map();
+      
+      data.forEach(b => {
+        const key = blockKey(b.x, b.y, b.z);
+        worldRef.current.set(key, b);
+        
+        const cx = worldToChunk(b.x);
+        const cz = worldToChunk(b.z);
+        const ck = chunkKeyStr(cx, cz);
+        if (!chunksRef.current.has(ck)) {
+          chunksRef.current.set(ck, { key: ck, cx, cz, blocks: new Map(), dirty: true });
+        }
+        chunksRef.current.get(ck)!.blocks.set(key, b);
+      });
+      
+      setChunkVersion(v => v + 1);
+    } catch (e) {
+      console.error("Failed to import world", e);
+    }
+  }, []);
+
   const hasBlock = useCallback((x: number, y: number, z: number): boolean => {
     return worldRef.current.has(blockKey(x, y, z));
   }, []);
@@ -111,5 +147,7 @@ export function useGameStore() {
     removeBlock,
     hasBlock,
     loadChunksAround,
+    exportWorld,
+    importWorld,
   };
 }

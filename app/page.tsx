@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DraggableWindow } from '@/components/Window';
 import { Dock, DockItem } from '@/components/Dock';
 import { DesktopFolder } from '@/components/DesktopIcon';
@@ -54,18 +55,47 @@ const ProjectCard = ({ name, description, language, languageColor, stars, forks,
 );
 
 // Profile Window Content
-const ProfileWindowContent = () => (
-  <div className="p-8 bg-white/40 rounded-b-xl">
+const ProfileWindowContent = ({ isLinkedIn }: { isLinkedIn: boolean }) => (
+  <div className="p-8 bg-white/40 rounded-b-xl max-h-[600px] overflow-y-auto custom-scrollbar">
     <div className="mb-6">
       <h1 className="font-serif-italic text-6xl text-gray-900 mb-4 tracking-tight">
-        HEY, i'm @tomlin7!
+        {isLinkedIn ? "HEY, i'm Dheeraj C.!" : "HEY, i'm @tomlin7!"}
       </h1>
-      <p className="font-mono-custom text-[13px] text-gray-500 bg-gray-100/50 inline-block px-3 py-1.5 rounded-md border border-gray-200/50">
-        software engineer // systems • graphics • full-stack
-      </p>
+      <div className="flex flex-wrap gap-2">
+        <p className="font-mono-custom text-[13px] text-gray-500 bg-gray-100/50 inline-block px-3 py-1.5 rounded-md border border-gray-200/50">
+          systems & software engineer // systems • compilers • full-stack
+        </p>
+        {isLinkedIn && (
+          <p className="font-mono-custom text-[13px] text-blue-600 bg-blue-50/50 inline-block px-3 py-1.5 rounded-md border border-blue-200/50">
+            ranchi, jh • +91-8304981017
+          </p>
+        )}
+      </div>
     </div>
     <hr className="border-t border-gray-300/60 my-6" />
     <ul className="space-y-4 text-[15px] leading-relaxed text-gray-700">
+      {isLinkedIn && (
+        <li className="flex items-start bg-blue-50/30 p-4 rounded-xl border border-blue-100/50">
+          <div className="grid grid-cols-2 gap-6 w-full text-[13px] font-medium">
+            <div>
+              <span className="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Email</span>
+              <a href="mailto:dheerajcofficial@gmail.com" className="text-blue-600 hover:underline">dheerajcofficial@gmail.com</a>
+            </div>
+            <div>
+              <span className="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Github</span>
+              <a href="https://github.com/tomlin7" className="text-blue-600 hover:underline">github.com/tomlin7</a>
+            </div>
+            <div>
+              <span className="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">LinkedIn</span>
+              <a href="https://linkedin.com/in/initdhee" className="text-blue-600 hover:underline">linkedin.com/in/initdhee</a>
+            </div>
+            <div>
+              <span className="block text-[10px] uppercase tracking-widest text-gray-400 mb-1">Education</span>
+              <span className="text-gray-900">BIT Mesra • B.Tech CSE (2027)</span>
+            </div>
+          </div>
+        </li>
+      )}
       <li className="flex items-start">
         <span className="text-blue-500 font-bold mr-3 mt-0.5">»</span>
         <span>i'm focused on building things close to the metal and shipping real products.</span>
@@ -87,8 +117,125 @@ const ProfileWindowContent = () => (
         <span>occasionally, i log out and pick up a pencil 🎨</span>
       </li>
     </ul>
+
+    {isLinkedIn && (
+      <div className="mt-8 pt-8 border-t border-gray-300/60">
+        <h4 className="text-[11px] font-bold text-gray-500/80 mb-4 uppercase tracking-tight">Core Competencies</h4>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <h5 className="text-[12px] font-bold text-gray-900 mb-2">Languages</h5>
+            <p className="text-[13px] text-gray-600">Python, TypeScript, Go, C, C++, Rust, SQL</p>
+          </div>
+          <div>
+            <h5 className="text-[12px] font-bold text-gray-900 mb-2">Systems</h5>
+            <p className="text-[13px] text-gray-600">REST, RPC, PTY, Tree-sitter, Compiler Design</p>
+          </div>
+          <div>
+            <h5 className="text-[12px] font-bold text-gray-900 mb-2">AI/ML</h5>
+            <p className="text-[13px] text-gray-600">PyTorch, LangChain, Ollama, Pinecone</p>
+          </div>
+          <div>
+            <h5 className="text-[12px] font-bold text-gray-900 mb-2">Infra</h5>
+            <p className="text-[13px] text-gray-600">Docker, AWS, PostgreSQL, Kubernetes</p>
+          </div>
+        </div>
+      </div>
+    )}
   </div>
 );
+
+// Experience Window Content
+const ExperienceWindowContent = () => {
+  const experiences = [
+    {
+      title: "Full-Stack Developer Intern",
+      company: "Morvion– ZH, Switzerland (Remote)",
+      period: "Nov 2025– Feb 2026",
+      description: [
+        "Architected and deployed a full-scale CRM from scratch using NestJS and Drizzle, implementing multi-workspace collaboration, Kanban pipelines, and Gmail API sync for automated contact management.",
+        "Engineered production-ready SaaS features including Stripe-integrated subscription/credit systems and administrative dashboards, while developing high-fidelity interactive UIs with Three.js, R3F."
+      ]
+    },
+    {
+      title: "Full-Stack Developer Intern",
+      company: "Hooman Digital– India (Remote)",
+      period: "July 2025– Sept 2025",
+      description: [
+        "Architected chartor.ai, an agentic trading platform with multimodal LLM layers to interpret live financial charts; managed a monorepo for cross-platform deployment across web, desktop, and browser extensions.",
+        "Standardized internal company infrastructure by engineering provider-agnostic Agent SDKs in Python for cross-team LLM orchestration."
+      ]
+    },
+    {
+      title: "Deep Learning Research Intern",
+      company: "NIT Calicut– Calicut, India",
+      period: "May 2025– July 2025",
+      description: [
+        "Developed CNN-Transformer fusion models classifying EEG motor imagery across 2, 3, and 4-class tasks under cross-subject validation; generated attention topographic maps for interpretability"
+      ]
+    },
+    {
+      title: "Founding Software Engineer Intern",
+      company: "OZi– Gurugram, India (Remote)",
+      period: "Oct 2024– Jan 2025",
+      description: [
+        "Architected the zero-to-one MVP for a specialized quick-commerce platform, designing the core data models and business logic required to support high-concurrency ordering and real-time inventory tracking.",
+        "Engineered the foundational full-stack infrastructure in Flutter and NodeJS, establishing the technical baseline that powered the startup’s growth."
+      ]
+    }
+  ];
+
+  return (
+    <div className="flex h-[550px] bg-white rounded-b-xl overflow-hidden">
+      {/* Finder-style Sidebar */}
+      <div className="w-[180px] bg-[#EBEBEB]/80 backdrop-blur-xl p-4 flex flex-col border-r border-gray-200/50">
+        <div className="space-y-6 flex-1 overflow-y-auto">
+          <div>
+            <h4 className="text-[11px] font-bold text-gray-500/80 mb-2 px-2 uppercase tracking-tight">Timeline</h4>
+            <div className="space-y-1">
+              <button className="w-full text-left px-2 py-1.5 text-[13px] font-medium bg-gray-200/60 rounded-lg flex items-center">
+                <span className="w-4 h-4 mr-2 text-blue-500 flex items-center justify-center">💼</span> Internships
+              </button>
+              <button className="w-full text-left px-2 py-1.5 text-[13px] font-medium text-gray-600 hover:bg-gray-200/40 rounded-lg flex items-center transition-colors">
+                <span className="w-4 h-4 mr-2 opacity-70 flex items-center justify-center">🎓</span> Education
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="flex-1 overflow-y-auto p-8 bg-[#FAFAFA]/50 custom-scrollbar">
+        <div className="mb-10">
+          <h2 className="text-4xl font-serif-italic mb-2 tracking-tight">Experience</h2>
+          <p className="text-gray-500 text-[14px] font-medium max-w-lg">
+            My professional journey and roles i've undertaken.
+          </p>
+        </div>
+
+        <div className="space-y-10">
+          {experiences.map((exp, i) => (
+            <div key={i} className="relative pl-6 border-l-2 border-blue-500/20">
+              <div className="absolute left-[-9px] top-1 w-4 h-4 rounded-full bg-blue-500 border-4 border-white shadow-sm" />
+              <div className="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                <h3 className="text-[17px] font-bold text-gray-900 tracking-tight">{exp.title}</h3>
+                <span className="text-[12px] font-mono text-gray-500 bg-gray-100 px-2 py-0.5 rounded-md">{exp.period}</span>
+              </div>
+              <p className="text-[14px] font-bold text-blue-600 mb-3">{exp.company}</p>
+              <ul className="space-y-2">
+                {exp.description.map((bullet, j) => (
+                  <li key={j} className="text-[14px] text-gray-600 leading-relaxed flex items-start">
+                    <span className="mr-2 mt-1.5 w-1.5 h-1.5 rounded-full bg-gray-400 shrink-0" />
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // Projects Window Content
 const ProjectsWindowContent = ({ searchQuery }: { searchQuery: string }) => {
@@ -377,9 +524,9 @@ const CompactTypingModule = ({ userInput, setUserInput }: { userInput: string; s
 
 export default function Home() {
   return (
-    <>
+    <Suspense fallback={null}>
       <PageContent />
-    </>
+    </Suspense>
   );
 }
 
@@ -429,13 +576,16 @@ const GameScreen = ({ isOpen, onClose }: {
 };
 
 function PageContent() {
+  const searchParams = useSearchParams();
+  const isLinkedIn = searchParams.get('source') === 'linkedin';
+
   const [clockText, setClockText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeWindow, setActiveWindow] = useState('profile');
-  const [zIndexMap, setZIndexMap] = useState<Record<string, number>>({ profile: 40, projects: 39 });
+  const [zIndexMap, setZIndexMap] = useState<Record<string, number>>({ profile: 40, projects: 39, experience: 38 });
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({ profile: true, projects: false });
-  const [minimizedWindows, setMinimizedWindows] = useState<Record<string, boolean>>({ profile: false, projects: false });
+  const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({ profile: true, projects: false, experience: false });
+  const [minimizedWindows, setMinimizedWindows] = useState<Record<string, boolean>>({ profile: false, projects: false, experience: false });
   const [hoveredAboutIcon, setHoveredAboutIcon] = useState<number | null>(null);
   const [hoveredDots, setHoveredDots] = useState(false);
   const [typingInput, setTypingInput] = useState("");
@@ -747,8 +897,9 @@ function PageContent() {
                     {/* Desktop Folders */}
                     <DesktopFolder label="projects" initialPos={{ top: '15%', left: '80%' }} onDoubleClick={() => activateWindow('projects')} />
                     <DesktopFolder label="about me" initialPos={{ top: '35%', left: '75%' }} onDoubleClick={() => activateWindow('profile')} />
+                    {isLinkedIn && <DesktopFolder label="experience" initialPos={{ top: '15%', left: '40%' }} onDoubleClick={() => activateWindow('experience')} />}
                     <DesktopFolder label="resume" initialPos={{ top: '55%', left: '45%' }} />
-                    <DesktopFolder label="graphic design" initialPos={{ top: '15%', left: '40%' }} />
+                    {!isLinkedIn && <DesktopFolder label="graphic design" initialPos={{ top: '15%', left: '40%' }} />}
 
                     {/* Profile Window */}
                     {openWindows['profile'] && !minimizedWindows['profile'] && (
@@ -770,7 +921,32 @@ function PageContent() {
                           </svg>
                         }
                       >
-                        <ProfileWindowContent />
+                        <ProfileWindowContent isLinkedIn={isLinkedIn} />
+                      </DraggableWindow>
+                    )}
+
+                    {/* Experience Window */}
+                    {isLinkedIn && openWindows['experience'] && !minimizedWindows['experience'] && (
+                      <DraggableWindow
+                        id="win-experience"
+                        initialPos={{ x: 200, y: 120 }}
+                        width="w-[850px]"
+                        zIndex={zIndexMap['experience']}
+                        isActive={activeWindow === 'experience'}
+                        onActivate={() => activateWindow('experience')}
+                        onClose={() => closeWindow('experience')}
+                        onMinimize={() => minimizeWindow('experience')}
+                        title="experience"
+                        headerCenter={
+                          <div className="flex items-center space-x-1">
+                            <svg className="w-4 h-4 text-blue-500" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M20 5h-9.586L8.707 3.293A.997.997 0 0 0 8 3H4c-1.103 0-2 .897-2 2v14c0 1.103.897 2 2 2h16c1.103 0 2-.897 2-2V7c0-1.103-.897-2-2-2z" />
+                            </svg>
+                            <span>experience</span>
+                          </div>
+                        }
+                      >
+                        <ExperienceWindowContent />
                       </DraggableWindow>
                     )}
 
@@ -822,10 +998,19 @@ function PageContent() {
                       <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853981255cc36b3a37af_finder.png" alt="Finder" className="w-full h-full object-contain" />
                     </DockItem>
 
-                    {/* Launchpad */}
-                    <DockItem tooltip="Launchpad">
-                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853943597517f128b9b4_launchpad.png" alt="Launchpad" className="w-full h-full object-contain" />
+                    {/* Experience (Conditional) */}
+                    {isLinkedIn && (
+                      <DockItem tooltip="Experience" dot={openWindows['experience']} onClick={() => activateWindow('experience')}>
+                        <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853943597517f128b9b4_launchpad.png" alt="Launchpad" className="w-full h-full object-contain" />
+                      </DockItem>
+                    )}
+
+                    {/* Profile (About Me) */}
+                    <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
+                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853743597518c528b9b3_contacts.png" alt="About Me" className="w-full h-full object-contain" />
                     </DockItem>
+
+                    <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
 
                     {/* Safari */}
                     <DockItem tooltip="Safari">
@@ -845,13 +1030,6 @@ function PageContent() {
                     {/* Music */}
                     <DockItem tooltip="Music">
                       <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ba0782d6ff2aca6b3_music.png" alt="Music" className="w-full h-full object-contain" />
-                    </DockItem>
-
-                    <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
-
-                    {/* Profile (About Me) */}
-                    <DockItem tooltip="About Me" dot={openWindows['profile']} onClick={() => activateWindow('profile')}>
-                      <img src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853743597518c528b9b3_contacts.png" alt="About Me" className="w-full h-full object-contain" />
                     </DockItem>
 
                     <div className="h-10 w-[1px] bg-black/10 mx-1"></div>
@@ -985,7 +1163,7 @@ function PageContent() {
               className="max-w-xl mx-auto"
             >
               <p className="text-lg md:text-xl text-white/50 leading-relaxed font-light">
-                hey there! i'm <span className="text-white/90 font-medium tracking-tight">tom</span> — a software engineer with a deep love for systems and performance. i currently build tools for the next generation of developers and occasionally dive into graphics, compilers, and games.
+                hey there! i'm <span className="text-white/90 font-medium tracking-tight">{isLinkedIn ? "Dheeraj" : "tom"}</span> — a software engineer with a deep love for systems and performance. i currently build tools for the next generation of developers and occasionally dive into graphics, compilers, and games.
               </p>
             </motion.div>
 
