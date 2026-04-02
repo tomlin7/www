@@ -28,7 +28,8 @@ function InteractionHandler({
       const mouse = new THREE.Vector2(0, 0); 
       raycaster.setFromCamera(mouse, camera);
 
-      const intersects = raycaster.intersectObjects(scene.children, true);
+      const intersects = raycaster.intersectObjects(scene.children, true)
+        .filter(i => i.object.name !== 'water');
       
       if (intersects.length > 0) {
         // Increased reach distance to 12
@@ -85,7 +86,10 @@ function Selection() {
     if (!selectionRef.current) return;
     
     raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
-    const intersects = raycaster.intersectObjects(scene.children, true);
+    // Ignore water in selection
+    const intersects = raycaster.intersectObjects(scene.children, true)
+      .filter(i => i.object.name !== 'water');
+      
     const hit = intersects.find(i => i.face && i.distance < 12);
 
     if (hit && hit.face) {
@@ -105,6 +109,25 @@ function Selection() {
   );
 }
 
+const Water = () => {
+  return (
+    <mesh 
+      name="water" 
+      rotation-x={-Math.PI / 2} 
+      position={[0, 9.8, 0]} 
+      receiveShadow
+    >
+      <planeGeometry args={[2000, 2000]} />
+      <meshToonMaterial 
+        color="#3498db" 
+        transparent 
+        opacity={0.6}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  );
+}
+
 export default function GameScene() {
   const { world, chunks, version, activeBlock, setActiveBlock, initWorld, addBlock, removeBlock, hasBlock, loadChunksAround, exportWorld, importWorld } = useGameStore();
 
@@ -117,8 +140,8 @@ export default function GameScene() {
       <HUD 
         activeBlock={activeBlock} 
         onSelectBlock={setActiveBlock} 
-        exportWorld={exportWorld}
-        importWorld={importWorld}
+        exportWorld={exportWorld} 
+        importWorld={importWorld} 
       />
       <Canvas
         shadows
@@ -131,17 +154,17 @@ export default function GameScene() {
         dpr={[1, 1.5]}
       >
         <color attach="background" args={['#87CEEB']} />
-        <fog attach="fog" args={['#87CEEB', 60, 160]} />
+        <fog attach="fog" args={['#87CEEB', 60, 260]} />
 
         <ambientLight intensity={0.4} />
         <directionalLight
-          position={[60, 100, 40]}
-          intensity={1.3}
+          position={[100, 100, 50]}
+          intensity={1.2}
           castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
+          shadow-mapSize-width={2048}
+          shadow-mapSize-height={2048}
         />
-        <hemisphereLight args={['#87CEEB', '#5E8C31', 0.3]} />
+        <hemisphereLight args={['#87CEEB', '#5E8C31', 0.4]} />
 
         <PlayerControls hasBlock={hasBlock} onPositionChange={loadChunksAround} />
 
@@ -151,6 +174,7 @@ export default function GameScene() {
           version={version}
         />
 
+        <Water />
         <Selection />
 
         <InteractionHandler 

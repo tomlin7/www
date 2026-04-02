@@ -1,6 +1,6 @@
 import { createNoise2D, createNoise3D } from 'simplex-noise';
 
-export type BlockType = 'grass' | 'dirt' | 'stone' | 'wood' | 'sand' | 'water' | 'leaves' | 'coal' | 'iron';
+export type BlockType = 'grass' | 'dirt' | 'stone' | 'wood' | 'sand' | 'leaves' | 'coal' | 'iron';
 
 export interface Block {
   x: number;
@@ -15,7 +15,6 @@ const BLOCK_COLORS: Record<BlockType, string> = {
   stone: '#808080',
   wood: '#6B4226',
   sand: '#C2B280',
-  water: '#3B7DD8',
   leaves: '#3A5F0B',
   coal: '#2A2A2A',
   iron: '#D4B483',
@@ -56,9 +55,7 @@ export function generateTerrain(chunkX: number, chunkZ: number, seed = 42): Bloc
         noise2D(worldX * 0.1, worldZ * 0.1) * 1.5
       );
 
-      const maxY = Math.max(height, SEA_LEVEL);
-
-      for (let y = 0; y <= maxY; y++) {
+      for (let y = 0; y <= height; y++) {
         // CAVE 3D NOISE - Skip block creation if noise is above threshold
         const caveNoise = noise3D(worldX * 0.1, y * 0.15, worldZ * 0.1);
         
@@ -66,19 +63,14 @@ export function generateTerrain(chunkX: number, chunkZ: number, seed = 42): Bloc
         const entranceThreshold = 0.7;
         const normalThreshold = 0.55;
         
-        // Only trigger cave noise for land blocks
-        if (y <= height) {
-          if (y === height) {
-            if (caveNoise > entranceThreshold) continue;
-          } else {
-            if (caveNoise > normalThreshold) continue;
-          }
+        if (y === height) {
+          if (caveNoise > entranceThreshold) continue;
+        } else {
+          if (caveNoise > normalThreshold) continue;
         }
 
         let type: BlockType;
-        if (y > height) {
-          type = 'water';
-        } else if (y === height) {
+        if (y === height) {
           // Surface: check for beach
           if (height <= SEA_LEVEL + 1) {
             type = 'sand';
