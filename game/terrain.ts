@@ -1,6 +1,6 @@
-import { createNoise2D } from 'simplex-noise';
+import { createNoise2D, createNoise3D } from 'simplex-noise';
 
-export type BlockType = 'grass' | 'dirt' | 'stone' | 'wood' | 'sand' | 'water' | 'leaves';
+export type BlockType = 'grass' | 'dirt' | 'stone' | 'wood' | 'sand' | 'water' | 'leaves' | 'coal' | 'iron';
 
 export interface Block {
   x: number;
@@ -17,6 +17,8 @@ const BLOCK_COLORS: Record<BlockType, string> = {
   sand: '#C2B280',
   water: '#3B7DD8',
   leaves: '#3A5F0B',
+  coal: '#2A2A2A',
+  iron: '#D4B483',
 };
 
 export function getBlockColor(type: BlockType): string {
@@ -25,6 +27,7 @@ export function getBlockColor(type: BlockType): string {
 
 export const CHUNK_SIZE = 64;
 export const WORLD_HEIGHT = 20;
+export const SEA_LEVEL = 10;
 
 function seededRandom(seed: number): () => number {
   let s = seed;
@@ -35,7 +38,9 @@ function seededRandom(seed: number): () => number {
 }
 
 export function generateTerrain(chunkX: number, chunkZ: number, seed = 42): Block[] {
-  const noise2D = createNoise2D(seededRandom(seed));
+  const seeded = seededRandom(seed);
+  const noise2D = createNoise2D(seeded);
+  const noise3D = createNoise3D(seededRandom(seed + 1));
 
   const blocks: Block[] = [];
 
@@ -51,14 +56,43 @@ export function generateTerrain(chunkX: number, chunkZ: number, seed = 42): Bloc
         noise2D(worldX * 0.1, worldZ * 0.1) * 1.5
       );
 
-      for (let y = 0; y <= height; y++) {
+      const maxY = Math.max(height, SEA_LEVEL);
+
+      for (let y = 0; y <= maxY; y++) {
+        // CAVE 3D NOISE - Skip block creation if noise is above threshold
+        const caveNoise = noise3D(worldX * 0.1, y * 0.15, worldZ * 0.1);
+        
+        // Entrances: If noise is very high, it can break the surface
+        const entranceThreshold = 0.7;
+        const normalThreshold = 0.55;
+        
+        // Only trigger cave noise for land blocks
+        if (y <= height) {
+          if (y === height) {
+            if (caveNoise > entranceThreshold) continue;
+          } else {
+            if (caveNoise > normalThreshold) continue;
+          }
+        }
+
         let type: BlockType;
-        if (y === height) {
-          type = height <= 6 ? 'sand' : 'grass';
+        if (y > height) {
+          type = 'water';
+        } else if (y === height) {
+          // Surface: check for beach
+          if (height <= SEA_LEVEL + 1) {
+            type = 'sand';
+          } else {
+            type = 'grass';
+          }
         } else if (y >= height - 3) {
-          type = 'dirt';
+          type = height <= SEA_LEVEL + 1 ? 'sand' : 'dirt';
         } else {
-          type = 'stone';
+          // Stone layer + ores
+          const oreNoise = noise3D(worldX * 0.2, y * 0.2, worldZ * 0.2);
+          if (oreNoise > 0.8) type = 'iron';
+          else if (oreNoise > 0.7) type = 'coal';
+          else type = 'stone';
         }
         blocks.push({ x: worldX, y, z: worldZ, type });
       }

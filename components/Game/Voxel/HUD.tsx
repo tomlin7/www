@@ -1,7 +1,7 @@
 import React from 'react';
 import { BlockType, getBlockColor } from '@/game/terrain';
 
-const BLOCK_TYPES: BlockType[] = ['grass', 'dirt', 'stone', 'wood', 'sand', 'leaves'];
+const BLOCK_TYPES: BlockType[] = ['grass', 'dirt', 'stone', 'wood', 'sand', 'leaves', 'coal', 'iron'];
 
 interface HUDProps {
   activeBlock: BlockType;

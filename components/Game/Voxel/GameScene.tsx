@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import { useEffect, useRef } from 'react';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '@/game/store';
 import Terrain from './Terrain';
@@ -18,7 +18,7 @@ function InteractionHandler({
   setActiveBlock: (type: any) => void;
 }) {
   const { raycaster, camera, scene, gl } = useThree();
-  const BLOCK_TYPES = ['grass', 'dirt', 'stone', 'wood', 'sand', 'leaves'];
+  const BLOCK_TYPES = ['grass', 'dirt', 'stone', 'wood', 'sand', 'leaves', 'coal', 'iron'];
 
   useEffect(() => {
     const handlePointer = (e: PointerEvent) => {
@@ -77,6 +77,34 @@ function InteractionHandler({
   return null;
 }
 
+function Selection() {
+  const { raycaster, camera, scene } = useThree();
+  const selectionRef = useRef<THREE.Mesh>(null);
+
+  useFrame(() => {
+    if (!selectionRef.current) return;
+    
+    raycaster.setFromCamera(new THREE.Vector2(0, 0), camera);
+    const intersects = raycaster.intersectObjects(scene.children, true);
+    const hit = intersects.find(i => i.face && i.distance < 12);
+
+    if (hit && hit.face) {
+      const pos = hit.point.clone().sub(hit.face.normal.clone().multiplyScalar(0.5));
+      selectionRef.current.position.set(Math.round(pos.x), Math.round(pos.y), Math.round(pos.z));
+      selectionRef.current.visible = true;
+    } else {
+      selectionRef.current.visible = false;
+    }
+  });
+
+  return (
+    <mesh ref={selectionRef} visible={false}>
+      <boxGeometry args={[1.01, 1.01, 1.01]} />
+      <meshBasicMaterial color="white" wireframe transparent opacity={0.3} />
+    </mesh>
+  );
+}
+
 export default function GameScene() {
   const { world, chunks, version, activeBlock, setActiveBlock, initWorld, addBlock, removeBlock, hasBlock, loadChunksAround, exportWorld, importWorld } = useGameStore();
 
@@ -94,7 +122,11 @@ export default function GameScene() {
       />
       <Canvas
         shadows
-        gl={{ antialias: false, powerPreference: 'high-performance' }}
+        gl={{ 
+          antialias: false, 
+          powerPreference: 'high-performance',
+          shadowMapType: THREE.PCFShadowMap 
+        }}
         camera={{ fov: 75, near: 0.1, far: 300 }}
         dpr={[1, 1.5]}
       >
@@ -118,6 +150,8 @@ export default function GameScene() {
           chunks={chunks}
           version={version}
         />
+
+        <Selection />
 
         <InteractionHandler 
           addBlock={addBlock} 
