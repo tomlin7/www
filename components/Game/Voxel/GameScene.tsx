@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Canvas, useThree, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useGameStore } from '@/game/store';
@@ -130,6 +130,7 @@ const Water = () => {
 
 export default function GameScene() {
   const { world, chunks, version, activeBlock, setActiveBlock, initWorld, addBlock, removeBlock, hasBlock, loadChunksAround, exportWorld, importWorld } = useGameStore();
+  const [isUnderwater, setIsUnderwater] = useState(false);
 
   useEffect(() => {
     initWorld();
@@ -153,9 +154,8 @@ export default function GameScene() {
         camera={{ fov: 75, near: 0.1, far: 300 }}
         dpr={[1, 1.5]}
       >
-        <color attach="background" args={['#87CEEB']} />
-        <fog attach="fog" args={['#87CEEB', 60, 260]} />
-
+        <SceneController isUnderwater={isUnderwater} setIsUnderwater={setIsUnderwater} />
+        
         <ambientLight intensity={0.4} />
         <directionalLight
           position={[100, 100, 50]}
@@ -166,7 +166,11 @@ export default function GameScene() {
         />
         <hemisphereLight args={['#87CEEB', '#5E8C31', 0.4]} />
 
-        <PlayerControls hasBlock={hasBlock} onPositionChange={loadChunksAround} />
+        <PlayerControls 
+          hasBlock={hasBlock} 
+          onPositionChange={loadChunksAround} 
+          isUnderwater={isUnderwater}
+        />
 
         <Terrain
           world={world}
@@ -186,4 +190,24 @@ export default function GameScene() {
       </Canvas>
     </div>
   );
+}
+
+function SceneController({ isUnderwater, setIsUnderwater }: { isUnderwater: boolean; setIsUnderwater: (v: boolean) => void }) {
+  const { scene, camera } = useThree();
+
+  useFrame(() => {
+    const under = camera.position.y < 9.8;
+    if (under !== isUnderwater) {
+      setIsUnderwater(under);
+      if (under) {
+        scene.background = new THREE.Color('#004466');
+        scene.fog = new THREE.Fog('#004466', 1, 30);
+      } else {
+        scene.background = new THREE.Color('#87CEEB');
+        scene.fog = new THREE.Fog('#87CEEB', 60, 260);
+      }
+    }
+  });
+
+  return null;
 }

@@ -13,9 +13,10 @@ const SPRINT_MULTIPLIER = 1.6;
 interface PlayerControlsProps {
   hasBlock: (x: number, y: number, z: number) => boolean;
   onPositionChange?: (x: number, z: number) => void;
+  isUnderwater: boolean;
 }
 
-export default function PlayerControls({ hasBlock, onPositionChange }: PlayerControlsProps) {
+export default function PlayerControls({ hasBlock, onPositionChange, isUnderwater }: PlayerControlsProps) {
   const { camera } = useThree();
   const velocity = useRef(new THREE.Vector3(0, 0, 0));
   const keys = useRef<Set<string>>(new Set());
@@ -102,7 +103,11 @@ export default function PlayerControls({ hasBlock, onPositionChange }: PlayerCon
     right.crossVectors(dir, new THREE.Vector3(0, 1, 0)).normalize();
 
     const sprinting = keys.current.has('ControlLeft') || keys.current.has('ShiftLeft');
-    const speed = MOVE_SPEED * (sprinting ? SPRINT_MULTIPLIER : 1);
+    let speed = MOVE_SPEED * (sprinting ? SPRINT_MULTIPLIER : 1);
+    
+    if (isUnderwater) {
+      speed *= 0.4; // Slower in water
+    }
 
     const moveDir = new THREE.Vector3(0, 0, 0);
     if (keys.current.has('KeyW')) moveDir.add(dir);
@@ -111,13 +116,23 @@ export default function PlayerControls({ hasBlock, onPositionChange }: PlayerCon
     if (keys.current.has('KeyD')) moveDir.add(right);
     if (moveDir.length() > 0) moveDir.normalize();
 
-    if (keys.current.has('Space') && isGrounded.current) {
-      velocity.current.y = JUMP_FORCE;
-      isGrounded.current = false;
+    if (keys.current.has('Space')) {
+      if (isUnderwater) {
+        velocity.current.y += 15 * dt; // Swim up
+        if (velocity.current.y > 4) velocity.current.y = 4;
+      } else if (isGrounded.current) {
+        velocity.current.y = JUMP_FORCE;
+        isGrounded.current = false;
+      }
     }
 
     if (!isGrounded.current) {
-      velocity.current.y += GRAVITY * dt;
+      if (isUnderwater) {
+        velocity.current.y += GRAVITY * 0.2 * dt; // High buoyancy/drag
+        if (velocity.current.y < -3) velocity.current.y = -3;
+      } else {
+        velocity.current.y += GRAVITY * dt;
+      }
     }
 
     const pos = camera.position.clone();

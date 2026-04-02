@@ -1236,15 +1236,17 @@ function PageContent() {
             </motion.div>
 
             {/* Integrated Typing & Keyboard Module */}
-            <motion.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5, duration: 0.8 }}
-              className="mt-32 w-full max-w-5xl mx-auto pb-12 overflow-x-auto custom-scrollbar flex flex-col items-center"
-            >
-              <CompactTypingModule userInput={typingInput} setUserInput={setTypingInput} />
-            </motion.div>
+            {!showGame && (
+              <motion.div
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5, duration: 0.8 }}
+                className="mt-32 w-full max-w-5xl mx-auto pb-12 overflow-x-auto custom-scrollbar flex flex-col items-center"
+              >
+                <CompactTypingModule userInput={typingInput} setUserInput={setTypingInput} />
+              </motion.div>
+            )}
           </motion.section>
 
 

@@ -3,7 +3,7 @@ import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const inter = Inter({subsets:['latin'],variable:'--font-sans'});
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "tomlin7 - macOS Portfolio",
-  description: "Software Engineer portfolio with macOS-like interface",
+  title: "Portfolio @tomlin7",
+  description: "software engineer > systems • graphics • full-stack",
 };
 
 import { Analytics } from "@vercel/analytics/react";
