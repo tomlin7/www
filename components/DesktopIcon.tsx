@@ -71,7 +71,7 @@ export const DesktopFolder = ({ label, initialPos, onDoubleClick }: DesktopFolde
       <div className="relative transform transition-transform group-active:scale-95 group-hover:drop-shadow-lg">
         <FolderIcon />
       </div>
-      <span className="text-[11px] text-center mt-1 font-medium bg-[#1F1F1F]/40 text-white px-2 py-0.5 rounded backdrop-blur-md shadow-sm border border-white/10 select-none">
+      <span className="text-[11px] text-center mt-1 font-medium bg-[#1F1F1F]/40 text-white px-2 py-0.5 rounded backdrop-blur-md shadow-sm select-none">
         {label}
       </span>
     </div>

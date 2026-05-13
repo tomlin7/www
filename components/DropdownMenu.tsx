@@ -38,7 +38,7 @@ export const DropdownMenu = ({ isOpen, items, onClose }: DropdownMenuProps) => {
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 backdrop-blur-xl rounded-lg shadow-2xl border border-gray-200/50 p-1 z-50 animate-in fade-in zoom-in duration-100 origin-top-left">
+      <div className="absolute top-full left-0 mt-1 w-60 bg-white/95 backdrop-blur-xl rounded-lg shadow-2xl p-1 z-50 animate-in fade-in zoom-in duration-100 origin-top-left">
         {items.map((item, index) => (
           <MenuItem key={index} {...item} />
         ))}

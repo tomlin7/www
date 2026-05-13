@@ -70,9 +70,9 @@ export const DockItem = ({
         className="dock-item group w-full h-full cursor-pointer flex items-center justify-center relative origin-bottom"
         onClick={onClick}
       >
-        <div className="dock-item-tooltip absolute -top-14 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-xl text-white text-[12px] px-3 py-1.5 rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 font-medium border border-white/10 whitespace-nowrap scale-90 group-hover:scale-100">
+        <div className="dock-item-tooltip absolute -top-14 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-xl text-white text-[12px] px-3 py-1.5 rounded-lg shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none z-50 font-medium whitespace-nowrap scale-90 group-hover:scale-100">
           {tooltip}
-          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/80 border-b border-r border-white/10 rotate-45" />
+          <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/80 rotate-45" />
         </div>
         <div className="w-full h-full rounded-[13px] overflow-hidden" style={{ transform: "translateZ(0)" }}>
           {children}
