@@ -181,11 +181,14 @@ export default function DesktopUI() {
     [trigger],
   );
 
-  const openFinder = useCallback((dir: string, selectId?: string | null) => {
-    setFinderSelectedId(selectId || null);
-    setFinderPath(`${dir}?t=${Date.now()}`);
-    activateWindow("finder");
-  }, [activateWindow]);
+  const openFinder = useCallback(
+    (dir: string, selectId?: string | null) => {
+      setFinderSelectedId(selectId || null);
+      setFinderPath(`${dir}?t=${Date.now()}`);
+      activateWindow("finder");
+    },
+    [activateWindow],
+  );
 
   const closeWindow = (id: string) => {
     trigger("nudge");
@@ -246,7 +249,10 @@ export default function DesktopUI() {
     ];
 
     apps.forEach((app) => {
-      if (app.name.toLowerCase().includes(query) || app.kind.toLowerCase().includes(query)) {
+      if (
+        (app.name || "").toLowerCase().includes(query) ||
+        (app.kind || "").toLowerCase().includes(query)
+      ) {
         results.push(app);
       }
     });
@@ -254,10 +260,12 @@ export default function DesktopUI() {
     // 2. Projects
     allProjectsList.forEach((proj) => {
       const match =
-        proj.title.toLowerCase().includes(query) ||
-        proj.subtitle.toLowerCase().includes(query) ||
-        proj.description.toLowerCase().includes(query) ||
-        proj.technologies.some((t) => t.toLowerCase().includes(query));
+        (proj.title || "").toLowerCase().includes(query) ||
+        (proj.subtitle || "").toLowerCase().includes(query) ||
+        (proj.description || "").toLowerCase().includes(query) ||
+        (proj.technologies || []).some((t) =>
+          (t || "").toLowerCase().includes(query),
+        );
 
       if (match) {
         let iconColorClass = "text-blue-400";
@@ -274,8 +282,19 @@ export default function DesktopUI() {
           id: proj.id,
           name: `${proj.title}.app`,
           category: "Projects" as const,
-          kind: proj.category === "ai-agents" ? "AI Agent" : proj.category === "systems-languages" ? "Systems App" : "Web App",
-          icon: <div className={`w-4 h-4 flex items-center justify-center ${iconColorClass}`}>{iconElement}</div>,
+          kind:
+            proj.category === "ai-agents"
+              ? "AI Agent"
+              : proj.category === "systems-languages"
+                ? "Systems App"
+                : "Web App",
+          icon: (
+            <div
+              className={`w-4 h-4 flex items-center justify-center ${iconColorClass}`}
+            >
+              {iconElement}
+            </div>
+          ),
           onSelect: () => {
             openFinder("projects", proj.id);
           },
@@ -286,11 +305,13 @@ export default function DesktopUI() {
     // 3. Experience
     allExperiencesList.forEach((exp) => {
       const match =
-        exp.company.toLowerCase().includes(query) ||
-        exp.role.toLowerCase().includes(query) ||
-        exp.location.toLowerCase().includes(query) ||
-        exp.period.toLowerCase().includes(query) ||
-        exp.bullets.some((b) => b.toLowerCase().includes(query));
+        (exp.company || "").toLowerCase().includes(query) ||
+        (exp.title || "").toLowerCase().includes(query) ||
+        (exp.location || "").toLowerCase().includes(query) ||
+        (exp.period || "").toLowerCase().includes(query) ||
+        (exp.bullets || []).some((b) =>
+          (b || "").toLowerCase().includes(query),
+        );
 
       if (match) {
         results.push({
@@ -321,7 +342,10 @@ export default function DesktopUI() {
     ];
 
     desktopFiles.forEach((file) => {
-      if (file.name.toLowerCase().includes(query) || file.kind.toLowerCase().includes(query)) {
+      if (
+        (file.name || "").toLowerCase().includes(query) ||
+        (file.kind || "").toLowerCase().includes(query)
+      ) {
         results.push(file);
       }
     });
@@ -335,7 +359,7 @@ export default function DesktopUI() {
       // Toggle on Cmd + Space or Ctrl + Space
       const isSpace = e.key === " " || e.code === "Space";
       const isModifier = e.metaKey || e.ctrlKey;
-      
+
       if (isModifier && isSpace) {
         e.preventDefault();
         setIsSpotlightOpen((prev) => {
@@ -364,7 +388,9 @@ export default function DesktopUI() {
       } else if (e.key === "ArrowUp") {
         e.preventDefault();
         if (results.length > 0) {
-          setSpotlightSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
+          setSpotlightSelectedIndex(
+            (prev) => (prev - 1 + results.length) % results.length,
+          );
         }
       } else if (e.key === "Enter") {
         e.preventDefault();
@@ -422,7 +448,7 @@ export default function DesktopUI() {
       <div className="text-white h-full w-full flex flex-col relative overflow-hidden z-10">
         <div className="h-full w-full flex flex-col relative bg-transparent">
           {/* Menu Bar */}
-          <nav className="glass w-full h-7 flex items-center justify-between px-4 text-xs z-[9999] absolute top-0 left-0 text-white/95">
+          <nav className="glass-darker backdrop-blur-md  w-full h-7 flex items-center justify-between px-4 text-xs z-[9999] absolute top-0 left-0 text-white/95">
             <div className="flex items-center space-x-1">
               <div className="flex items-center space-x-4 pr-3">
                 <img
@@ -647,7 +673,7 @@ export default function DesktopUI() {
                 setIsSpotlightOpen(!isSpotlightOpen);
               }}
             >
-              <div className="w-full h-full rounded-xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-inner">
+              <div className="w-full h-full rounded-xl bg-linear-to-tr from-sky-500 via-blue-500 to-indigo-400 border-2 border-white/40 flex items-center justify-center text-white shadow-inner">
                 <IconSearch className="w-6 h-6 stroke-[2.5]" />
               </div>
             </DockItem>
@@ -701,12 +727,12 @@ export default function DesktopUI() {
 
       {/* Spotlight Search Overlay */}
       {isSpotlightOpen && (
-        <div 
+        <div
           className="absolute inset-0 bg-transparent z-[99999]"
           onClick={() => setIsSpotlightOpen(false)}
         >
-          <div 
-            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] rounded-xl glass-darker shadow-2xl overflow-hidden"
+          <div
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] rounded-xl backdrop-blur-md  glass-darker  shadow-2xl overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Search Input Box */}
@@ -726,75 +752,86 @@ export default function DesktopUI() {
             </div>
 
             {/* Search Results Display */}
-            {spotlightQuery.trim() !== "" ? (() => {
-              const results = getSpotlightResults();
-              if (results.length === 0) {
+            {spotlightQuery.trim() !== "" ? (
+              (() => {
+                const results = getSpotlightResults();
+                if (results.length === 0) {
+                  return (
+                    <div className="py-8 text-center text-white/30 text-xs select-none">
+                      No results found for "{spotlightQuery}"
+                    </div>
+                  );
+                }
+
+                const groups: Record<string, typeof results> = {};
+                results.forEach((item) => {
+                  if (!groups[item.category]) {
+                    groups[item.category] = [];
+                  }
+                  groups[item.category].push(item);
+                });
+
+                let flatIndex = 0;
+
                 return (
-                  <div className="py-8 text-center text-white/30 text-xs select-none">
-                    No results found for "{spotlightQuery}"
+                  <div className="max-h-[350px] overflow-y-auto custom-scrollbar p-2 space-y-3">
+                    {Object.entries(groups).map(([category, items]) => (
+                      <div key={category} className="space-y-1">
+                        <div className="px-3 py-1 text-[9.5px] font-semibold text-white/40 uppercase tracking-widest select-none">
+                          {category}
+                        </div>
+                        <div className="space-y-0.5">
+                          {items.map((item) => {
+                            const currentFlatIndex = flatIndex++;
+                            const isSelected =
+                              spotlightSelectedIndex === currentFlatIndex;
+
+                            return (
+                              <div
+                                key={item.id}
+                                onMouseEnter={() =>
+                                  setSpotlightSelectedIndex(currentFlatIndex)
+                                }
+                                onClick={() => {
+                                  trigger?.("success");
+                                  item.onSelect();
+                                  setIsSpotlightOpen(false);
+                                }}
+                                className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-default select-none transition-colors ${
+                                  isSelected
+                                    ? "bg-[#0a84ff] text-white"
+                                    : "text-white/90 hover:bg-white/[0.04]"
+                                }`}
+                              >
+                                <div className="flex items-center space-x-3 min-w-0">
+                                  <div
+                                    className={`${isSelected ? "text-white" : "text-white/60"} shrink-0`}
+                                  >
+                                    {item.icon}
+                                  </div>
+                                  <div className="truncate text-xs font-normal">
+                                    {item.name}
+                                  </div>
+                                </div>
+                                <div
+                                  className={`text-[10px] uppercase font-normal select-none ${
+                                    isSelected
+                                      ? "text-white/70"
+                                      : "text-white/35"
+                                  }`}
+                                >
+                                  {item.kind}
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 );
-              }
-
-              const groups: Record<string, typeof results> = {};
-              results.forEach((item) => {
-                if (!groups[item.category]) {
-                  groups[item.category] = [];
-                }
-                groups[item.category].push(item);
-              });
-
-              let flatIndex = 0;
-
-              return (
-                <div className="max-h-[350px] overflow-y-auto custom-scrollbar p-2 space-y-3">
-                  {Object.entries(groups).map(([category, items]) => (
-                    <div key={category} className="space-y-1">
-                      <div className="px-3 py-1 text-[9.5px] font-semibold text-white/40 uppercase tracking-widest select-none">
-                        {category}
-                      </div>
-                      <div className="space-y-0.5">
-                        {items.map((item) => {
-                          const currentFlatIndex = flatIndex++;
-                          const isSelected = spotlightSelectedIndex === currentFlatIndex;
-
-                          return (
-                            <div
-                              key={item.id}
-                              onMouseEnter={() => setSpotlightSelectedIndex(currentFlatIndex)}
-                              onClick={() => {
-                                trigger?.("success");
-                                item.onSelect();
-                                setIsSpotlightOpen(false);
-                              }}
-                              className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-default select-none transition-colors ${
-                                isSelected 
-                                  ? "bg-[#0a84ff] text-white" 
-                                  : "text-white/90 hover:bg-white/[0.04]"
-                              }`}
-                            >
-                              <div className="flex items-center space-x-3 min-w-0">
-                                <div className={`${isSelected ? "text-white" : "text-white/60"} shrink-0`}>
-                                  {item.icon}
-                                </div>
-                                <div className="truncate text-xs font-normal">
-                                  {item.name}
-                                </div>
-                              </div>
-                              <div className={`text-[10px] uppercase font-normal select-none ${
-                                isSelected ? "text-white/70" : "text-white/35"
-                              }`}>
-                                {item.kind}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              );
-            })() : (
+              })()
+            ) : (
               <div className="py-8 text-center text-white/30 text-xs select-none">
                 Type to search projects, experience, or applications
               </div>
@@ -802,7 +839,9 @@ export default function DesktopUI() {
 
             {/* Spotlight Footer Hint */}
             <div className="px-4 py-2 bg-black/30 border-t border-white/5 flex items-center justify-between text-[9px] text-white/30 select-none">
-              <span>Search projects, experience, applications, and documents</span>
+              <span>
+                Search projects, experience, applications, and documents
+              </span>
               <div className="flex space-x-3">
                 <span>↑↓ to navigate</span>
                 <span>↵ to open</span>
