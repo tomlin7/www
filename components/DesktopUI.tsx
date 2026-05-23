@@ -11,8 +11,7 @@ import { useWebHaptics } from "web-haptics/react";
 
 import {
   ProfileWindowContent,
-  ExperienceWindowContent,
-  ProjectsWindowContent,
+  FinderWindowContent,
   finderMenuItems,
   fileMenuItems,
   editMenuItems,
@@ -44,26 +43,24 @@ export default function DesktopUI() {
 
   const [clockText, setClockText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [finderPath, setFinderPath] = useState("documents");
   const [activeWindow, setActiveWindow] = useState("profile");
   const [zIndexMap, setZIndexMap] = useState<Record<string, number>>({
     profile: 40,
-    projects: 39,
-    experience: 38,
-    resume: 37,
+    finder: 39,
+    resume: 38,
   });
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({
     profile: true,
-    projects: false,
-    experience: false,
+    finder: false,
     resume: false,
   });
   const [minimizedWindows, setMinimizedWindows] = useState<
     Record<string, boolean>
   >({
     profile: false,
-    projects: false,
-    experience: false,
+    finder: false,
     resume: false,
   });
   const zCounter = useRef(40);
@@ -165,6 +162,11 @@ export default function DesktopUI() {
     },
     [trigger],
   );
+
+  const openFinder = useCallback((dir: string) => {
+    setFinderPath(`${dir}?t=${Date.now()}`);
+    activateWindow("finder");
+  }, [activateWindow]);
 
   const closeWindow = (id: string) => {
     trigger("nudge");
@@ -332,7 +334,7 @@ export default function DesktopUI() {
             <DesktopFolder
               label="projects"
               initialPos={{ top: "12%", left: "82%" }}
-              onDoubleClick={() => activateWindow("projects")}
+              onDoubleClick={() => openFinder("projects")}
             />
             <DesktopFolder
               label="about me"
@@ -342,7 +344,7 @@ export default function DesktopUI() {
             <DesktopFolder
               label="experience"
               initialPos={{ top: "12%", left: "42%" }}
-              onDoubleClick={() => activateWindow("experience")}
+              onDoubleClick={() => openFinder("experience")}
             />
             <DesktopFolder
               label="resume"
@@ -368,39 +370,21 @@ export default function DesktopUI() {
               </DraggableWindow>
             )}
 
-            {/* Experience Window */}
-            {openWindows["experience"] && !minimizedWindows["experience"] && (
+            {/* Finder Window */}
+            {openWindows["finder"] && !minimizedWindows["finder"] && (
               <DraggableWindow
-                id="win-experience"
-                initialPos={{ x: 160, y: 110 }}
-                width="w-[800px]"
-                zIndex={zIndexMap["experience"]}
-                isActive={activeWindow === "experience"}
-                onActivate={() => activateWindow("experience")}
-                onClose={() => closeWindow("experience")}
-                onMinimize={() => minimizeWindow("experience")}
-                title="experience"
-                headerBg="bg-[#1c1c1e] border-b border-white/5"
-              >
-                <ExperienceWindowContent />
-              </DraggableWindow>
-            )}
-
-            {/* Projects Window */}
-            {openWindows["projects"] && !minimizedWindows["projects"] && (
-              <DraggableWindow
-                id="win-projects"
-                initialPos={{ x: 280, y: 140 }}
-                width="w-[850px]"
-                zIndex={zIndexMap["projects"]}
-                isActive={activeWindow === "projects"}
-                onActivate={() => activateWindow("projects")}
-                onClose={() => closeWindow("projects")}
-                onMinimize={() => minimizeWindow("projects")}
-                title="Projects"
+                id="win-finder"
+                initialPos={{ x: 200, y: 100 }}
+                width="w-[980px]"
+                zIndex={zIndexMap["finder"]}
+                isActive={activeWindow === "finder"}
+                onActivate={() => activateWindow("finder")}
+                onClose={() => closeWindow("finder")}
+                onMinimize={() => minimizeWindow("finder")}
+                title="Finder"
                 headerBg="bg-[#2a2a2c] border-b border-[#1c1c1e]"
               >
-                <ProjectsWindowContent searchQuery={searchQuery} />
+                <FinderWindowContent initialDir={finderPath} onOpenWindow={activateWindow} />
               </DraggableWindow>
             )}
 
@@ -430,8 +414,8 @@ export default function DesktopUI() {
           <Dock>
             <DockItem
               tooltip="Finder"
-              dot={openWindows["projects"]}
-              onClick={() => activateWindow("projects")}
+              dot={openWindows["finder"]}
+              onClick={() => openFinder("documents")}
             >
               <img
                 src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853981255cc36b3a37af_finder.png"
@@ -441,8 +425,8 @@ export default function DesktopUI() {
             </DockItem>
             <DockItem
               tooltip="Experience"
-              dot={openWindows["experience"]}
-              onClick={() => activateWindow("experience")}
+              dot={openWindows["finder"] && finderPath.split("?")[0] === "experience"}
+              onClick={() => openFinder("experience")}
             >
               <img
                 src="https://res.cloudinary.com/dwmxbkhch/image/upload/v1779539038/57d2b9d8-8847-4b3a-9812-56f1c213d284_ybzjtn.png"
