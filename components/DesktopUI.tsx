@@ -375,7 +375,7 @@ export default function DesktopUI() {
               <DraggableWindow
                 id="win-finder"
                 initialPos={{ x: 200, y: 100 }}
-                width="w-[980px]"
+                width="w-[1200px]"
                 zIndex={zIndexMap["finder"]}
                 isActive={activeWindow === "finder"}
                 onActivate={() => activateWindow("finder")}
