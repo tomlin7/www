@@ -4,14 +4,14 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 
 export const TrafficLights = ({ onClose, onMinimize, onMaximize }: { onClose?: () => void, onMinimize?: () => void, onMaximize?: () => void }) => (
   <div className="flex space-x-2 w-20">
-    <button onClick={onClose} className="traffic-light tl-red hover:opacity-80 transition-opacity flex items-center justify-center group">
-      <span className="opacity-0 group-hover:opacity-100 text-[8px] text-gray-800/60 font-bold leading-none">×</span>
+    <button onClick={onClose} className="traffic-light tl-red hover:opacity-80 transition-opacity flex items-center justify-center group cursor-pointer">
+      <span className="opacity-0 group-hover:opacity-100 text-[8px] text-black/60 font-bold leading-none">×</span>
     </button>
-    <button onClick={onMinimize} className="traffic-light tl-yellow hover:opacity-80 transition-opacity flex items-center justify-center group">
-      <span className="opacity-0 group-hover:opacity-100 text-[10px] text-gray-800/60 font-bold leading-none">−</span>
+    <button onClick={onMinimize} className="traffic-light tl-yellow hover:opacity-80 transition-opacity flex items-center justify-center group cursor-pointer">
+      <span className="opacity-0 group-hover:opacity-100 text-[10px] text-black/60 font-bold leading-none">−</span>
     </button>
-    <button onClick={onMaximize} className="traffic-light tl-green hover:opacity-80 transition-opacity flex items-center justify-center group">
-      <span className="opacity-0 group-hover:opacity-100 text-[7px] text-gray-800/60 font-bold leading-none">+</span>
+    <button onClick={onMaximize} className="traffic-light tl-green hover:opacity-80 transition-opacity flex items-center justify-center group cursor-pointer">
+      <span className="opacity-0 group-hover:opacity-100 text-[7px] text-black/60 font-bold leading-none">+</span>
     </button>
   </div>
 );
@@ -31,6 +31,7 @@ interface WindowProps {
   titleIcon?: React.ReactNode;
   headerRight?: React.ReactNode;
   headerCenter?: React.ReactNode;
+  headerBg?: string;
 }
 
 export const DraggableWindow = ({
@@ -47,7 +48,8 @@ export const DraggableWindow = ({
   title,
   titleIcon,
   headerRight,
-  headerCenter
+  headerCenter,
+  headerBg
 }: WindowProps) => {
   const isDragging = useRef(false);
   const dragOffset = useRef({ x: 0, y: 0 });
@@ -101,13 +103,13 @@ export const DraggableWindow = ({
   return (
     <div
       id={id}
-      className={`mac-window glass-darker overflow-hidden ${isMaximized ? '' : `${width} rounded-xl`} ${isActive ? 'active' : ''} ${className || ''}`}
+      className={`mac-window overflow-hidden border border-[#3a3a3c] shadow-2xl ${isMaximized ? '' : `${width} rounded-xl`} ${isActive ? 'active border-[#4a4a4c]' : ''} ${className || 'bg-[#1c1c1e]'}`}
       style={windowStyle}
       onMouseDown={onActivate}
     >
-      <div className={`window-header h-12 flex items-center px-4 border-b border-gray-200/50 ${isMaximized ? '' : 'cursor-move'}`} onMouseDown={handleMouseDown}>
+      <div className={`window-header h-12 flex items-center px-4 ${headerBg || 'bg-[#1c1c1e] border-b border-white/5'} ${isMaximized ? '' : 'cursor-move'}`} onMouseDown={handleMouseDown}>
         <TrafficLights onClose={onClose} onMinimize={onMinimize} onMaximize={toggleMaximize} />
-        <div className="flex-1 text-center text-sm font-semibold text-gray-700 select-none flex items-center justify-center space-x-2">
+        <div className="flex-1 text-center text-sm font-semibold text-white/80 select-none flex items-center justify-center space-x-2">
           {headerCenter || (
             <>
               <div className="flex items-center space-x-2">

@@ -79,7 +79,7 @@ export const DockItem = ({
         </div>
       </motion.div>
       {dot && (
-        <div className="w-1.5 h-1.5 bg-black/60 dark:bg-white/60 rounded-full absolute -bottom-3 left-1/2 -translate-x-1/2 transition-opacity duration-300"></div>
+        <div className="w-1.5 h-1.5 bg-white/80 rounded-full absolute -bottom-3 left-1/2 -translate-x-1/2 transition-opacity duration-300"></div>
       )}
     </div>
   );
@@ -106,9 +106,9 @@ export const Dock = ({ children }: { children: React.ReactNode }) => {
           if (React.isValidElement(child)) {
             const props = child.props as any;
             // Check for separators or generic divs
-            if (typeof child.type === 'string' && child.type === 'div' && props.className?.includes('bg-black/10')) {
+            if (typeof child.type === 'string' && child.type === 'div' && (props.className?.includes('bg-black/10') || props.className?.includes('bg-white/10'))) {
               return (
-                <div key="sep" className="h-10 w-[1.5px] bg-black/15 mx-1.5 self-center rounded-full opacity-60" />
+                <div key="sep" className="h-10 w-[1.5px] bg-white/20 mx-1.5 self-center rounded-full opacity-60" />
               );
             }
             // Inject mouseX into DockItem components
