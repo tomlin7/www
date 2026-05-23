@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import { cn } from "@/lib/utils";
 import {
@@ -42,7 +42,13 @@ import { useWebHaptics } from "web-haptics/react";
 
 export type KeyboardEventSource = "physical" | "pointer";
 export type KeyboardEventPhase = "down" | "up";
-export type KeyboardThemeName = "classic" | "mint" | "royal" | "dolch" | "sand" | "scarlet";
+export type KeyboardThemeName =
+  | "classic"
+  | "mint"
+  | "royal"
+  | "dolch"
+  | "sand"
+  | "scarlet";
 
 export interface KeyboardInteractionEvent {
   code: string;
@@ -193,7 +199,9 @@ function KeyboardProvider({
       }
 
       const soundDef =
-        phase === "down" ? SOUND_DEFINES_DOWN[keyCode] : SOUND_DEFINES_UP[keyCode];
+        phase === "down"
+          ? SOUND_DEFINES_DOWN[keyCode]
+          : SOUND_DEFINES_UP[keyCode];
       if (!soundDef) {
         return;
       }
@@ -224,9 +232,7 @@ function KeyboardProvider({
       return;
     }
 
-    void trigger([
-      { duration: 25 },
-    ], { intensity: 0.7 })
+    void trigger([{ duration: 25 }], { intensity: 0.7 });
   }, [enableHaptics, trigger]);
 
   const pressKey = useCallback(
@@ -374,9 +380,7 @@ function KeyboardLayout() {
         <div className="bg-black/80 border border-black rounded-[5px] rounded-t-[8px] h-[278px]">
           <div className="-space-y-1 -translate-y-1 rounded-[5px] overflow-hidden">
             <Row>
-              <Key keyCode={KEYCODE.Escape}>
-                {"esc"}
-              </Key>
+              <Key keyCode={KEYCODE.Escape}>{"esc"}</Key>
 
               <Key keyCode={KEYCODE.F1}>
                 <IconBrightnessDown className="size-[10px]" />
@@ -432,9 +436,7 @@ function KeyboardLayout() {
               <Key keyCode={KEYCODE.F13}>
                 <IconFrame className="size-[10px]" />
               </Key>
-              <Key keyCode={KEYCODE.Delete}>
-                {"del"}
-              </Key>
+              <Key keyCode={KEYCODE.Delete}>{"del"}</Key>
               <Key keyCode={KEYCODE.F14}>
                 <IconBulb className="size-[12px]" />
               </Key>
@@ -500,9 +502,7 @@ function KeyboardLayout() {
               <Key keyCode={KEYCODE.Backspace} width={100}>
                 <IconArrowNarrowLeft className="size-[12px]" />
               </Key>
-              <Key keyCode={KEYCODE.PageUp}>
-                {"pgup"}
-              </Key>
+              <Key keyCode={KEYCODE.PageUp}>{"pgup"}</Key>
             </Row>
 
             <Row>
@@ -535,9 +535,7 @@ function KeyboardLayout() {
                 <span>{"|"}</span>
                 <span>{"\\"}</span>
               </Key>
-              <Key keyCode={KEYCODE.PageDown}>
-                {"pgdn"}
-              </Key>
+              <Key keyCode={KEYCODE.PageDown}>{"pgdn"}</Key>
             </Row>
 
             <Row>
@@ -561,16 +559,14 @@ function KeyboardLayout() {
                 <span>{";"}</span>
               </Key>
               <Key keyCode={KEYCODE.Quote}>
-                <span>{"\""}</span>
+                <span>{'"'}</span>
                 <span>{"'"}</span>
               </Key>
 
               <Key keyCode={KEYCODE.Enter} width={100}>
                 {"return"}
               </Key>
-              <Key keyCode={KEYCODE.Home}>
-                {"home"}
-              </Key>
+              <Key keyCode={KEYCODE.Home}>{"home"}</Key>
             </Row>
 
             <Row>
@@ -606,9 +602,7 @@ function KeyboardLayout() {
               <Key keyCode={KEYCODE.ArrowUp}>
                 <IconChevronUp className="size-[12px]" />
               </Key>
-              <Key keyCode={KEYCODE.End}>
-                {"end"}
-              </Key>
+              <Key keyCode={KEYCODE.End}>{"end"}</Key>
             </Row>
 
             <Row>
@@ -627,12 +621,8 @@ function KeyboardLayout() {
               <Key keyCode={KEYCODE.MetaRight}>
                 <IconCommand className="size-[12px]" />
               </Key>
-              <Key keyCode={KEYCODE.Fn}>
-                {"fn"}
-              </Key>
-              <Key keyCode={KEYCODE.ControlRight}>
-                {"ctrl"}
-              </Key>
+              <Key keyCode={KEYCODE.Fn}>{"fn"}</Key>
+              <Key keyCode={KEYCODE.ControlRight}>{"ctrl"}</Key>
               <Key keyCode={KEYCODE.ArrowLeft}>
                 <IconChevronLeft className="size-[12px]" />
               </Key>
@@ -661,13 +651,9 @@ interface KeyProps {
   keyCode?: KEYCODE;
 }
 
-function Key({
-  width = 50,
-  children,
-  className,
-  keyCode,
-}: KeyProps) {
-  const { themeName, pressedKeys, pressKey, releaseKey, triggerPointerHaptic } = useKeyboardContext();
+function Key({ width = 50, children, className, keyCode }: KeyProps) {
+  const { themeName, pressedKeys, pressKey, releaseKey, triggerPointerHaptic } =
+    useKeyboardContext();
   const isPressed = keyCode ? pressedKeys.has(keyCode) : false;
   const keyVariantSlot = resolveKeyVariant(themeName, keyCode);
   const keyVariant = KEYBOARD_THEMES[themeName].variants[keyVariantSlot];
@@ -935,7 +921,7 @@ const KEYBOARD_THEMES: Record<KeyboardThemeName, KeyboardThemeDefinition> = {
         KEYCODE.ArrowLeft,
         KEYCODE.ArrowRight,
         KEYCODE.ArrowUp,
-        KEYCODE.ArrowDown
+        KEYCODE.ArrowDown,
       ],
       dark: MINT_DARK_KEYS,
     }),
@@ -953,7 +939,7 @@ const KEYBOARD_THEMES: Record<KeyboardThemeName, KeyboardThemeDefinition> = {
         KEYCODE.ArrowLeft,
         KEYCODE.ArrowRight,
         KEYCODE.ArrowUp,
-        KEYCODE.ArrowDown
+        KEYCODE.ArrowDown,
       ],
       dark: MINT_DARK_KEYS,
     }),
@@ -1014,7 +1000,9 @@ function buildKeyVariantOverrides({
     entries.push([keyCode, "light"]);
   }
 
-  return Object.fromEntries(entries) as Partial<Record<KEYCODE, KeyVariantSlot>>;
+  return Object.fromEntries(entries) as Partial<
+    Record<KEYCODE, KeyVariantSlot>
+  >;
 }
 
 function resolveKeyVariant(
@@ -1036,12 +1024,13 @@ function toRgba(color: string, alpha: number): string {
   }
 
   const value = color.slice(1);
-  const hex = value.length === 3
-    ? value
-        .split("")
-        .map((char) => `${char}${char}`)
-        .join("")
-    : value;
+  const hex =
+    value.length === 3
+      ? value
+          .split("")
+          .map((char) => `${char}${char}`)
+          .join("")
+      : value;
 
   if (hex.length !== 6) {
     return color;

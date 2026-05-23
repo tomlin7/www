@@ -15,7 +15,7 @@ export const ControlPanel = ({ isOpen, onClose, children, title }: ControlPanelP
   return (
     <>
       <div className="fixed inset-0 z-40" onClick={onClose} />
-      <div className="absolute top-full right-0 mt-1 w-72 bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl border border-white/40 p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
+      <div className="absolute top-full right-0 mt-1 w-72 bg-white/90 backdrop-blur-2xl rounded-2xl shadow-2xl p-4 z-50 animate-in fade-in slide-in-from-top-2 duration-200 origin-top-right">
         {title && <h3 className="text-[13px] font-bold text-gray-500 mb-3 px-1 uppercase tracking-wider">{title}</h3>}
         {children}
       </div>
