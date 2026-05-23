@@ -268,7 +268,7 @@ const TECH_ICONS: Record<string, { url: string; invert?: boolean }> = {
   },
 };
 
-interface Project {
+export interface Project {
   id: string;
   title: string;
   subtitle: string;
@@ -286,7 +286,7 @@ interface Project {
   dateModified: string;
 }
 
-const allProjectsList: Project[] = [
+export const allProjectsList: Project[] = [
   {
     id: "ted",
     title: "ted",
@@ -700,7 +700,7 @@ const allProjectsList: Project[] = [
   },
 ];
 
-interface Experience {
+export interface Experience {
   id: string;
   title: string;
   company: string;
@@ -711,7 +711,7 @@ interface Experience {
   dateModified: string;
 }
 
-const allExperiencesList: Experience[] = [
+export const allExperiencesList: Experience[] = [
   {
     id: "exp_morvion",
     title: "Software Engineer Intern",
@@ -1207,9 +1207,11 @@ interface FinderItem {
 export const FinderWindowContent = ({
   initialDir,
   onOpenWindow,
+  selectedId,
 }: {
   initialDir?: string;
   onOpenWindow?: (id: string) => void;
+  selectedId?: string | null;
 }) => {
   const [currentDir, setCurrentDir] = useState<string>("documents");
   const [history, setHistory] = useState<string[]>(["documents"]);
@@ -1392,6 +1394,23 @@ export const FinderWindowContent = ({
       navigateToDir(cleanDir);
     }
   }, [initialDir]);
+
+  // Track deep-linked item selection from Spotlight
+  useEffect(() => {
+    if (selectedId) {
+      let foundDir: string | null = null;
+      for (const [dir, files] of Object.entries(dirFiles)) {
+        if (files.some((f) => f.id === selectedId)) {
+          foundDir = dir;
+          break;
+        }
+      }
+      if (foundDir) {
+        navigateToDir(foundDir);
+        setSelectedItemId(selectedId);
+      }
+    }
+  }, [selectedId, dirFiles]);
 
   // Navigate helper
   const navigateToDir = (dir: string, pushHistory = true) => {

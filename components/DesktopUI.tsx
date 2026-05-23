@@ -18,6 +18,8 @@ import {
   viewMenuItems,
   windowMenuItems,
   helpMenuItems,
+  allProjectsList,
+  allExperiencesList,
 } from "./portfolio-data";
 
 import {
@@ -31,6 +33,15 @@ import {
   IconBattery4,
   IconBatterySpark,
   IconBatteryCharging,
+  IconSearch,
+  IconTerminal,
+  IconCpu,
+  IconDeviceDesktop,
+  IconBriefcase,
+  IconFileText,
+  IconFolder,
+  IconSettings,
+  IconUser,
 } from "@tabler/icons-react";
 
 const WifiIcon = () => <IconWifi className="w-5 h-5 text-white" />;
@@ -44,6 +55,7 @@ export default function DesktopUI() {
   const [clockText, setClockText] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [finderPath, setFinderPath] = useState("documents");
+  const [finderSelectedId, setFinderSelectedId] = useState<string | null>(null);
   const [activeWindow, setActiveWindow] = useState("profile");
   const [zIndexMap, setZIndexMap] = useState<Record<string, number>>({
     profile: 40,
@@ -64,6 +76,12 @@ export default function DesktopUI() {
     resume: false,
   });
   const zCounter = useRef(40);
+
+  // Spotlight search states
+  const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
+  const [spotlightQuery, setSpotlightQuery] = useState("");
+  const [spotlightSelectedIndex, setSpotlightSelectedIndex] = useState(0);
+  const spotlightInputRef = useRef<HTMLInputElement>(null);
 
   // Preloading States
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -163,7 +181,8 @@ export default function DesktopUI() {
     [trigger],
   );
 
-  const openFinder = useCallback((dir: string) => {
+  const openFinder = useCallback((dir: string, selectId?: string | null) => {
+    setFinderSelectedId(selectId || null);
     setFinderPath(`${dir}?t=${Date.now()}`);
     activateWindow("finder");
   }, [activateWindow]);
@@ -177,6 +196,199 @@ export default function DesktopUI() {
     trigger("nudge");
     setMinimizedWindows((prev) => ({ ...prev, [id]: true }));
   };
+
+  // Calculate Spotlight Results
+  const getSpotlightResults = useCallback(() => {
+    if (!spotlightQuery.trim()) return [];
+
+    const query = spotlightQuery.toLowerCase().trim();
+    const results: Array<{
+      id: string;
+      name: string;
+      category: "Applications" | "Projects" | "Experience" | "Documents";
+      kind: string;
+      icon: React.ReactNode;
+      onSelect: () => void;
+    }> = [];
+
+    // 1. Applications
+    const apps = [
+      {
+        id: "app_settings",
+        name: "System Settings.app",
+        category: "Applications" as const,
+        kind: "Application",
+        icon: <IconSettings className="w-4 h-4 text-gray-400" />,
+        onSelect: () => {
+          activateWindow("profile");
+        },
+      },
+      {
+        id: "app_finder",
+        name: "Finder.app",
+        category: "Applications" as const,
+        kind: "Application",
+        icon: <IconFolder className="w-4 h-4 text-blue-400" />,
+        onSelect: () => {
+          openFinder("documents");
+        },
+      },
+      {
+        id: "app_resume",
+        name: "Resume.pdf",
+        category: "Applications" as const,
+        kind: "Document",
+        icon: <IconFileText className="w-4 h-4 text-red-500" />,
+        onSelect: () => {
+          activateWindow("resume");
+        },
+      },
+    ];
+
+    apps.forEach((app) => {
+      if (app.name.toLowerCase().includes(query) || app.kind.toLowerCase().includes(query)) {
+        results.push(app);
+      }
+    });
+
+    // 2. Projects
+    allProjectsList.forEach((proj) => {
+      const match =
+        proj.title.toLowerCase().includes(query) ||
+        proj.subtitle.toLowerCase().includes(query) ||
+        proj.description.toLowerCase().includes(query) ||
+        proj.technologies.some((t) => t.toLowerCase().includes(query));
+
+      if (match) {
+        let iconColorClass = "text-blue-400";
+        let iconElement = <IconDeviceDesktop className="w-4 h-4" />;
+        if (proj.category === "ai-agents") {
+          iconColorClass = "text-purple-400";
+          iconElement = <IconCpu className="w-4 h-4" />;
+        } else if (proj.category === "systems-languages") {
+          iconColorClass = "text-orange-400";
+          iconElement = <IconTerminal className="w-4 h-4" />;
+        }
+
+        results.push({
+          id: proj.id,
+          name: `${proj.title}.app`,
+          category: "Projects" as const,
+          kind: proj.category === "ai-agents" ? "AI Agent" : proj.category === "systems-languages" ? "Systems App" : "Web App",
+          icon: <div className={`w-4 h-4 flex items-center justify-center ${iconColorClass}`}>{iconElement}</div>,
+          onSelect: () => {
+            openFinder("projects", proj.id);
+          },
+        });
+      }
+    });
+
+    // 3. Experience
+    allExperiencesList.forEach((exp) => {
+      const match =
+        exp.company.toLowerCase().includes(query) ||
+        exp.role.toLowerCase().includes(query) ||
+        exp.location.toLowerCase().includes(query) ||
+        exp.period.toLowerCase().includes(query) ||
+        exp.bullets.some((b) => b.toLowerCase().includes(query));
+
+      if (match) {
+        results.push({
+          id: exp.id,
+          name: `${exp.company}.job`,
+          category: "Experience" as const,
+          kind: "Document",
+          icon: <IconBriefcase className="w-4 h-4 text-green-400" />,
+          onSelect: () => {
+            openFinder("experience", exp.id);
+          },
+        });
+      }
+    });
+
+    // 4. Desktop Files
+    const desktopFiles = [
+      {
+        id: "file_welcome",
+        name: "Welcome.txt",
+        category: "Documents" as const,
+        kind: "Document",
+        icon: <IconFileText className="w-4 h-4 text-gray-300" />,
+        onSelect: () => {
+          openFinder("desktop", "file_welcome");
+        },
+      },
+    ];
+
+    desktopFiles.forEach((file) => {
+      if (file.name.toLowerCase().includes(query) || file.kind.toLowerCase().includes(query)) {
+        results.push(file);
+      }
+    });
+
+    return results;
+  }, [spotlightQuery, activateWindow, openFinder]);
+
+  // Spotlight keyboard toggles and list navigation keys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Toggle on Cmd + Space or Ctrl + Space
+      const isSpace = e.key === " " || e.code === "Space";
+      const isModifier = e.metaKey || e.ctrlKey;
+      
+      if (isModifier && isSpace) {
+        e.preventDefault();
+        setIsSpotlightOpen((prev) => {
+          const next = !prev;
+          if (next) {
+            setSpotlightQuery("");
+            setSpotlightSelectedIndex(0);
+          }
+          return next;
+        });
+        return;
+      }
+
+      if (!isSpotlightOpen) return;
+
+      const results = getSpotlightResults();
+
+      if (e.key === "Escape") {
+        e.preventDefault();
+        setIsSpotlightOpen(false);
+      } else if (e.key === "ArrowDown") {
+        e.preventDefault();
+        if (results.length > 0) {
+          setSpotlightSelectedIndex((prev) => (prev + 1) % results.length);
+        }
+      } else if (e.key === "ArrowUp") {
+        e.preventDefault();
+        if (results.length > 0) {
+          setSpotlightSelectedIndex((prev) => (prev - 1 + results.length) % results.length);
+        }
+      } else if (e.key === "Enter") {
+        e.preventDefault();
+        if (results.length > 0 && results[spotlightSelectedIndex]) {
+          trigger?.("success");
+          results[spotlightSelectedIndex].onSelect();
+          setIsSpotlightOpen(false);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isSpotlightOpen, spotlightSelectedIndex, getSpotlightResults, trigger]);
+
+  // Autofocus input when Spotlight is opened
+  useEffect(() => {
+    if (isSpotlightOpen) {
+      const timer = setTimeout(() => {
+        spotlightInputRef.current?.focus();
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isSpotlightOpen]);
 
   if (!bootCompleted) {
     return (
@@ -384,7 +596,11 @@ export default function DesktopUI() {
                 title="Finder"
                 headerBg="bg-[#2a2a2c] border-b border-[#1c1c1e]"
               >
-                <FinderWindowContent initialDir={finderPath} onOpenWindow={activateWindow} />
+                <FinderWindowContent
+                  initialDir={finderPath}
+                  onOpenWindow={activateWindow}
+                  selectedId={finderSelectedId}
+                />
               </DraggableWindow>
             )}
 
@@ -424,15 +640,16 @@ export default function DesktopUI() {
               />
             </DockItem>
             <DockItem
-              tooltip="Experience"
-              dot={openWindows["finder"] && finderPath.split("?")[0] === "experience"}
-              onClick={() => openFinder("experience")}
+              tooltip="Spotlight Search"
+              dot={isSpotlightOpen}
+              onClick={() => {
+                trigger("nudge");
+                setIsSpotlightOpen(!isSpotlightOpen);
+              }}
             >
-              <img
-                src="https://res.cloudinary.com/dwmxbkhch/image/upload/v1779539038/57d2b9d8-8847-4b3a-9812-56f1c213d284_ybzjtn.png"
-                alt="Launchpad"
-                className="w-full h-full object-contain"
-              />
+              <div className="w-full h-full rounded-xl bg-gradient-to-tr from-sky-500 via-blue-600 to-indigo-500 flex items-center justify-center text-white shadow-inner">
+                <IconSearch className="w-6 h-6 stroke-[2.5]" />
+              </div>
             </DockItem>
             <DockItem
               tooltip="System Info"
@@ -481,6 +698,120 @@ export default function DesktopUI() {
           </Dock>
         </div>
       </div>
+
+      {/* Spotlight Search Overlay */}
+      {isSpotlightOpen && (
+        <div 
+          className="absolute inset-0 bg-transparent z-[99999]"
+          onClick={() => setIsSpotlightOpen(false)}
+        >
+          <div 
+            className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[600px] rounded-xl glass-darker shadow-2xl overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Search Input Box */}
+            <div className="flex items-center px-4 py-3.5 border-b border-white/10">
+              <IconSearch className="w-5 h-5 text-white/40 shrink-0 mr-3" />
+              <input
+                ref={spotlightInputRef}
+                type="text"
+                value={spotlightQuery}
+                onChange={(e) => {
+                  setSpotlightQuery(e.target.value);
+                  setSpotlightSelectedIndex(0);
+                }}
+                placeholder="Spotlight Search"
+                className="w-full bg-transparent border-none text-white placeholder-white/35 focus:outline-none text-[15px] font-normal"
+              />
+            </div>
+
+            {/* Search Results Display */}
+            {spotlightQuery.trim() !== "" ? (() => {
+              const results = getSpotlightResults();
+              if (results.length === 0) {
+                return (
+                  <div className="py-8 text-center text-white/30 text-xs select-none">
+                    No results found for "{spotlightQuery}"
+                  </div>
+                );
+              }
+
+              const groups: Record<string, typeof results> = {};
+              results.forEach((item) => {
+                if (!groups[item.category]) {
+                  groups[item.category] = [];
+                }
+                groups[item.category].push(item);
+              });
+
+              let flatIndex = 0;
+
+              return (
+                <div className="max-h-[350px] overflow-y-auto custom-scrollbar p-2 space-y-3">
+                  {Object.entries(groups).map(([category, items]) => (
+                    <div key={category} className="space-y-1">
+                      <div className="px-3 py-1 text-[9.5px] font-semibold text-white/40 uppercase tracking-widest select-none">
+                        {category}
+                      </div>
+                      <div className="space-y-0.5">
+                        {items.map((item) => {
+                          const currentFlatIndex = flatIndex++;
+                          const isSelected = spotlightSelectedIndex === currentFlatIndex;
+
+                          return (
+                            <div
+                              key={item.id}
+                              onMouseEnter={() => setSpotlightSelectedIndex(currentFlatIndex)}
+                              onClick={() => {
+                                trigger?.("success");
+                                item.onSelect();
+                                setIsSpotlightOpen(false);
+                              }}
+                              className={`flex items-center justify-between px-3 py-2 rounded-lg cursor-default select-none transition-colors ${
+                                isSelected 
+                                  ? "bg-[#0a84ff] text-white" 
+                                  : "text-white/90 hover:bg-white/[0.04]"
+                              }`}
+                            >
+                              <div className="flex items-center space-x-3 min-w-0">
+                                <div className={`${isSelected ? "text-white" : "text-white/60"} shrink-0`}>
+                                  {item.icon}
+                                </div>
+                                <div className="truncate text-xs font-normal">
+                                  {item.name}
+                                </div>
+                              </div>
+                              <div className={`text-[10px] uppercase font-normal select-none ${
+                                isSelected ? "text-white/70" : "text-white/35"
+                              }`}>
+                                {item.kind}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              );
+            })() : (
+              <div className="py-8 text-center text-white/30 text-xs select-none">
+                Type to search projects, experience, or applications
+              </div>
+            )}
+
+            {/* Spotlight Footer Hint */}
+            <div className="px-4 py-2 bg-black/30 border-t border-white/5 flex items-center justify-between text-[9px] text-white/30 select-none">
+              <span>Search projects, experience, applications, and documents</span>
+              <div className="flex space-x-3">
+                <span>↑↓ to navigate</span>
+                <span>↵ to open</span>
+                <span>esc to close</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
