@@ -1633,6 +1633,42 @@ export const FinderWindowContent = ({
     }
 
     // Job / internship items checks
+    if (item.id === "exp_morvion") {
+      return (
+        <img
+          src="https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304675/morvion_logo_qw4vfy.jpg"
+          alt="Morvion"
+          className="w-10 h-10 object-cover rounded-lg group-hover:scale-105 transition-transform shadow-sm"
+        />
+      );
+    }
+    if (item.id === "exp_hooman") {
+      return (
+        <img
+          src="https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304319/hooman_digital_logo_qdclr3.jpg"
+          alt="Hooman Digital"
+          className="w-10 h-10 object-cover rounded-lg group-hover:scale-105 transition-transform shadow-sm"
+        />
+      );
+    }
+    if (item.id === "exp_nitc") {
+      return (
+        <img
+          src="https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304559/gceknewlogos_glexcj.png"
+          alt="NIT Calicut"
+          className="w-10 h-10 object-cover rounded-lg group-hover:scale-105 transition-transform shadow-sm bg-transparent"
+        />
+      );
+    }
+    if (item.id === "exp_ozi") {
+      return (
+        <img
+          src="https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304733/ozi-logo_2025-10-07-072401_gxyx_fs76wl.png"
+          alt="Ozi"
+          className="w-10 h-10 object-cover rounded-lg group-hover:scale-105 transition-transform shadow-sm"
+        />
+      );
+    }
     if (item.id.startsWith("exp_")) {
       return (
         <div className="w-10 h-10 rounded-xl bg-green-600/10 flex items-center justify-center text-green-400 group-hover:scale-105 transition-transform shadow-inner">
