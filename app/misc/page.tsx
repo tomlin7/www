@@ -40,6 +40,7 @@ const PROFANITY_WORDS = [
   "pussy",
   "cunt",
   "nigger",
+  "nigga",
   "faggot",
   "chink",
   "fuc",
@@ -49,17 +50,20 @@ const PROFANITY_WORDS = [
 ];
 
 const containsProfanity = (text: string) => {
-  const words = text.toLowerCase().split(/[\s,._\-]+/);
+  const words = text
+    .toLowerCase()
+    .split(/[\s,._\-]+/)
+    .filter(Boolean);
+  // Check if any word contains a profane term (or exactly matches one).
+  // Avoid matching short benign words that are substrings of profane words (e.g. "hi" in "shit").
   return words.some((w) =>
-    PROFANITY_WORDS.some((p) => w.includes(p) || p.includes(w)),
+    PROFANITY_WORDS.some((p) => w === p || w.includes(p)),
   );
 };
 
 export default function MiscPage() {
   // --- Env config ---
   const JSONBIN_BIN_ID = process.env.NEXT_PUBLIC_JSONBIN_BIN_ID;
-  const JSONBIN_API_KEY = process.env.NEXT_PUBLIC_JSONBIN_API_KEY;
-
   // --- AI Chat State ---
   const [chatMessages, setChatMessages] = useState<Message[]>([
     {
@@ -84,27 +88,16 @@ export default function MiscPage() {
 
   // --- Initialize Lists ---
   useEffect(() => {
-    // Initialize Local Guestbook
-    const savedSigns = localStorage.getItem("tomlin7_guestbook");
-    if (savedSigns) {
-      setGuestSigns(JSON.parse(savedSigns));
-    } else {
-      const defaults: GuestSign[] = [
-        {
-          id: "1",
-          name: "dheeraj",
-          message: "Feel free to leave a note or sign the book.",
-          timestamp: Date.now() - 3600000 * 24,
-        },
-      ];
-      setGuestSigns(defaults);
-      localStorage.setItem("tomlin7_guestbook", JSON.stringify(defaults));
-    }
-
-    // Load from remote JSONBin if credentials exist in env (API Key is optional for public bins)
-    if (JSONBIN_BIN_ID) {
-      fetchFromJSONBin(JSONBIN_BIN_ID, JSONBIN_API_KEY);
-    }
+    const load = async () => {
+      if (JSONBIN_BIN_ID) {
+        const ok = await fetchFromJSONBin(JSONBIN_BIN_ID);
+        // if (!ok) {
+        //   // fallback to defaults if fetch failed
+        //   setGuestSigns(defaults);
+        // }
+      }
+    };
+    load();
   }, []);
 
   // --- Auto-scroll Chat ---
@@ -118,41 +111,78 @@ export default function MiscPage() {
   }, [chatMessages, isTyping]);
 
   // --- JSONBin Fetching & Syncing ---
-  const fetchFromJSONBin = async (binId: string, binKey?: string) => {
+  const fetchFromJSONBin = async (binId: string) => {
+    console.log("fetchFromJSONBin (proxy) called", { binId });
     try {
-      const headers: HeadersInit = {};
-      if (binKey) {
-        headers["X-Master-Key"] = binKey;
-      }
-      const res = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
-        headers,
-      });
+      const res = await fetch(`/api/jsonbin?bin=${encodeURIComponent(binId)}`);
       if (res.ok) {
         const result = await res.json();
-        const messages = result.record?.messages || result.messages;
-        if (messages) {
+        const messages: GuestSign[] =
+          result.record?.messages ||
+          result.messages ||
+          result.messages ||
+          result.messages ||
+          result.messages ||
+          result.messages ||
+          result;
+        // jsonbin proxy returns the raw response from JSONBin; try to normalize
+        if (Array.isArray(messages)) {
           setGuestSigns(messages);
-          localStorage.setItem("tomlin7_guestbook", JSON.stringify(messages));
+        } else if (
+          result?.record?.messages &&
+          Array.isArray(result.record.messages)
+        ) {
+          setGuestSigns(result.record.messages);
+        } else if (Array.isArray(result.messages)) {
+          setGuestSigns(result.messages);
+        } else {
+          console.warn("Unexpected JSONBin proxy payload:", result);
+          return false;
         }
+      } else {
+        console.warn("JSONBin proxy fetch failed:", res.status, res.statusText);
+        const text = await res.text();
+        console.warn(text);
+        return false;
       }
     } catch (err) {
-      console.error("JSONBin load error:", err);
+      console.error("JSONBin proxy load error:", err);
+      return false;
     }
+
+    return true;
   };
 
-  const syncToJSONBin = async (id: string, key: string, data: GuestSign[]) => {
+  const syncToJSONBin = async (id: string, data: GuestSign[]) => {
     setIsSyncing(true);
+    console.log("syncToJSONBin (proxy) called", {
+      id,
+      count: data.length,
+    });
     try {
-      await fetch(`https://api.jsonbin.io/v3/b/${id}`, {
-        method: "PUT",
+      const res = await fetch(`/api/jsonbin`, {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-Master-Key": key,
         },
-        body: JSON.stringify({ messages: data }),
+        body: JSON.stringify({ bin: id, messages: data }),
       });
+      if (!res.ok) {
+        const text = await res.text();
+        console.warn(
+          "JSONBin proxy sync failed:",
+          res.status,
+          res.statusText,
+          text,
+        );
+        return false;
+      } else {
+        console.log("JSONBin proxy sync success");
+        return true;
+      }
     } catch (err) {
-      console.error("JSONBin sync error:", err);
+      console.error("JSONBin proxy sync error:", err);
+      return false;
     } finally {
       setIsSyncing(false);
     }
@@ -253,7 +283,7 @@ export default function MiscPage() {
   };
 
   // --- Guestbook Logic ---
-  const handleGuestSubmit = (e: React.FormEvent) => {
+  const handleGuestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSignError("");
     setSignSuccess(false);
@@ -290,15 +320,15 @@ export default function MiscPage() {
 
     const updated = [newSign, ...guestSigns];
     setGuestSigns(updated);
-    localStorage.setItem("tomlin7_guestbook", JSON.stringify(updated));
 
     setSignName("");
     setSignMessage("");
     setSignSuccess(true);
 
-    // Sync to remote JSONBin if env variables are available
-    if (JSONBIN_BIN_ID && JSONBIN_API_KEY) {
-      syncToJSONBin(JSONBIN_BIN_ID, JSONBIN_API_KEY, updated);
+    console.log("syncing to JSONBin...");
+    const ok = await syncToJSONBin(JSONBIN_BIN_ID, updated);
+    if (!ok) {
+      setSignError("Failed to sync to remote bin. See console for details.");
     }
 
     setTimeout(() => setSignSuccess(false), 2000);

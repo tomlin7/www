@@ -1,12 +1,13 @@
-'use strict';
+"use strict";
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from "react";
 
 export const FolderIcon = () => (
-  <svg className="w-16 h-16 drop-shadow-sm select-none" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M43.75 18.75H12.5C9.05 18.75 6.25 21.55 6.25 25V75C6.25 78.45 9.05 81.25 12.5 81.25H87.5C90.95 81.25 93.75 78.45 93.75 75V31.25C93.75 27.8 90.95 25 87.5 25H50L43.75 18.75Z" fill="#75C3FF" />
-    <path d="M43.75 18.75H12.5C9.05 18.75 6.25 21.55 6.25 25V31.25H93.75V31.25C93.75 27.8 90.95 25 87.5 25H50L43.75 18.75Z" fill="#50A8FF" />
-  </svg>
+  <img
+    src="https://res.cloudinary.com/dwmxbkhch/image/upload/v1779537170/folder-icon-macos_dl98vf.png"
+    alt="Folder Icon"
+    className="w-full h-full drop-shadow-sm select-none"
+  />
 );
 
 interface DesktopFolderProps {
@@ -15,7 +16,11 @@ interface DesktopFolderProps {
   onDoubleClick?: () => void;
 }
 
-export const DesktopFolder = ({ label, initialPos, onDoubleClick }: DesktopFolderProps) => {
+export const DesktopFolder = ({
+  label,
+  initialPos,
+  onDoubleClick,
+}: DesktopFolderProps) => {
   const [flashing, setFlashing] = useState(false);
   const [pos, setPos] = useState(initialPos);
   const isDragging = useRef(false);
@@ -30,7 +35,7 @@ export const DesktopFolder = ({ label, initialPos, onDoubleClick }: DesktopFolde
         x: e.clientX - rect.left,
         y: e.clientY - rect.top,
       };
-      document.body.style.userSelect = 'none';
+      document.body.style.userSelect = "none";
     }
   }, []);
 
@@ -44,13 +49,13 @@ export const DesktopFolder = ({ label, initialPos, onDoubleClick }: DesktopFolde
     };
     const handleMouseUp = () => {
       isDragging.current = false;
-      document.body.style.userSelect = '';
+      document.body.style.userSelect = "";
     };
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     };
   }, []);
 

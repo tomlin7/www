@@ -36,9 +36,7 @@ const RevealScreen = ({
     <motion.div
       initial={false}
       animate={{
-        clipPath: isOpen
-          ? "circle(150% at 100% 100%)"
-          : "circle(0% at 100% 100%)",
+        clipPath: isOpen ? "circle(150% at 100% 0%)" : "circle(0% at 100% 0%)",
       }}
       transition={{
         duration: 1.2,
@@ -47,16 +45,6 @@ const RevealScreen = ({
       className="fixed inset-0 z-[200] bg-[#050505] overflow-hidden select-none"
       style={{ pointerEvents: isOpen ? "auto" : "none" }}
     >
-      <div className="absolute top-10 left-10 z-[250]">
-        <motion.button
-          onClick={onClose}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.9 }}
-          className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-xl hover:bg-white/20 transition-all"
-        >
-          <IconX className="w-5 h-5" stroke={2.5} />
-        </motion.button>
-      </div>
       <div className="w-full h-full bg-black">{isOpen && children}</div>
     </motion.div>
   );
@@ -77,7 +65,8 @@ export default function PortfolioLayout({
   useEffect(() => {
     const handleOpenReveal = () => setShowReveal(true);
     window.addEventListener("open-desktop-reveal", handleOpenReveal);
-    return () => window.removeEventListener("open-desktop-reveal", handleOpenReveal);
+    return () =>
+      window.removeEventListener("open-desktop-reveal", handleOpenReveal);
   }, []);
 
   const { scrollYProgress } = useScroll({
@@ -154,7 +143,11 @@ export default function PortfolioLayout({
                   >
                     <span className="text-white/20">/</span>
                     <span className="text-white/80 font-medium capitalize">
-                      {activeSection === "oss" ? "OSS" : activeSection === "misc" ? "Misc" : activeSection}
+                      {activeSection === "oss"
+                        ? "OSS"
+                        : activeSection === "misc"
+                          ? "Misc"
+                          : activeSection}
                     </span>
                   </motion.div>
                 )}
@@ -359,16 +352,20 @@ export default function PortfolioLayout({
 
         {/* Preserved Peeling Corner */}
         <motion.div
-          onClick={() => setShowReveal(true)}
-          className="fixed bottom-0 right-0 w-24 h-24 pointer-events-auto group z-[200] cursor-pointer overflow-visible"
+          onClick={() => {
+            if (!showReveal) setShowReveal(true);
+          }}
+          className="absolute top-0 right-0 w-24 h-24 pointer-events-auto group z-[200] cursor-pointer overflow-visible"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           whileHover="hover"
         >
           {/* Peeling Corner Corner Dog-Ear */}
           <motion.div
-            className="absolute bottom-0 right-0 w-full h-full bg-white shadow-inner origin-top-left blur"
-            style={{ clipPath: "polygon(100% 0, 0 100%, 100% 100%)" }}
+            className={`absolute top-0 right-0 w-full h-full shadow-inner origin-bottom-left blur transition-colors duration-300 ${
+              showReveal ? "bg-black" : "bg-white"
+            }`}
+            style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%)" }}
             variants={{
               hover: { width: "140%", height: "140%" },
             }}
@@ -377,13 +374,30 @@ export default function PortfolioLayout({
 
           {/* The 'peeled up' triangle pointing towards the center */}
           <motion.div
-            className="absolute bottom-0 right-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent backdrop-blur-xl shadow-[-15px_-15px_40px_rgba(0,0,0,0.6)] origin-bottom-right"
-            style={{ clipPath: "polygon(100% 0, 0 100%, 0 0)" }}
+            className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/20 to-transparent backdrop-blur-xl shadow-[-15px_15px_40px_rgba(0,0,0,0.6)] origin-top-right"
+            style={{ clipPath: "polygon(0 0, 0 100%, 100% 100%)" }}
             variants={{
               hover: { width: "140%", height: "140%", rotate: 0 },
             }}
             transition={{ type: "spring", stiffness: 50, damping: 15 }}
           />
+
+          {/* Moved Close Button inside the Peel */}
+          <AnimatePresence>
+            {showReveal && (
+              <motion.button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowReveal(false);
+                }}
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="absolute bottom-11 left-11 z-[250] w-10 h-10 bg-white/30 backdrop-blur-md rounded-full flex items-center justify-center text-white shadow-xl hover:bg-white/20 transition-all cursor-pointer"
+              >
+                <IconX className="w-5 h-5" stroke={2.5} />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </motion.div>
       </motion.div>
     </div>

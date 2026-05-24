@@ -1,7 +1,15 @@
-'use client';
+"use client";
 
-import React, { useRef, useState } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, MotionValue, useAnimation, useMotionValueEvent } from 'framer-motion';
+import React, { useRef, useState } from "react";
+import {
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  MotionValue,
+  useAnimation,
+  useMotionValueEvent,
+} from "framer-motion";
 
 interface DockItemProps {
   tooltip: string;
@@ -12,13 +20,13 @@ interface DockItemProps {
   shake?: boolean;
 }
 
-export const DockItem = ({ 
-  tooltip, 
-  children, 
+export const DockItem = ({
+  tooltip,
+  children,
   dot,
   onClick,
   mouseX,
-  shake
+  shake,
 }: DockItemProps) => {
   const ref = useRef<HTMLDivElement>(null);
   const controls = useAnimation();
@@ -34,18 +42,18 @@ export const DockItem = ({
 
   // Scale influence range: one element to the left and right (approx 100-120px)
   const scaleSync = useTransform(distance, [-120, 0, 120], [1, 1.7, 1]);
-  const scale = useSpring(scaleSync, { 
-    mass: 0.1, 
-    stiffness: 150, 
-    damping: 12 
+  const scale = useSpring(scaleSync, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
   });
 
   // Subtle Y lift
   const ySync = useTransform(distance, [-120, 0, 120], [0, -12, 0]);
-  const y = useSpring(ySync, { 
-    mass: 0.1, 
-    stiffness: 150, 
-    damping: 12 
+  const y = useSpring(ySync, {
+    mass: 0.1,
+    stiffness: 150,
+    damping: 12,
   });
 
   // Trigger shake when mouse is very close to center
@@ -54,7 +62,7 @@ export const DockItem = ({
       setHasShaken(true);
       controls.start({
         rotate: [0, -5, 5, -5, 5, 0],
-        transition: { duration: 0.4, ease: "easeInOut" }
+        transition: { duration: 0.4, ease: "easeInOut" },
       });
     } else if (Math.abs(latest) > 60) {
       setHasShaken(false);
@@ -62,7 +70,10 @@ export const DockItem = ({
   });
 
   return (
-    <div className="relative flex flex-col items-center justify-end" style={{ width: '44px', height: '44px' }}>
+    <div
+      className="relative flex flex-col items-center justify-end"
+      style={{ width: "44px", height: "44px" }}
+    >
       <motion.div
         ref={ref}
         style={{ scale, y, backfaceVisibility: "hidden" }}
@@ -74,12 +85,15 @@ export const DockItem = ({
           {tooltip}
           <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-black/80 rotate-45" />
         </div>
-        <div className="w-full h-full rounded-[13px] overflow-hidden" style={{ transform: "translateZ(0)" }}>
+        <div
+          className="w-full h-full rounded-[13px] overflow-hidden"
+          style={{ transform: "translateZ(0)" }}
+        >
           {children}
         </div>
       </motion.div>
       {dot && (
-        <div className="w-1.5 h-1.5 bg-black/60 dark:bg-white/60 rounded-full absolute -bottom-3 left-1/2 -translate-x-1/2 transition-opacity duration-300"></div>
+        <div className="w-1.5 h-1.5 bg-white/80 rounded-full absolute -bottom-3 left-1/2 -translate-x-1/2 transition-opacity duration-300"></div>
       )}
     </div>
   );
@@ -90,13 +104,14 @@ export const Dock = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <div className="absolute bottom-6 left-0 right-0 flex justify-center z-50 pointer-events-none">
-      <motion.div 
-        className="glass flex items-end space-x-3 px-4 py-4 rounded-[32px] pointer-events-auto relative shadow-2xl group/dock"
+      <motion.div
+        className="glass backdrop-blur-md flex items-end space-x-3 px-4 py-4 rounded-[32px] pointer-events-auto relative shadow-2xl group/dock"
         onMouseMove={(e) => mouseX.set(e.pageX)}
         onMouseLeave={() => mouseX.set(Infinity)}
-        style={{ 
+        style={{
           // Match the top bar's specific glass tone but with our premium shadows
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05)',
+          boxShadow:
+            "0 25px 50px -12px rgba(0, 0, 0, 0.25), inset 0 1px 1px rgba(255, 255, 255, 0.2), inset 0 0 0 1px rgba(255, 255, 255, 0.05)",
         }}
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -106,9 +121,17 @@ export const Dock = ({ children }: { children: React.ReactNode }) => {
           if (React.isValidElement(child)) {
             const props = child.props as any;
             // Check for separators or generic divs
-            if (typeof child.type === 'string' && child.type === 'div' && props.className?.includes('bg-black/10')) {
+            if (
+              typeof child.type === "string" &&
+              child.type === "div" &&
+              (props.className?.includes("bg-black/10") ||
+                props.className?.includes("bg-white/10"))
+            ) {
               return (
-                <div key="sep" className="h-10 w-[1.5px] bg-black/15 mx-1.5 self-center rounded-full opacity-60" />
+                <div
+                  key="sep"
+                  className="h-10 w-[1.5px] bg-white/20 mx-1.5 self-center rounded-full opacity-60"
+                />
               );
             }
             // Inject mouseX into DockItem components
