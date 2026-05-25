@@ -12,6 +12,7 @@ import {
   SafariHeaderCenter,
   type SafariTab,
 } from "@/components/SafariApp";
+import { IPodContent } from "@/components/iPodApp";
 import { Dock, DockItem } from "@/components/Dock";
 import { DesktopFolder } from "@/components/DesktopIcon";
 import { DropdownMenu } from "@/components/DropdownMenu";
@@ -137,6 +138,7 @@ export default function DesktopUI() {
     resume: 38,
     messages: 37,
     safari: 36,
+    ipod: 35,
   });
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({
@@ -145,6 +147,7 @@ export default function DesktopUI() {
     resume: false,
     messages: false,
     safari: false,
+    ipod: false,
   });
   const [minimizedWindows, setMinimizedWindows] = useState<
     Record<string, boolean>
@@ -154,6 +157,7 @@ export default function DesktopUI() {
     resume: false,
     messages: false,
     safari: false,
+    ipod: false,
   });
   const zCounter = useRef(40);
 
@@ -559,6 +563,10 @@ export default function DesktopUI() {
 
   const openSafari = useCallback(() => {
     activateWindow("safari");
+  }, [activateWindow]);
+
+  const openIPod = useCallback(() => {
+    activateWindow("ipod");
   }, [activateWindow]);
 
   const handleSelectSafariTab = useCallback(
@@ -1316,6 +1324,26 @@ export default function DesktopUI() {
                 />
               </DraggableWindow>
             )}
+
+            {/* iPod Classic Window */}
+            {openWindows["ipod"] && !minimizedWindows["ipod"] && (
+              <DraggableWindow
+                id="win-ipod"
+                initialPos={{ x: 880, y: 80 }}
+                width="w-[280px]"
+                zIndex={zIndexMap["ipod"]}
+                isActive={activeWindow === "ipod"}
+                onActivate={() => activateWindow("ipod")}
+                onClose={() => closeWindow("ipod")}
+                onMinimize={() => minimizeWindow("ipod")}
+                title=""
+                className="!bg-transparent !border-0 !shadow-none !rounded-[22px] overflow-hidden"
+                headerBg="!bg-gradient-to-b from-[#d8d8d8] to-[#c4c4c4] h-10 flex items-center px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
+              >
+                <IPodContent />
+              </DraggableWindow>
+            )}
+
           </main>
 
           {/* Dock */}
@@ -1385,6 +1413,17 @@ export default function DesktopUI() {
               <img
                 src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853a55558a68e192ee08_messages.png"
                 alt="Messages"
+                className="w-full h-full object-contain"
+              />
+            </DockItem>
+            <DockItem
+              tooltip="iPod"
+              dot={openWindows["ipod"]}
+              onClick={openIPod}
+            >
+              <img
+                src="https://res.cloudinary.com/dwmxbkhch/image/upload/v1779574549/7249f1e1-9187-4034-8a90-01d795ee9039_x5usto.png"
+                alt="iPod"
                 className="w-full h-full object-contain"
               />
             </DockItem>
