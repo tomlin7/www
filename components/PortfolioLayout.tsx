@@ -355,7 +355,9 @@ export default function PortfolioLayout({
           onClick={() => {
             if (!showReveal) setShowReveal(true);
           }}
-          className="absolute top-0 right-0 w-24 h-24 pointer-events-auto group z-[200] cursor-pointer overflow-visible"
+          className={`${
+            showReveal ? "fixed z-[250]" : "absolute z-[200]"
+          } top-0 right-0 w-24 h-24 pointer-events-auto group cursor-pointer overflow-visible`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           whileHover="hover"
