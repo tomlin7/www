@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   IconPlayerPlay,
   IconPlayerPause,
@@ -11,33 +11,71 @@ import {
 /* ─────────────────────────────── Data ─────────────────────────────── */
 
 const TRACKS = [
-  { id: 1, title: "One More Time",           artist: "Daft Punk",                  album: "Discovery",              duration: 320, h: 220, s: 80 },
-  { id: 2, title: "Around the World",         artist: "Daft Punk",                  album: "Homework",               duration: 429, h: 10,  s: 90 },
-  { id: 3, title: "Get Lucky",               artist: "Daft Punk ft. Pharrell",      album: "Random Access Memories", duration: 368, h: 45,  s: 85 },
-  { id: 4, title: "Harder Better Faster",    artist: "Daft Punk",                  album: "Discovery",              duration: 225, h: 160, s: 70 },
-  { id: 5, title: "Digital Love",            artist: "Daft Punk",                  album: "Discovery",              duration: 298, h: 270, s: 75 },
-  { id: 6, title: "Instant Crush",           artist: "Daft Punk ft. Julian C.",    album: "Random Access Memories", duration: 337, h: 25,  s: 80 },
-  { id: 7, title: "Lose Yourself to Dance",  artist: "Daft Punk ft. Pharrell",     album: "Random Access Memories", duration: 353, h: 185, s: 70 },
-  { id: 8, title: "Something About Us",      artist: "Daft Punk",                  album: "Discovery",              duration: 233, h: 310, s: 65 },
+  { id: 1, title: "One More Time",           artist: "Daft Punk",                  album: "Discovery",              duration: 372, h: 220, s: 80, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", genre: "House" },
+  { id: 2, title: "Around the World",         artist: "Daft Punk",                  album: "Homework",               duration: 425, h: 10,  s: 90, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", genre: "House" },
+  { id: 3, title: "Get Lucky",               artist: "Daft Punk ft. Pharrell",      album: "Random Access Memories", duration: 302, h: 45,  s: 85, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", genre: "Funk / Disco" },
+  { id: 4, title: "Harder Better Faster",    artist: "Daft Punk",                  album: "Discovery",              duration: 302, h: 160, s: 70, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", genre: "Synth-Pop" },
+  { id: 5, title: "Digital Love",            artist: "Daft Punk",                  album: "Discovery",              duration: 353, h: 270, s: 75, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3", genre: "Synth-Pop" },
+  { id: 6, title: "Instant Crush",           artist: "Daft Punk ft. Julian C.",    album: "Random Access Memories", duration: 582, h: 25,  s: 80, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3", genre: "Rock" },
+  { id: 7, title: "Lose Yourself to Dance",  artist: "Daft Punk ft. Pharrell",     album: "Random Access Memories", duration: 454, h: 185, s: 70, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-7.mp3", genre: "Funk / Disco" },
+  { id: 8, title: "Something About Us",      artist: "Daft Punk",                  album: "Discovery",              duration: 318, h: 310, s: 65, src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3", genre: "House" },
 ];
 
 const MAIN_MENU  = ["Music", "Videos", "Photos", "Podcasts", "Extras", "Settings", "Shuffle Songs", "Now Playing"];
-const MUSIC_MENU = ["All Songs", "Artists", "Albums", "Genres", "Composers", "Compilations"];
+const MUSIC_MENU = ["All Songs", "Artists", "Albums", "Genres"];
+const VIDEOS_MENU = ["Visualizer 3D", "Matrix Rain", "Synthwave Ride"];
+const EXTRAS_MENU = ["Games", "Clock", "Stopwatch"];
+const GAMES_MENU = ["Brick Breakout"];
+const SETTINGS_MENU = ["Theme", "Clicker"];
+const THEMES = ["Silver", "Carbon Black", "U2 Special Edition"];
+
+const PHOTOS = [
+  { id: 1, title: "Vibrant Gradient", url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80" },
+  { id: 2, title: "Cyberpunk City", url: "https://images.unsplash.com/photo-1515621061946-eff1c2a352bd?w=200&auto=format&fit=crop&q=80" },
+  { id: 3, title: "Retro Synthwave", url: "https://images.unsplash.com/photo-1550684848-fac1c5b4e853?w=200&auto=format&fit=crop&q=80" },
+  { id: 4, title: "Aesthetic Landscape", url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=200&auto=format&fit=crop&q=80" },
+];
+
+/* ─────────────────────────────── Themes Styling ──────────────────── */
+
+const THEME_STYLES = {
+  Silver: {
+    body: "linear-gradient(160deg, #dcdcdc 0%, #c8c8c8 25%, #b8b8b8 50%, #c4c4c4 75%, #d4d4d4 100%)",
+    wheel: "linear-gradient(145deg, #f8f8f8 0%, #e4e4e4 40%, #d8d8d8 65%, #eaeaea 100%)",
+    center: "linear-gradient(145deg, #eaeaea, #c8c8c8)",
+    text: "#666",
+    shadow: "0 4px 16px rgba(0,0,0,0.25), inset 0 1.5px 3px rgba(255,255,255,0.95), inset 0 -1.5px 3px rgba(0,0,0,0.12)",
+  },
+  "Carbon Black": {
+    body: "linear-gradient(160deg, #2c2c2c 0%, #1c1c1c 25%, #121212 50%, #1c1c1c 75%, #2c2c2c 100%)",
+    wheel: "linear-gradient(145deg, #252525 0%, #1e1e1e 40%, #141414 65%, #202020 100%)",
+    center: "linear-gradient(145deg, #333333, #1e1e1e)",
+    text: "#888",
+    shadow: "0 4px 16px rgba(0,0,0,0.45), inset 0 1.5px 3px rgba(255,255,255,0.15), inset 0 -1.5px 3px rgba(0,0,0,0.3)",
+  },
+  "U2 Special Edition": {
+    body: "linear-gradient(160deg, #1c1c1c 0%, #0d0d0d 25%, #050505 50%, #0d0d0d 75%, #1c1c1c 100%)",
+    wheel: "linear-gradient(145deg, #ff1e27 0%, #e00b12 40%, #b50005 65%, #e00b12 100%)",
+    center: "linear-gradient(145deg, #242424, #121212)",
+    text: "#fff",
+    shadow: "0 4px 16px rgba(0,0,0,0.55), inset 0 1.5px 3px rgba(255,255,255,0.2), inset 0 -1.5px 3px rgba(0,0,0,0.4)",
+  }
+};
 
 /* ─────────────────────────────── Helpers ─────────────────────────── */
 
-const fmt = (s: number) =>
-  `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, "0")}`;
+const fmt = (s: number) => {
+  const mins = Math.floor(s / 60);
+  const secs = Math.floor(s % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+};
 
-/* Generative album art – concentric circle pattern */
 const AlbumArt = ({ h, s, size }: { h: number; s: number; size: number }) => (
   <div style={{ width: size, height: size, flexShrink: 0, position: "relative", overflow: "hidden" }}>
-    {/* Base gradient */}
     <div style={{
       position: "absolute", inset: 0,
       background: `radial-gradient(ellipse at 35% 30%, hsl(${h},${s}%,60%) 0%, hsl(${(h+30)%360},${s}%,25%) 65%, hsl(${(h+60)%360},${s-10}%,15%) 100%)`,
     }} />
-    {/* Ring 1 */}
     <div style={{
       position: "absolute",
       width: size * 1.1, height: size * 1.1,
@@ -45,7 +83,6 @@ const AlbumArt = ({ h, s, size }: { h: number; s: number; size: number }) => (
       border: `${Math.round(size * 0.09)}px solid rgba(255,255,255,0.13)`,
       top: "50%", left: "50%", transform: "translate(-50%,-50%)",
     }} />
-    {/* Ring 2 */}
     <div style={{
       position: "absolute",
       width: size * 0.65, height: size * 0.65,
@@ -53,7 +90,6 @@ const AlbumArt = ({ h, s, size }: { h: number; s: number; size: number }) => (
       border: `${Math.round(size * 0.07)}px solid rgba(255,255,255,0.2)`,
       top: "50%", left: "50%", transform: "translate(-50%,-50%)",
     }} />
-    {/* Center glow */}
     <div style={{
       position: "absolute",
       width: size * 0.3, height: size * 0.3,
@@ -62,7 +98,6 @@ const AlbumArt = ({ h, s, size }: { h: number; s: number; size: number }) => (
       opacity: 0.35,
       top: "50%", left: "50%", transform: "translate(-50%,-50%)",
     }} />
-    {/* Sheen */}
     <div style={{
       position: "absolute", inset: 0,
       background: "linear-gradient(135deg, rgba(255,255,255,0.18) 0%, transparent 55%)",
@@ -70,7 +105,6 @@ const AlbumArt = ({ h, s, size }: { h: number; s: number; size: number }) => (
   </div>
 );
 
-/* Blue gradient title bar — exactly like real iPod Classic */
 const TitleBar = ({ label }: { label: string }) => (
   <div style={{
     background: "linear-gradient(180deg, #72b4f8 0%, #3c80d8 45%, #2968bf 100%)",
@@ -84,9 +118,7 @@ const TitleBar = ({ label }: { label: string }) => (
     <span style={{ color: "#fff", fontSize: 11.5, fontWeight: 700, fontFamily: "-apple-system,sans-serif", letterSpacing: 0.2 }}>
       {label}
     </span>
-    {/* Battery indicator */}
     <div style={{ display: "flex", alignItems: "center", gap: 3 }}>
-      {/* Battery shell */}
       <div style={{
         border: "1.5px solid rgba(255,255,255,0.85)",
         borderRadius: 2.5,
@@ -96,7 +128,6 @@ const TitleBar = ({ label }: { label: string }) => (
         display: "flex", alignItems: "center",
       }}>
         <div style={{ background: "#4ade80", width: "82%", height: "100%", borderRadius: 1 }} />
-        {/* Nub */}
         <div style={{ position: "absolute", right: -3.5, top: "50%", transform: "translateY(-50%)", width: 2, height: 5, background: "rgba(255,255,255,0.7)", borderRadius: "0 1px 1px 0" }} />
       </div>
     </div>
@@ -105,62 +136,379 @@ const TitleBar = ({ label }: { label: string }) => (
 
 /* ─────────────────────────────── Main Component ─────────────────── */
 
-type Screen = "main" | "music" | "songs" | "nowplaying";
+type Screen = 
+  | "main" 
+  | "music" | "songs" | "artists" | "artist-songs" | "albums" | "album-songs" | "genres" | "genre-songs"
+  | "nowplaying" 
+  | "videos" | "video-player"
+  | "photos" | "photo-detail"
+  | "extras" | "games" | "game-brick" | "clock" | "stopwatch"
+  | "settings" | "settings-theme";
 
 export const IPodContent = () => {
-  const [screen,   setScreen]   = useState<Screen>("main");
-  const [mainSel,  setMainSel]  = useState(0);
+  const [screen, setScreen] = useState<Screen>("main");
+  
+  // Selection Indices
+  const [mainSel, setMainSel] = useState(0);
   const [musicSel, setMusicSel] = useState(0);
-  const [songSel,  setSongSel]  = useState(0);
+  const [songSel, setSongSel] = useState(0);
+  const [artistSel, setArtistSel] = useState(0);
+  const [artistSongSel, setArtistSongSel] = useState(0);
+  const [albumSel, setAlbumSel] = useState(0);
+  const [albumSongSel, setAlbumSongSel] = useState(0);
+  const [genreSel, setGenreSel] = useState(0);
+  const [genreSongSel, setGenreSongSel] = useState(0);
+  const [videoSel, setVideoSel] = useState(0);
+  const [photoSel, setPhotoSel] = useState(0);
+  const [extraSel, setExtraSel] = useState(0);
+  const [gameSel, setGameSel] = useState(0);
+  const [settingSel, setSettingSel] = useState(0);
+  const [themeSel, setThemeSel] = useState(0);
+
+  // Dynamic values
+  const [selectedArtist, setSelectedArtist] = useState("");
+  const [selectedAlbum, setSelectedAlbum] = useState("");
+  const [selectedGenre, setSelectedGenre] = useState("");
+  
+  // Audio playback state
   const [trackIdx, setTrackIdx] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [elapsed,   setElapsed]   = useState(0);
-  const [btnPress,  setBtnPress]  = useState<string | null>(null);
-  const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [elapsed, setElapsed] = useState(0);
+  const [volume, setVolume] = useState(0.5);
+  
+  // Settings
+  const [theme, setTheme] = useState<"Silver" | "Carbon Black" | "U2 Special Edition">("Silver");
+  const [clicker, setClicker] = useState(true);
+  
+  // UI styling feedback
+  const [btnPress, setBtnPress] = useState<string | null>(null);
+  
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  
+  // Track computed properties
+  const track = TRACKS[trackIdx];
+  const [duration, setDuration] = useState(track.duration);
 
-  const track   = TRACKS[trackIdx];
-  const progress = Math.min((elapsed / track.duration) * 100, 100);
-  // Which track art to preview in right panel
-  const previewTrack = screen === "songs" ? TRACKS[songSel] : track;
+  // Grouped lists
+  const uniqueArtists = Array.from(new Set(TRACKS.map(t => t.artist))).sort();
+  const uniqueAlbums = Array.from(new Set(TRACKS.map(t => t.album))).sort();
+  const uniqueGenres = Array.from(new Set(TRACKS.map(t => t.genre))).sort();
 
-  /* Playback -------------------------------------------------------- */
+  const artistTracks = TRACKS.filter(t => t.artist === selectedArtist);
+  const albumTracks = TRACKS.filter(t => t.album === selectedAlbum);
+  const genreTracks = TRACKS.filter(t => t.genre === selectedGenre);
+
+  // Dynamic preview art
+  let previewTrack = track;
+  if (screen === "songs") previewTrack = TRACKS[songSel];
+  else if (screen === "artist-songs" && artistTracks[artistSongSel]) previewTrack = artistTracks[artistSongSel];
+  else if (screen === "album-songs" && albumTracks[albumSongSel]) previewTrack = albumTracks[albumSongSel];
+  else if (screen === "genre-songs" && genreTracks[genreSongSel]) previewTrack = genreTracks[genreSongSel];
+
+  // Brick game state
+  const [paddleX, setPaddleX] = useState(37.5);
+  const [ball, setBall] = useState({ x: 50, y: 75, vx: 0.8, vy: -1.2 });
+  const [bricks, setBricks] = useState<Array<{ x: number, y: number, w: number, h: number, active: boolean }>>([]);
+  const [score, setScore] = useState(0);
+  const [gameOver, setGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
+
+  // Stopwatch state
+  const [stopwatchRunning, setStopwatchRunning] = useState(false);
+  const [stopwatchTime, setStopwatchTime] = useState(0);
+  const [laps, setLaps] = useState<number[]>([]);
+  const stopwatchIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Digital Clock live updates
+  const [timeStr, setTimeStr] = useState("");
   useEffect(() => {
-    if (isPlaying) {
-      timer.current = setInterval(() => {
-        setElapsed(e => {
-          if (e >= track.duration) {
-            setTrackIdx(i => (i + 1) % TRACKS.length);
-            return 0;
-          }
-          return e + 1;
+    const updateTime = () => {
+      const now = new Date();
+      setTimeStr(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Brick Game Initializer
+  const initBrickGame = useCallback(() => {
+    const grid: typeof bricks = [];
+    const cols = 5;
+    const rows = 4;
+    const w = 16;
+    const h = 7;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        grid.push({
+          x: c * 18 + 7,
+          y: r * 9 + 12,
+          w,
+          h,
+          active: true,
         });
-      }, 1000);
-    } else {
-      if (timer.current) clearInterval(timer.current);
+      }
     }
-    return () => { if (timer.current) clearInterval(timer.current); };
-  }, [isPlaying, track.duration]);
+    setBricks(grid);
+    setBall({ x: 50, y: 75, vx: 0.9, vy: -1.3 });
+    setPaddleX(37.5);
+    setScore(0);
+    setGameOver(false);
+    setGameStarted(false);
+  }, [bricks]);
 
-  useEffect(() => { setElapsed(0); }, [trackIdx]);
+  // Synthesis of physical click wheel sound
+  const playClickSound = useCallback(() => {
+    if (!clicker || typeof window === "undefined") return;
+    try {
+      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(900, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.02);
+      gain.gain.setValueAtTime(0.04, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.02);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      osc.stop(ctx.currentTime + 0.02);
+    } catch (e) {}
+  }, [clicker]);
 
-  /* Click wheel actions -------------------------------------------- */
+  // Audio loading & syncing
+  useEffect(() => {
+    setDuration(track.duration);
+  }, [trackIdx, track.duration]);
+
+  const progress = Math.min((elapsed / duration) * 100, 100);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    if (isPlaying) {
+      audio.play().catch((err) => {
+        console.warn("Playback failed:", err);
+      });
+    } else {
+      audio.pause();
+    }
+  }, [isPlaying, trackIdx]);
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
+
+  // Brick Game Frame Loop
+  useEffect(() => {
+    if (screen !== "game-brick" || !gameStarted || gameOver) return;
+    const interval = setInterval(() => {
+      setBall(b => {
+        let { x, y, vx, vy } = b;
+        x += vx;
+        y += vy;
+
+        // Wall collisions
+        if (x <= 2 || x >= 98) {
+          vx = -vx;
+          x = x <= 2 ? 2 : 98;
+          playClickSound();
+        }
+        if (y <= 2) {
+          vy = -vy;
+          y = 2;
+          playClickSound();
+        }
+
+        // Paddle collision
+        if (y >= 88 && y <= 91 && x >= paddleX && x <= paddleX + 25) {
+          vy = -Math.abs(vy);
+          const hitPos = (x - (paddleX + 12.5)) / 12.5; // -1 to 1
+          vx += hitPos * 0.3;
+          y = 88;
+          playClickSound();
+        }
+
+        // Death / Out of bounds
+        if (y >= 98) {
+          setGameOver(true);
+          return b;
+        }
+
+        // Brick collision
+        let hit = false;
+        const nextBricks = bricks.map(brk => {
+          if (!brk.active || hit) return brk;
+          if (x >= brk.x && x <= brk.x + brk.w && y >= brk.y && y <= brk.y + brk.h) {
+            hit = true;
+            vy = -vy;
+            setScore(s => s + 10);
+            playClickSound();
+            return { ...brk, active: false };
+          }
+          return brk;
+        });
+
+        if (hit) {
+          setBricks(nextBricks);
+          if (nextBricks.every(bk => !bk.active)) {
+            // cleared all - reset with faster speed
+            setTimeout(() => {
+              initBrickGame();
+              setBall({ x: 50, y: 75, vx: vx * 1.1, vy: -Math.abs(vy) * 1.1 });
+              setGameStarted(true);
+            }, 600);
+          }
+        }
+
+        return { x, y, vx, vy };
+      });
+    }, 30);
+
+    return () => clearInterval(interval);
+  }, [screen, gameStarted, gameOver, paddleX, bricks, initBrickGame, playClickSound]);
+
+  // Stopwatch Interval
+  useEffect(() => {
+    if (stopwatchRunning) {
+      stopwatchIntervalRef.current = setInterval(() => {
+        setStopwatchTime(t => t + 10);
+      }, 10);
+    } else {
+      if (stopwatchIntervalRef.current) clearInterval(stopwatchIntervalRef.current);
+    }
+    return () => {
+      if (stopwatchIntervalRef.current) clearInterval(stopwatchIntervalRef.current);
+    };
+  }, [stopwatchRunning]);
+
+  // Canvas visualizer animation
+  useEffect(() => {
+    if (screen !== "video-player") return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    let animId: number;
+
+    const barsCount = 20;
+    const barWidths = canvas.width / barsCount;
+    let frame = 0;
+
+    const render = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      frame++;
+
+      if (videoSel === 0) {
+        // Visualizer 3D spectrum
+        ctx.fillStyle = "#ff007f";
+        for (let i = 0; i < barsCount; i++) {
+          const h = (Math.sin(frame * 0.08 + i * 0.4) + 1) * 30 + Math.random() * 15;
+          const bounceHeight = isPlaying ? h : 5;
+          // Gradient fill
+          const grad = ctx.createLinearGradient(0, canvas.height, 0, canvas.height - bounceHeight);
+          grad.addColorStop(0, "#ff007f");
+          grad.addColorStop(1, "#7f00ff");
+          ctx.fillStyle = grad;
+          ctx.fillRect(i * (barWidths + 1), canvas.height - bounceHeight, barWidths - 1, bounceHeight);
+        }
+      } else if (videoSel === 1) {
+        // Matrix digital rain
+        ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#00ff00";
+        ctx.font = "8px monospace";
+        for (let i = 0; i < canvas.width; i += 10) {
+          const y = (Math.sin(frame * 0.02 + i) + 1) * (canvas.height / 2) + (frame % 30);
+          ctx.fillText(String.fromCharCode(33 + Math.floor(Math.random() * 90)), i, y % canvas.height);
+        }
+      } else {
+        // Synthwave Ride grid
+        ctx.fillStyle = "#0a001a";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Sun
+        ctx.beginPath();
+        ctx.arc(canvas.width / 2, 45, 25, 0, Math.PI * 2);
+        const sunGrad = ctx.createLinearGradient(0, 20, 0, 70);
+        sunGrad.addColorStop(0, "#ff007f");
+        sunGrad.addColorStop(1, "#ffcc00");
+        ctx.fillStyle = sunGrad;
+        ctx.fill();
+
+        // Horizontal scan lines on Sun
+        ctx.fillStyle = "#0a001a";
+        for (let y = 35; y < 70; y += 4) {
+          ctx.fillRect(canvas.width / 2 - 25, y, 50, 1.5);
+        }
+
+        // Draw moving grid perspective lines
+        ctx.strokeStyle = "#7f00ff";
+        ctx.lineWidth = 1;
+        const horizon = 60;
+        const speed = (frame * 1.5) % 15;
+        
+        // Perspective vertical lines
+        for (let i = -100; i <= canvas.width + 100; i += 25) {
+          ctx.beginPath();
+          ctx.moveTo(canvas.width / 2, horizon);
+          ctx.lineTo(i, canvas.height);
+          ctx.stroke();
+        }
+
+        // Horizontal grid lines
+        for (let y = horizon; y < canvas.height; y += 8) {
+          const dy = y + (speed * (y - horizon) / (canvas.height - horizon));
+          ctx.beginPath();
+          ctx.moveTo(0, dy);
+          ctx.lineTo(canvas.width, dy);
+          ctx.stroke();
+        }
+      }
+
+      animId = requestAnimationFrame(render);
+    };
+
+    render();
+    return () => cancelAnimationFrame(animId);
+  }, [screen, videoSel, isPlaying]);
+
+  // Click wheel input handling
   const press = (zone: string, fn: () => void) => {
     setBtnPress(zone);
+    playClickSound();
     fn();
     setTimeout(() => setBtnPress(null), 180);
   };
 
   const onMenu = () => {
+    // Hierarchical back navigation
     if (screen === "nowplaying") setScreen("songs");
-    else if (screen === "songs")  setScreen("music");
-    else if (screen === "music")  setScreen("main");
+    else if (screen === "songs" || screen === "artists" || screen === "albums" || screen === "genres") setScreen("music");
+    else if (screen === "artist-songs") setScreen("artists");
+    else if (screen === "album-songs") setScreen("albums");
+    else if (screen === "genre-songs") setScreen("genres");
+    else if (screen === "music" || screen === "videos" || screen === "photos" || screen === "extras" || screen === "settings") setScreen("main");
+    else if (screen === "video-player") setScreen("videos");
+    else if (screen === "photo-detail") setScreen("photos");
+    else if (screen === "games") setScreen("extras");
+    else if (screen === "game-brick") setScreen("games");
+    else if (screen === "clock" || screen === "stopwatch") setScreen("extras");
+    else if (screen === "settings-theme") setScreen("settings");
     else setScreen("main");
   };
 
   const onSelect = () => {
     if (screen === "main") {
       const item = MAIN_MENU[mainSel];
-      if (item === "Music")         setScreen("music");
+      if (item === "Music") setScreen("music");
+      else if (item === "Videos") setScreen("videos");
+      else if (item === "Photos") setScreen("photos");
+      else if (item === "Extras") setScreen("extras");
+      else if (item === "Settings") setScreen("settings");
       else if (item === "Now Playing") setScreen("nowplaying");
       else if (item === "Shuffle Songs") {
         setTrackIdx(Math.floor(Math.random() * TRACKS.length));
@@ -168,37 +516,169 @@ export const IPodContent = () => {
         setScreen("nowplaying");
       }
     } else if (screen === "music") {
-      if (musicSel === 0) setScreen("songs");
+      const item = MUSIC_MENU[musicSel];
+      if (item === "All Songs") setScreen("songs");
+      else if (item === "Artists") setScreen("artists");
+      else if (item === "Albums") setScreen("albums");
+      else if (item === "Genres") setScreen("genres");
     } else if (screen === "songs") {
       setTrackIdx(songSel);
       setIsPlaying(true);
       setScreen("nowplaying");
+    } else if (screen === "artists") {
+      setSelectedArtist(uniqueArtists[artistSel]);
+      setScreen("artist-songs");
+      setArtistSongSel(0);
+    } else if (screen === "artist-songs") {
+      const matching = artistTracks[artistSongSel];
+      const idx = TRACKS.findIndex(t => t.id === matching.id);
+      if (idx !== -1) {
+        setTrackIdx(idx);
+        setIsPlaying(true);
+        setScreen("nowplaying");
+      }
+    } else if (screen === "albums") {
+      setSelectedAlbum(uniqueAlbums[albumSel]);
+      setScreen("album-songs");
+      setAlbumSongSel(0);
+    } else if (screen === "album-songs") {
+      const matching = albumTracks[albumSongSel];
+      const idx = TRACKS.findIndex(t => t.id === matching.id);
+      if (idx !== -1) {
+        setTrackIdx(idx);
+        setIsPlaying(true);
+        setScreen("nowplaying");
+      }
+    } else if (screen === "genres") {
+      setSelectedGenre(uniqueGenres[genreSel]);
+      setScreen("genre-songs");
+      setGenreSongSel(0);
+    } else if (screen === "genre-songs") {
+      const matching = genreTracks[genreSongSel];
+      const idx = TRACKS.findIndex(t => t.id === matching.id);
+      if (idx !== -1) {
+        setTrackIdx(idx);
+        setIsPlaying(true);
+        setScreen("nowplaying");
+      }
+    } else if (screen === "videos") {
+      setScreen("video-player");
+    } else if (screen === "photos") {
+      setScreen("photo-detail");
+    } else if (screen === "extras") {
+      const item = EXTRAS_MENU[extraSel];
+      if (item === "Games") setScreen("games");
+      else if (item === "Clock") setScreen("clock");
+      else if (item === "Stopwatch") {
+        setScreen("stopwatch");
+        setStopwatchTime(0);
+        setLaps([]);
+        setStopwatchRunning(false);
+      }
+    } else if (screen === "games") {
+      setScreen("game-brick");
+      initBrickGame();
+    } else if (screen === "game-brick") {
+      if (gameOver) {
+        initBrickGame();
+      } else {
+        setGameStarted(p => !p);
+      }
+    } else if (screen === "stopwatch") {
+      // Toggle stopwatch
+      setStopwatchRunning(r => !r);
+    } else if (screen === "settings") {
+      const item = SETTINGS_MENU[settingSel];
+      if (item === "Theme") setScreen("settings-theme");
+      else if (item === "Clicker") setClicker(c => !c);
+    } else if (screen === "settings-theme") {
+      setTheme(THEMES[themeSel] as any);
+      setScreen("settings");
     } else if (screen === "nowplaying") {
       setIsPlaying(p => !p);
     }
   };
 
   const onUp = () => {
-    if (screen === "main")  setMainSel(i  => Math.max(0, i - 1));
-    if (screen === "music") setMusicSel(i => Math.max(0, i - 1));
-    if (screen === "songs") setSongSel(i  => Math.max(0, i - 1));
+    playClickSound();
+    if (screen === "main") setMainSel(i => Math.max(0, i - 1));
+    else if (screen === "music") setMusicSel(i => Math.max(0, i - 1));
+    else if (screen === "songs") setSongSel(i => Math.max(0, i - 1));
+    else if (screen === "artists") setArtistSel(i => Math.max(0, i - 1));
+    else if (screen === "artist-songs") setArtistSongSel(i => Math.max(0, i - 1));
+    else if (screen === "albums") setAlbumSel(i => Math.max(0, i - 1));
+    else if (screen === "album-songs") setAlbumSongSel(i => Math.max(0, i - 1));
+    else if (screen === "genres") setGenreSel(i => Math.max(0, i - 1));
+    else if (screen === "genre-songs") setGenreSongSel(i => Math.max(0, i - 1));
+    else if (screen === "videos") setVideoSel(i => Math.max(0, i - 1));
+    else if (screen === "photos") setPhotoSel(i => Math.max(0, i - 1));
+    else if (screen === "extras") setExtraSel(i => Math.max(0, i - 1));
+    else if (screen === "games") setGameSel(i => Math.max(0, i - 1));
+    else if (screen === "settings") setSettingSel(i => Math.max(0, i - 1));
+    else if (screen === "settings-theme") setThemeSel(i => Math.max(0, i - 1));
+    else if (screen === "nowplaying") setVolume(v => Math.min(1, v + 0.06));
+    else if (screen === "game-brick") setPaddleX(x => Math.max(0, x - 5.5));
+    else if (screen === "stopwatch") {
+      // Record Lap
+      if (stopwatchRunning) {
+        setLaps(l => [stopwatchTime, ...l.slice(0, 4)]);
+      }
+    }
   };
 
   const onDown = () => {
-    if (screen === "main")  setMainSel(i  => Math.min(MAIN_MENU.length  - 1, i + 1));
-    if (screen === "music") setMusicSel(i => Math.min(MUSIC_MENU.length - 1, i + 1));
-    if (screen === "songs") setSongSel(i  => Math.min(TRACKS.length     - 1, i + 1));
+    playClickSound();
+    if (screen === "main") setMainSel(i => Math.min(MAIN_MENU.length - 1, i + 1));
+    else if (screen === "music") setMusicSel(i => Math.min(MUSIC_MENU.length - 1, i + 1));
+    else if (screen === "songs") setSongSel(i => Math.min(TRACKS.length - 1, i + 1));
+    else if (screen === "artists") setArtistSel(i => Math.min(uniqueArtists.length - 1, i + 1));
+    else if (screen === "artist-songs") setArtistSongSel(i => Math.min(artistTracks.length - 1, i + 1));
+    else if (screen === "albums") setAlbumSel(i => Math.min(uniqueAlbums.length - 1, i + 1));
+    else if (screen === "album-songs") setAlbumSongSel(i => Math.min(albumTracks.length - 1, i + 1));
+    else if (screen === "genres") setGenreSel(i => Math.min(uniqueGenres.length - 1, i + 1));
+    else if (screen === "genre-songs") setGenreSongSel(i => Math.min(genreTracks.length - 1, i + 1));
+    else if (screen === "videos") setVideoSel(i => Math.min(VIDEOS_MENU.length - 1, i + 1));
+    else if (screen === "photos") setPhotoSel(i => Math.min(PHOTOS.length - 1, i + 1));
+    else if (screen === "extras") setExtraSel(i => Math.min(EXTRAS_MENU.length - 1, i + 1));
+    else if (screen === "games") setGameSel(i => Math.min(GAMES_MENU.length - 1, i + 1));
+    else if (screen === "settings") setSettingSel(i => Math.min(SETTINGS_MENU.length - 1, i + 1));
+    else if (screen === "settings-theme") setThemeSel(i => Math.min(THEMES.length - 1, i + 1));
+    else if (screen === "nowplaying") setVolume(v => Math.max(0, v - 0.06));
+    else if (screen === "game-brick") setPaddleX(x => Math.min(75, x + 5.5));
+    else if (screen === "stopwatch") {
+      // Reset stopwatch
+      setStopwatchRunning(false);
+      setStopwatchTime(0);
+      setLaps([]);
+    }
   };
 
-  const onBack    = () => { setTrackIdx(i => (i - 1 + TRACKS.length) % TRACKS.length); setElapsed(0); };
-  const onForward = () => { setTrackIdx(i => (i + 1) % TRACKS.length);                 setElapsed(0); };
-  const onPlay    = () => { setIsPlaying(p => !p); if (screen !== "nowplaying") setScreen("nowplaying"); };
+  const onBack = () => {
+    if (audioRef.current && audioRef.current.currentTime > 3) {
+      audioRef.current.currentTime = 0;
+      setElapsed(0);
+    } else {
+      setTrackIdx(i => (i - 1 + TRACKS.length) % TRACKS.length);
+      setElapsed(0);
+    }
+  };
 
-  /* Menu list renderer --------------------------------------------- */
+  const onForward = () => {
+    setTrackIdx(i => (i + 1) % TRACKS.length);
+    setElapsed(0);
+  };
+
+  const onPlay = () => {
+    setIsPlaying(p => !p);
+    if (screen !== "nowplaying" && screen !== "video-player" && screen !== "game-brick") {
+      setScreen("nowplaying");
+    }
+  };
+
+  // Rendering Helper: Menu lists
   const MenuList = ({ items, sel, title }: { items: string[]; sel: number; title: string }) => {
-    // Show a sliding window of ~6 items centred around selection
     const WINDOW = 7;
-    const start  = Math.max(0, Math.min(sel - 2, items.length - WINDOW));
+    const start = Math.max(0, Math.min(sel - 2, items.length - WINDOW));
     const visible = items.slice(start, start + WINDOW);
 
     return (
@@ -207,13 +687,13 @@ export const IPodContent = () => {
         <div style={{ flex: 1, overflow: "hidden" }}>
           {visible.map((item, vi) => {
             const actual = start + vi;
-            const isSel  = actual === sel;
+            const isSel = actual === sel;
             return (
               <div key={item} style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-                padding: "4px 8px",
+                padding: "4.5px 8px",
                 background: isSel
                   ? "linear-gradient(90deg, #3b7ed8, #1a5ab8)"
                   : actual % 2 === 0 ? "#fff" : "#f7f7f7",
@@ -224,6 +704,10 @@ export const IPodContent = () => {
                   fontFamily: "-apple-system,sans-serif",
                   color: isSel ? "#fff" : "#111",
                   fontWeight: isSel ? 600 : 400,
+                  whiteSpace: "nowrap",
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
+                  maxWidth: "90%",
                 }}>
                   {item}
                 </span>
@@ -236,24 +720,24 @@ export const IPodContent = () => {
     );
   };
 
-  /* Wheel button opacity helper ------------------------------------ */
+  // Style properties matching active theme state
+  const curTheme = THEME_STYLES[theme];
   const op = (zone: string) => btnPress === zone ? 0.45 : 1;
 
-  /* ─── Render ─── */
   return (
     <div
       style={{
-        /* iPod Classic silver body */
-        background: "linear-gradient(160deg, #dcdcdc 0%, #c8c8c8 25%, #b8b8b8 50%, #c4c4c4 75%, #d4d4d4 100%)",
+        background: curTheme.body,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         padding: "12px 16px 28px",
         userSelect: "none",
         width: "100%",
+        borderRadius: "inherit",
       }}
     >
-      {/* ── Screen bezel ── */}
+      {/* bezel display boundary */}
       <div style={{
         width: "100%",
         background: "#1c1c1c",
@@ -261,7 +745,7 @@ export const IPodContent = () => {
         padding: "5px 5px 7px",
         boxShadow: "inset 0 2px 8px rgba(0,0,0,0.85), 0 1px 0 rgba(255,255,255,0.25)",
       }}>
-        {/* Screen glass */}
+        {/* LCD Glass Screen */}
         <div style={{
           width: "100%",
           height: 172,
@@ -270,9 +754,10 @@ export const IPodContent = () => {
           display: "flex",
           background: "#fff",
           boxShadow: "inset 0 1px 4px rgba(0,0,0,0.4)",
+          position: "relative",
         }}>
 
-          {/* ── Now Playing full view ── */}
+          {/* 1. Main Now Playing display */}
           {screen === "nowplaying" && (
             <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#f4f4f4" }}>
               <TitleBar label="Now Playing" />
@@ -295,34 +780,213 @@ export const IPodContent = () => {
                   </div>
                 </div>
               </div>
-              {/* Progress bar */}
-              <div style={{ padding: "0 8px 8px" }}>
+              <div style={{ padding: "0 8px 4px" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9, color: "#aaa", marginBottom: 3, fontFamily: "monospace" }}>
                   <span>{fmt(elapsed)}</span>
-                  <span>-{fmt(track.duration - elapsed)}</span>
+                  <span>-{fmt(duration - elapsed)}</span>
                 </div>
                 <div style={{ background: "#ddd", borderRadius: 3, height: 4 }}>
                   <div style={{
                     height: "100%", borderRadius: 3,
                     width: `${progress}%`,
                     background: `linear-gradient(90deg, hsl(${track.h},70%,40%), hsl(${track.h},85%,58%))`,
-                    transition: "width 0.9s linear",
+                    transition: "width 0.2s linear",
                   }} />
+                </div>
+              </div>
+              <div style={{ padding: "0 8px 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                <span style={{ fontSize: 9, color: "#777" }}>🔈</span>
+                <div style={{ background: "#ddd", borderRadius: 2, height: 3, flex: 1, position: "relative" }}>
+                  <div style={{
+                    height: "100%", borderRadius: 2,
+                    width: `${volume * 100}%`,
+                    background: "#666",
+                  }} />
+                </div>
+                <span style={{ fontSize: 9, color: "#777" }}>🔊</span>
+              </div>
+            </div>
+          )}
+
+          {/* 2. Visualizers viewport */}
+          {screen === "video-player" && (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#000" }}>
+              <TitleBar label={VIDEOS_MENU[videoSel]} />
+              <canvas 
+                ref={canvasRef} 
+                width={238} 
+                height={150} 
+                style={{ width: "100%", height: "100%", display: "block" }} 
+              />
+            </div>
+          )}
+
+          {/* 3. Photo viewer */}
+          {screen === "photo-detail" && (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#000" }}>
+              <TitleBar label={PHOTOS[photoSel].title} />
+              <div style={{ 
+                flex: 1, 
+                backgroundImage: `url(${PHOTOS[photoSel].url})`, 
+                backgroundSize: "cover", 
+                backgroundPosition: "center" 
+              }} />
+            </div>
+          )}
+
+          {/* 4. Brick Breakout Game */}
+          {screen === "game-brick" && (
+            <div style={{ 
+              flex: 1, 
+              display: "flex", 
+              flexDirection: "column", 
+              background: "#c4cfa1", 
+              fontFamily: "monospace",
+              color: "#1f2f0f",
+              padding: 4,
+              boxSizing: "border-box",
+            }}>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, borderBottom: "1.5px solid #1f2f0f", paddingBottom: 2, marginBottom: 4 }}>
+                <span>BRICK</span>
+                <span>PTS: {score}</span>
+              </div>
+              <div style={{ flex: 1, position: "relative", overflow: "hidden", border: "1px solid rgba(31,47,15,0.2)" }}>
+                {/* Bricks rendering */}
+                {bricks.map((bk, i) => bk.active && (
+                  <div key={i} style={{
+                    position: "absolute",
+                    left: `${bk.x}%`,
+                    top: `${bk.y}%`,
+                    width: `${bk.w}%`,
+                    height: `${bk.h}%`,
+                    background: "#1f2f0f",
+                    borderRadius: 1,
+                  }} />
+                ))}
+
+                {/* Ball */}
+                <div style={{
+                  position: "absolute",
+                  left: `${ball.x}%`,
+                  top: `${ball.y}%`,
+                  width: 5, height: 5,
+                  borderRadius: "50%",
+                  background: "#1f2f0f",
+                  transform: "translate(-50%, -50%)",
+                }} />
+
+                {/* Paddle */}
+                <div style={{
+                  position: "absolute",
+                  left: `${paddleX}%`,
+                  bottom: "8%",
+                  width: "25%",
+                  height: "5%",
+                  background: "#1f2f0f",
+                  borderRadius: 1,
+                }} />
+
+                {/* Status Messages */}
+                {!gameStarted && !gameOver && (
+                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "rgba(196,207,161,0.9)", textAlign: "center", fontSize: 10 }}>
+                    <div>SCROLL WHEEL:</div>
+                    <div style={{ fontWeight: "bold" }}>MOVE PADDLE</div>
+                    <div style={{ marginTop: 6, animation: "pulse 1s infinite", border: "1px solid #1f2f0f", padding: "1px 4px" }}>PRESS SELECT</div>
+                  </div>
+                )}
+
+                {gameOver && (
+                  <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "rgba(196,207,161,0.9)", textAlign: "center", fontSize: 11, fontWeight: "bold" }}>
+                    <div style={{ fontSize: 13 }}>GAME OVER</div>
+                    <div style={{ marginTop: 4 }}>FINAL: {score}</div>
+                    <div style={{ marginTop: 8, border: "1px solid #1f2f0f", padding: "1px 6px" }}>SELECT TO RESET</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 5. Analog / Digital Clock */}
+          {screen === "clock" && (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#f0f0f0", alignItems: "center", justifyContent: "center" }}>
+              <TitleBar label="Clock" />
+              <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10 }}>
+                {/* Clock graphic */}
+                <div style={{
+                  width: 60, height: 60,
+                  borderRadius: "50%",
+                  border: "2px solid #555",
+                  position: "relative",
+                  background: "#fff",
+                }}>
+                  {/* hands */}
+                  <div style={{ position: "absolute", top: "50%", left: "50%", width: 2, height: 16, background: "#111", transformOrigin: "bottom center", transform: `translate(-50%, -100%) rotate(${new Date().getHours() * 30}deg)` }} />
+                  <div style={{ position: "absolute", top: "50%", left: "50%", width: 1.5, height: 22, background: "#3c80d8", transformOrigin: "bottom center", transform: `translate(-50%, -100%) rotate(${new Date().getMinutes() * 6}deg)` }} />
+                  <div style={{ position: "absolute", top: "50%", left: "50%", width: 8, height: 8, background: "#555", borderRadius: "50%", transform: "translate(-50%, -50%)" }} />
+                </div>
+                <div style={{ fontSize: 16, fontWeight: 700, fontFamily: "monospace", color: "#222" }}>
+                  {timeStr}
+                </div>
+                <div style={{ fontSize: 9, color: "#888" }}>
+                  {new Date().toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
                 </div>
               </div>
             </div>
           )}
 
-          {/* ── Split view: menu left + album art right ── */}
-          {screen !== "nowplaying" && (
-            <>
-              {/* Left panel — menu */}
-              <div style={{ flex: "0 0 54%", borderRight: "1px solid #ccc", overflow: "hidden", height: "100%" }}>
-                {screen === "main"  && <MenuList items={MAIN_MENU}                   sel={mainSel}  title="iPod" />}
-                {screen === "music" && <MenuList items={MUSIC_MENU}                  sel={musicSel} title="Music" />}
-                {screen === "songs" && <MenuList items={TRACKS.map(t => t.title)}   sel={songSel}  title="Songs" />}
+          {/* 6. Stopwatch */}
+          {screen === "stopwatch" && (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", background: "#f0f0f0" }}>
+              <TitleBar label="Stopwatch" />
+              <div style={{ flex: 1, padding: 8, display: "flex", flexDirection: "column", minHeight: 0 }}>
+                <div style={{ fontSize: 22, fontWeight: "bold", fontFamily: "monospace", textAlign: "center", margin: "4px 0", color: "#333" }}>
+                  {Math.floor(stopwatchTime / 60000)}:
+                  {Math.floor((stopwatchTime % 60000) / 1000).toString().padStart(2, "0")}.
+                  <span style={{ fontSize: 14 }}>{Math.floor((stopwatchTime % 1000) / 10).toString().padStart(2, "0")}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, color: "#666", borderBottom: "1px solid #ccc", paddingBottom: 2, marginBottom: 4 }}>
+                  <span>SCROLL UP: LAP</span>
+                  <span>SCROLL DOWN: RESET</span>
+                </div>
+                {/* Laps list */}
+                <div style={{ flex: 1, overflow: "hidden", fontSize: 10 }}>
+                  {laps.map((lp, idx) => (
+                    <div key={idx} style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px dashed #ddd", padding: "2px 0", color: "#444" }}>
+                      <span>Lap {laps.length - idx}</span>
+                      <span style={{ fontFamily: "monospace" }}>
+                        {Math.floor(lp / 60000)}:
+                        {Math.floor((lp % 60000) / 1000).toString().padStart(2, "0")}.
+                        {Math.floor((lp % 1000) / 10).toString().padStart(2, "0")}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              {/* Right panel — album art */}
+            </div>
+          )}
+
+          {/* 7. Classic iPod split menus */}
+          {screen !== "nowplaying" && screen !== "video-player" && screen !== "photo-detail" && screen !== "game-brick" && screen !== "clock" && screen !== "stopwatch" && (
+            <>
+              <div style={{ flex: "0 0 54%", borderRight: "1px solid #ccc", overflow: "hidden", height: "100%" }}>
+                {screen === "main"            && <MenuList items={MAIN_MENU}                   sel={mainSel}       title="iPod" />}
+                {screen === "music"           && <MenuList items={MUSIC_MENU}                  sel={musicSel}      title="Music" />}
+                {screen === "songs"           && <MenuList items={TRACKS.map(t => t.title)}   sel={songSel}       title="Songs" />}
+                {screen === "artists"         && <MenuList items={uniqueArtists}               sel={artistSel}     title="Artists" />}
+                {screen === "artist-songs"    && <MenuList items={artistTracks.map(t => t.title)} sel={artistSongSel} title={selectedArtist} />}
+                {screen === "albums"          && <MenuList items={uniqueAlbums}                sel={albumSel}      title="Albums" />}
+                {screen === "album-songs"     && <MenuList items={albumTracks.map(t => t.title)}  sel={albumSongSel}  title={selectedAlbum} />}
+                {screen === "genres"          && <MenuList items={uniqueGenres}                sel={genreSel}      title="Genres" />}
+                {screen === "genre-songs"     && <MenuList items={genreTracks.map(t => t.title)}  sel={genreSongSel}  title={selectedGenre} />}
+                {screen === "videos"          && <MenuList items={VIDEOS_MENU}                 sel={videoSel}      title="Videos" />}
+                {screen === "photos"          && <MenuList items={PHOTOS.map(p => p.title)}    sel={photoSel}      title="Photos" />}
+                {screen === "extras"          && <MenuList items={EXTRAS_MENU}                 sel={extraSel}      title="Extras" />}
+                {screen === "games"           && <MenuList items={GAMES_MENU}                  sel={gameSel}       title="Games" />}
+                {screen === "settings"        && <MenuList items={SETTINGS_MENU}               sel={settingSel}    title="Settings" />}
+                {screen === "settings-theme"  && <MenuList items={THEMES}                      sel={themeSel}      title="Themes" />}
+              </div>
+              
+              {/* Split screen right graphic */}
               <div style={{
                 flex: 1,
                 display: "flex",
@@ -330,34 +994,41 @@ export const IPodContent = () => {
                 justifyContent: "center",
                 background: "#e8e8e8",
                 overflow: "hidden",
+                position: "relative",
               }}>
-                <AlbumArt h={previewTrack.h} s={previewTrack.s} size={96} />
+                {screen === "photos" ? (
+                  <div style={{ 
+                    width: 96, height: 96, 
+                    backgroundImage: `url(${PHOTOS[photoSel].url})`, 
+                    backgroundSize: "cover", 
+                    backgroundPosition: "center",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                    borderRadius: 4
+                  }} />
+                ) : (
+                  <AlbumArt h={previewTrack.h} s={previewTrack.s} size={96} />
+                )}
               </div>
             </>
           )}
         </div>
       </div>
 
-      {/* ── Click Wheel ── */}
+      {/* ── iPod Classic tactile Click Wheel ── */}
       <div
         style={{ marginTop: 24, position: "relative", width: 200, height: 200, flexShrink: 0 }}
         onWheel={e => e.deltaY < 0 ? onUp() : onDown()}
       >
-        {/* Outer wheel ring — white with subtle silver shading */}
+        {/* Outer scroll ring */}
         <div style={{
           position: "absolute",
           inset: 0,
           borderRadius: "50%",
-          background: "linear-gradient(145deg, #f8f8f8 0%, #e4e4e4 40%, #d8d8d8 65%, #eaeaea 100%)",
-          boxShadow: [
-            "0 4px 16px rgba(0,0,0,0.28)",
-            "0 1px 4px rgba(0,0,0,0.18)",
-            "inset 0 1.5px 3px rgba(255,255,255,0.95)",
-            "inset 0 -1.5px 3px rgba(0,0,0,0.12)",
-          ].join(", "),
+          background: curTheme.wheel,
+          boxShadow: curTheme.shadow,
         }} />
 
-        {/* ── MENU (top) ── */}
+        {/* ── MENU Button (Top) ── */}
         <button onClick={() => press("menu", onMenu)} style={{
           position: "absolute",
           top: 8, left: "50%", transform: "translateX(-50%)",
@@ -366,14 +1037,14 @@ export const IPodContent = () => {
           display: "flex", alignItems: "flex-start", justifyContent: "center",
           paddingTop: 14,
           fontSize: 10, fontWeight: 700, letterSpacing: 2,
-          color: "#666", fontFamily: "-apple-system,sans-serif",
+          color: curTheme.text, fontFamily: "-apple-system,sans-serif",
           opacity: op("menu"),
           transition: "opacity 0.1s",
         }}>
           MENU
         </button>
 
-        {/* ── Skip Back (left) ── */}
+        {/* ── Skip Back (Left) ── */}
         <button onClick={() => press("back", onBack)} style={{
           position: "absolute",
           top: "50%", left: 8, transform: "translateY(-50%)",
@@ -383,10 +1054,10 @@ export const IPodContent = () => {
           paddingLeft: 12,
           opacity: op("back"), transition: "opacity 0.1s",
         }}>
-          <IconPlayerSkipBack style={{ width: 17, height: 17, color: "#666" }} />
+          <IconPlayerSkipBack style={{ width: 17, height: 17, color: curTheme.text }} />
         </button>
 
-        {/* ── Skip Forward (right) ── */}
+        {/* ── Skip Forward (Right) ── */}
         <button onClick={() => press("fwd", onForward)} style={{
           position: "absolute",
           top: "50%", right: 8, transform: "translateY(-50%)",
@@ -396,10 +1067,10 @@ export const IPodContent = () => {
           paddingRight: 12,
           opacity: op("fwd"), transition: "opacity 0.1s",
         }}>
-          <IconPlayerSkipForward style={{ width: 17, height: 17, color: "#666" }} />
+          <IconPlayerSkipForward style={{ width: 17, height: 17, color: curTheme.text }} />
         </button>
 
-        {/* ── Play/Pause (bottom) ── */}
+        {/* ── Play/Pause (Bottom) ── */}
         <button onClick={() => press("play", onPlay)} style={{
           position: "absolute",
           bottom: 8, left: "50%", transform: "translateX(-50%)",
@@ -410,28 +1081,41 @@ export const IPodContent = () => {
           opacity: op("play"), transition: "opacity 0.1s",
         }}>
           {isPlaying
-            ? <IconPlayerPause style={{ width: 17, height: 17, color: "#666" }} />
-            : <IconPlayerPlay  style={{ width: 17, height: 17, color: "#666" }} />}
+            ? <IconPlayerPause style={{ width: 17, height: 17, color: curTheme.text }} />
+            : <IconPlayerPlay  style={{ width: 17, height: 17, color: curTheme.text }} />}
         </button>
 
-        {/* ── Center Select button ── */}
+        {/* ── Center Select Circle ── */}
         <button onClick={() => press("sel", onSelect)} style={{
           position: "absolute",
           top: "50%", left: "50%",
           transform: "translate(-50%, -50%)",
           width: 78, height: 78,
           borderRadius: "50%",
-          background: "linear-gradient(145deg, #eaeaea, #c8c8c8)",
-          boxShadow: [
-            "inset 0 1.5px 3px rgba(255,255,255,0.9)",
-            "inset 0 -1px 2px rgba(0,0,0,0.18)",
-            "0 1px 4px rgba(0,0,0,0.12)",
-          ].join(", "),
+          background: curTheme.center,
+          boxShadow: "inset 0 1.5px 3px rgba(255,255,255,0.7), inset 0 -1px 2px rgba(0,0,0,0.18), 0 1px 4px rgba(0,0,0,0.12)",
           border: "none",
           cursor: "pointer",
           opacity: op("sel"), transition: "opacity 0.1s",
         }} />
       </div>
+
+      {/* Hidden audio element */}
+      <audio
+        ref={audioRef}
+        src={track.src}
+        onTimeUpdate={(e) => {
+          setElapsed(e.currentTarget.currentTime);
+        }}
+        onLoadedMetadata={(e) => {
+          if (e.currentTarget.duration) {
+            setDuration(Math.floor(e.currentTarget.duration));
+          }
+        }}
+        onEnded={() => {
+          setTrackIdx((i) => (i + 1) % TRACKS.length);
+        }}
+      />
     </div>
   );
 };
