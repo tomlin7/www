@@ -594,7 +594,7 @@ export const IPodContent = () => {
   const [extraSel, setExtraSel] = useState(0);
   const [gameSel, setGameSel] = useState(0);
   const [settingSel, setSettingSel] = useState(0);
-  const [themeSel, setThemeSel] = useState(0);
+  const [themeSel, setThemeSel] = useState(1);
 
   // Dynamic values
   const [selectedArtist, setSelectedArtist] = useState("");
@@ -610,7 +610,7 @@ export const IPodContent = () => {
   // Settings
   const [theme, setTheme] = useState<
     "Silver" | "Carbon Black" | "U2 Special Edition"
-  >("Silver");
+  >("Carbon Black");
   const [clicker, setClicker] = useState(true);
 
   // UI styling feedback
@@ -1306,7 +1306,7 @@ export const IPodContent = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        padding: "12px 16px 28px",
+        padding: "36px 16px 28px",
         userSelect: "none",
         width: "100%",
         borderRadius: "inherit",

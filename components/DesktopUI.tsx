@@ -1338,7 +1338,7 @@ export default function DesktopUI() {
                 onMinimize={() => minimizeWindow("ipod")}
                 title=""
                 className="!bg-transparent !border-0 !shadow-none !rounded-[22px] overflow-hidden"
-                headerBg="!bg-gradient-to-b from-[#d8d8d8] to-[#c4c4c4] h-10 flex items-center px-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.6)]"
+                headerBg="absolute top-0 left-0 w-full bg-gradient-to-b from-black/50 to-transparent z-30 h-10 flex items-center px-3"
               >
                 <IPodContent />
               </DraggableWindow>
