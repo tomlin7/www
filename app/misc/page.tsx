@@ -325,10 +325,16 @@ export default function MiscPage() {
     setSignMessage("");
     setSignSuccess(true);
 
-    console.log("syncing to JSONBin...");
-    const ok = await syncToJSONBin(JSONBIN_BIN_ID, updated);
-    if (!ok) {
-      setSignError("Failed to sync to remote bin. See console for details.");
+    if (JSONBIN_BIN_ID) {
+      console.log("syncing to JSONBin...");
+      const ok = await syncToJSONBin(JSONBIN_BIN_ID, updated);
+      if (!ok) {
+        setSignError("Failed to sync to remote bin. See console for details.");
+      }
+    } else {
+      setSignError(
+        "No JSONBin BIN ID configured (NEXT_PUBLIC_JSONBIN_BIN_ID). Unable to save remotely.",
+      );
     }
 
     setTimeout(() => setSignSuccess(false), 2000);

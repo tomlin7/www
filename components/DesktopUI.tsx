@@ -7,6 +7,11 @@ import {
   MessagesAppContent,
   MessagesHeaderCenter,
 } from "@/components/MessagesApp";
+import {
+  SafariAppContent,
+  SafariHeaderCenter,
+  type SafariTab,
+} from "@/components/SafariApp";
 import { Dock, DockItem } from "@/components/Dock";
 import { DesktopFolder } from "@/components/DesktopIcon";
 import { DropdownMenu } from "@/components/DropdownMenu";
@@ -131,6 +136,7 @@ export default function DesktopUI() {
     finder: 39,
     resume: 38,
     messages: 37,
+    safari: 36,
   });
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [openWindows, setOpenWindows] = useState<Record<string, boolean>>({
@@ -138,6 +144,7 @@ export default function DesktopUI() {
     finder: false,
     resume: false,
     messages: false,
+    safari: false,
   });
   const [minimizedWindows, setMinimizedWindows] = useState<
     Record<string, boolean>
@@ -146,8 +153,27 @@ export default function DesktopUI() {
     finder: false,
     resume: false,
     messages: false,
+    safari: false,
   });
   const zCounter = useRef(40);
+
+  // Safari App States
+  const [safariTabs, setSafariTabs] = useState<SafariTab[]>([
+    {
+      id: "google",
+      title: "Google",
+      url: "https://www.google.com",
+      history: ["https://www.google.com"],
+      historyIndex: 0,
+    },
+  ]);
+  const [safariActiveTabId, setSafariActiveTabId] = useState<string>("google");
+  const [safariAddressInput, setSafariAddressInput] = useState<string>(
+    "https://www.google.com",
+  );
+  const [safariIsSidebarOpen, setSafariIsSidebarOpen] =
+    useState<boolean>(false);
+  const [safariRefreshTrigger, setSafariRefreshTrigger] = useState<number>(0);
 
   // Messages App States
   const willyContact = {
@@ -170,7 +196,6 @@ export default function DesktopUI() {
     },
     {
       id: "trev",
-      name: "trev",
       name: "Trev Smith",
       memoji: "https://api.dicebear.com/7.x/adventurer/svg?seed=Trev",
       snippet: "Gotcha covered!",
@@ -532,6 +557,167 @@ export default function DesktopUI() {
     [activateWindow],
   );
 
+  const openSafari = useCallback(() => {
+    activateWindow("safari");
+  }, [activateWindow]);
+
+  const handleSelectSafariTab = useCallback(
+    (id: string) => {
+      setSafariActiveTabId(id);
+      const tab = safariTabs.find((t) => t.id === id);
+      if (tab) {
+        setSafariAddressInput(tab.url);
+      }
+    },
+    [safariTabs],
+  );
+
+  const handleAddSafariTab = useCallback(() => {
+    const newId = `tab-${Date.now()}`;
+    const newTab: SafariTab = {
+      id: newId,
+      title: "New Tab",
+      url: "https://www.google.com",
+      history: ["https://www.google.com"],
+      historyIndex: 0,
+    };
+    setSafariTabs((prev) => [...prev, newTab]);
+    setSafariActiveTabId(newId);
+    setSafariAddressInput("https://www.google.com");
+  }, []);
+
+  const handleCloseSafariTab = useCallback(
+    (id: string, e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (safariTabs.length <= 1) return;
+      const closedIndex = safariTabs.findIndex((t) => t.id === id);
+      const newTabs = safariTabs.filter((t) => t.id !== id);
+      setSafariTabs(newTabs);
+      if (safariActiveTabId === id) {
+        const nextActiveIndex = Math.max(0, closedIndex - 1);
+        const nextTab = newTabs[nextActiveIndex];
+        setSafariActiveTabId(nextTab.id);
+        setSafariAddressInput(nextTab.url);
+      }
+    },
+    [safariTabs, safariActiveTabId],
+  );
+
+  const handleSafariNavigate = useCallback(
+    (url: string) => {
+      let targetUrl = url;
+      const isDomain = url.includes(".") || url.includes("localhost") || url.startsWith("http://") || url.startsWith("https://");
+      const isSearch = !isDomain || (url.includes(" ") && !url.startsWith("http"));
+
+      if (isSearch) {
+        targetUrl = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+      } else if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        if (
+          url.includes("geraudlecarduner.com") ||
+          url.includes("archviews.com") ||
+          url.includes("kvellhome.com") ||
+          url.includes("cleverdesign.co")
+        ) {
+          // Keep as domain
+        } else if (url.includes("localhost")) {
+          targetUrl = `http://${url}`;
+        } else {
+          targetUrl = `https://${url}`;
+        }
+      }
+
+      setSafariTabs((prev) =>
+        prev.map((t) => {
+          if (t.id === safariActiveTabId) {
+            const newHistory = t.history.slice(0, t.historyIndex + 1);
+            newHistory.push(targetUrl);
+
+            let title = "New Tab";
+            if (targetUrl.includes("google.com/search")) {
+              const urlParts = targetUrl.split("?");
+              const searchParamsObj = new URLSearchParams(urlParts[1] || "");
+              let q = searchParamsObj.get("q") || "";
+              if (!q && searchParamsObj.get("url")) {
+                try {
+                  const innerParams = new URLSearchParams(new URL(searchParamsObj.get("url")!).search);
+                  q = innerParams.get("q") || "";
+                } catch(e) {}
+              }
+              title = q ? `${q} - Google Search` : "Google Search";
+            } else if (targetUrl.includes("google.com")) {
+              title = "Google";
+            } else {
+              try {
+                const hostname = new URL(targetUrl.startsWith("http") ? targetUrl : `https://${targetUrl}`).hostname;
+                title = hostname.replace("www.", "");
+              } catch (e) {
+                title = targetUrl
+                  .replace("https://", "")
+                  .replace("http://", "")
+                  .replace("www.", "")
+                  .split("/")[0];
+              }
+            }
+
+            return {
+              ...t,
+              title,
+              url: targetUrl,
+              history: newHistory,
+              historyIndex: newHistory.length - 1,
+            };
+          }
+          return t;
+        }),
+      );
+      setSafariAddressInput(targetUrl);
+    },
+    [safariActiveTabId],
+  );
+
+  const handleSafariGoBack = useCallback(() => {
+    setSafariTabs((prev) =>
+      prev.map((t) => {
+        if (t.id === safariActiveTabId && t.historyIndex > 0) {
+          const newIdx = t.historyIndex - 1;
+          const targetUrl = t.history[newIdx];
+          setSafariAddressInput(targetUrl);
+          return {
+            ...t,
+            url: targetUrl,
+            historyIndex: newIdx,
+          };
+        }
+        return t;
+      }),
+    );
+  }, [safariActiveTabId]);
+
+  const handleSafariGoForward = useCallback(() => {
+    setSafariTabs((prev) =>
+      prev.map((t) => {
+        if (
+          t.id === safariActiveTabId &&
+          t.historyIndex < t.history.length - 1
+        ) {
+          const newIdx = t.historyIndex + 1;
+          const targetUrl = t.history[newIdx];
+          setSafariAddressInput(targetUrl);
+          return {
+            ...t,
+            url: targetUrl,
+            historyIndex: newIdx,
+          };
+        }
+        return t;
+      }),
+    );
+  }, [safariActiveTabId]);
+
+  const handleSafariRefresh = useCallback(() => {
+    setSafariRefreshTrigger((prev) => prev + 1);
+  }, []);
+
   const closeWindow = (id: string) => {
     trigger("nudge");
     setOpenWindows((prev) => ({ ...prev, [id]: false }));
@@ -602,6 +788,22 @@ export default function DesktopUI() {
         ),
         onSelect: () => {
           activateWindow("messages");
+        },
+      },
+      {
+        id: "app_safari",
+        name: "Safari.app",
+        category: "Applications" as const,
+        kind: "Application",
+        icon: (
+          <img
+            src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ddd826358438eda6d_safari.png"
+            alt="Safari"
+            className="w-4 h-4 object-contain"
+          />
+        ),
+        onSelect: () => {
+          activateWindow("safari");
         },
       },
     ];
@@ -1062,6 +1264,58 @@ export default function DesktopUI() {
                 />
               </DraggableWindow>
             )}
+
+            {/* Safari Window */}
+            {openWindows["safari"] && !minimizedWindows["safari"] && (
+              <DraggableWindow
+                id="win-safari"
+                initialPos={{ x: 100, y: 70 }}
+                width="w-[900px]"
+                zIndex={zIndexMap["safari"]}
+                isActive={activeWindow === "safari"}
+                onActivate={() => activateWindow("safari")}
+                onClose={() => closeWindow("safari")}
+                onMinimize={() => minimizeWindow("safari")}
+                title=""
+                className="bg-[#e8e8e8] text-neutral-800"
+                headerBg="w-full bg-[#e8e8e8] h-12 flex items-center"
+                headerCenter={
+                  <SafariHeaderCenter
+                    tabs={safariTabs}
+                    activeTabId={safariActiveTabId}
+                    onSelectTab={handleSelectSafariTab}
+                    onCloseTab={handleCloseSafariTab}
+                    onAddTab={handleAddSafariTab}
+                    addressInput={safariAddressInput}
+                    setAddressInput={setSafariAddressInput}
+                    onNavigate={handleSafariNavigate}
+                    onGoBack={handleSafariGoBack}
+                    onGoForward={handleSafariGoForward}
+                    onRefresh={handleSafariRefresh}
+                    isSidebarOpen={safariIsSidebarOpen}
+                    setIsSidebarOpen={setSafariIsSidebarOpen}
+                    refreshTrigger={safariRefreshTrigger}
+                  />
+                }
+              >
+                <SafariAppContent
+                  tabs={safariTabs}
+                  activeTabId={safariActiveTabId}
+                  onSelectTab={handleSelectSafariTab}
+                  onCloseTab={handleCloseSafariTab}
+                  onAddTab={handleAddSafariTab}
+                  addressInput={safariAddressInput}
+                  setAddressInput={setSafariAddressInput}
+                  onNavigate={handleSafariNavigate}
+                  onGoBack={handleSafariGoBack}
+                  onGoForward={handleSafariGoForward}
+                  onRefresh={handleSafariRefresh}
+                  isSidebarOpen={safariIsSidebarOpen}
+                  setIsSidebarOpen={setSafariIsSidebarOpen}
+                  refreshTrigger={safariRefreshTrigger}
+                />
+              </DraggableWindow>
+            )}
           </main>
 
           {/* Dock */}
@@ -1112,7 +1366,11 @@ export default function DesktopUI() {
               />
             </DockItem>
             <div className="h-10 w-[1px] bg-white/10 mx-1"></div>
-            <DockItem tooltip="Safari">
+            <DockItem
+              tooltip="Safari"
+              dot={openWindows["safari"]}
+              onClick={openSafari}
+            >
               <img
                 src="https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ddd826358438eda6d_safari.png"
                 alt="Safari"
