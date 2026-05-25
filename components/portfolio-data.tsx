@@ -2262,19 +2262,15 @@ export const FinderWindowContent = ({
                   })()}
 
                 {selectedItem.experienceId && (
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(
-                        "dheerajcofficial@gmail.com",
-                      );
-                      trigger?.("success");
-                      alert("Recruiter email copied to clipboard!");
-                    }}
+                  <a
+                    href="https://notion.so"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-full max-w-[200px] py-1.5 px-3 bg-[#0a84ff] hover:bg-[#0070e3] active:scale-95 transition-all text-white rounded-md text-xs font-medium text-center flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm"
                   >
-                    <IconMail className="w-3.5 h-3.5" />
-                    <span>Copy Email</span>
-                  </button>
+                    <IconExternalLink className="w-3.5 h-3.5" />
+                    <span>View on Notion</span>
+                  </a>
                 )}
 
                 {selectedItem.isFolder && (
