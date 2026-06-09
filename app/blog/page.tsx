@@ -42,11 +42,11 @@ export default function BlogPage() {
           {/* Main Card Container */}
           <div className="bg-[#111111] rounded-[24px] p-5 flex flex-col md:flex-row gap-6 cursor-pointer transition-all duration-300 relative z-10 group-hover:bg-[#151515] group-hover:shadow-[0_4px_20px_rgb(0,0,0,0.1)]">
             {/* Thumbnail Image Box */}
-            <div className="w-full md:w-52 h-32 rounded-xl overflow-hidden relative bg-[#181818] flex-shrink-0 flex items-center justify-center p-4">
+            <div className="w-full md:w-52 h-40 rounded-xl overflow-hidden relative bg-[#181818] flex-shrink-0 flex items-center justify-center">
               <img
-                src="https://raw.githubusercontent.com/atom/atom/master/resources/atom.png"
+                src="https://miro.medium.com/v2/resize:fit:720/format:webp/1*AniBQwGluIusmH2BMNMUPA.png"
                 alt="Atom Logo"
-                className="w-14 h-14 object-contain group-hover:scale-105 transition-transform duration-500 opacity-75 group-hover:opacity-95"
+                className="object-contain group-hover:scale-105 transition-transform duration-500 opacity-75 group-hover:opacity-95"
               />
               {/* Subtle overlay grid pattern */}
               <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808006_1px,transparent_1px),linear-gradient(to_bottom,#80808006_1px,transparent_1px)] bg-[size:10px_10px]" />
@@ -68,7 +68,10 @@ export default function BlogPage() {
                 </h3>
 
                 <p className="text-white/60 text-[13px] leading-relaxed mb-4 max-w-3xl">
-                  Three years ago today, Atom was archived. Yet its ideas still define how we write code. A deep dive into the legacy of the editor that brought web technologies (Electron), hackable packages, and modern customizability to developer tools.
+                  Three years ago today, Atom was archived. Yet its ideas still
+                  define how we write code. A deep dive into the legacy of the
+                  editor that brought web technologies (Electron), hackable
+                  packages, and modern customizability to developer tools.
                 </p>
               </div>
 
@@ -80,9 +83,7 @@ export default function BlogPage() {
           </div>
 
           {/* Sliding Tab for Hover State */}
-          <div
-            className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-full group-hover:translate-y-[-2px] opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out z-0 bg-[#151515] text-[10px] tracking-wider uppercase font-semibold text-white/45 px-4 pt-2 pb-1.5 rounded-b-xl pointer-events-none whitespace-nowrap shadow-md flex items-center gap-1"
-          >
+          <div className="absolute top-full left-1/2 -translate-x-1/2 -translate-y-full group-hover:translate-y-[-2px] opacity-0 group-hover:opacity-100 transition-all duration-300 ease-out z-0 bg-[#151515] text-[10px] tracking-wider uppercase font-semibold text-white/45 px-4 pt-2 pb-1.5 rounded-b-xl pointer-events-none whitespace-nowrap shadow-md flex items-center gap-1">
             <span>Read Article</span>
             <IconExternalLink className="w-3 h-3 text-white/40" />
           </div>

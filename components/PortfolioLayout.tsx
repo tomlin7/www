@@ -218,7 +218,7 @@ export default function PortfolioLayout({
         <div className="flex-grow">{children}</div>
 
         {/* Global Footer info */}
-        <div className="max-w-[1000px] mx-auto w-full px-6 pt-20 pb-12 flex flex-col gap-8">
+        <div className="max-w-[1000px] mx-auto w-full px-6 pt-10 pb-12 flex flex-col gap-8">
           {/* Top Banner (Cream Card) */}
           <div className="bg-[#FAF6EE] rounded-full px-6 py-2.5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm border border-black/5">
             <span className="text-black font-semibold text-[15px] text-center md:text-left tracking-tight">
