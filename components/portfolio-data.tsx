@@ -2261,17 +2261,35 @@ export const FinderWindowContent = ({
                     );
                   })()}
 
-                {selectedItem.experienceId && (
-                  <a
-                    href="https://notion.so"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full max-w-[200px] py-1.5 px-3 bg-[#0a84ff] hover:bg-[#0070e3] active:scale-95 transition-all text-white rounded-md text-xs font-medium text-center flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm"
-                  >
-                    <IconExternalLink className="w-3.5 h-3.5" />
-                    <span>View on Notion</span>
-                  </a>
-                )}
+                {selectedItem.experienceId &&
+                  (() => {
+                    let notionLink =
+                      "https://tomlin7.notion.site/36c88f368552811b8cc8f8ad6e70a8e0?v=36c88f36855281d69853000ca2e6234b&pvs=74";
+                    if (selectedItem.experienceId === "exp_morvion") {
+                      notionLink =
+                        "https://tomlin7.notion.site/Morvion-36c88f368552812c8553f551dc52b02c";
+                    } else if (selectedItem.experienceId === "exp_hooman") {
+                      notionLink =
+                        "https://tomlin7.notion.site/Hooman-Digital-36c88f3685528137b698e0e25e09c558";
+                    } else if (selectedItem.experienceId === "exp_nitc") {
+                      notionLink =
+                        "https://tomlin7.notion.site/NIT-Calicut-Research-Development-36c88f36855281d8ae14e6f9d61ec81f";
+                    } else if (selectedItem.experienceId === "exp_ozi") {
+                      notionLink =
+                        "https://tomlin7.notion.site/OZi-36c88f36855281a4a5bbf4285e861068";
+                    }
+                    return (
+                      <a
+                        href={notionLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full max-w-[200px] py-1.5 px-3 bg-[#0a84ff] hover:bg-[#0070e3] active:scale-95 transition-all text-white rounded-md text-xs font-medium text-center flex items-center justify-center space-x-1.5 cursor-pointer shadow-sm"
+                      >
+                        <IconExternalLink className="w-3.5 h-3.5" />
+                        <span>Visit Portfolio</span>
+                      </a>
+                    );
+                  })()}
 
                 {selectedItem.isFolder && (
                   <button
