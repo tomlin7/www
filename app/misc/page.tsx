@@ -14,6 +14,7 @@ import {
   IconAlertCircle,
   IconCheck,
 } from "@tabler/icons-react";
+import FishPond from "@/components/FishPond";
 
 interface Message {
   sender: "user" | "ai";
@@ -577,9 +578,9 @@ export default function MiscPage() {
           </div>
         </div>
 
-        {/* Module 4: Reserved Future Cell */}
-        <div className="bg-[#111111]/45 rounded-[24px] p-5 h-[220px] flex flex-col items-center justify-center text-center relative overflow-hidden select-none">
-          coming soon
+        {/* Module 4: Interactive Koi Fish Pond */}
+        <div className="bg-[#111111] rounded-[24px] h-[220px] flex flex-col relative overflow-hidden border border-transparent shadow-[0_4px_20px_rgba(0,0,0,0.1)]">
+          <FishPond />
         </div>
       </div>
     </div>
