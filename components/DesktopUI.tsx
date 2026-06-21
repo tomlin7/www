@@ -105,7 +105,7 @@ const generateWillyResponse = (input: string): string => {
     return "Hello! 👋 I'm Willy, a bot designed by Dheeraj. Feel free to ask me about my key projects, workspace setup, engineering intern experience, or core programming skills!";
   }
   if (query.includes("contact") || query.includes("email")) {
-    return "You can get in touch with me directly at dheerajcofficial@gmail.com. Let's build something cool!";
+    return "You can get in touch with me directly at hello@tomlin7.com. Let's build something cool!";
   }
   if (
     query.includes("education") ||

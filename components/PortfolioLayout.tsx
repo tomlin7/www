@@ -226,7 +226,7 @@ export default function PortfolioLayout({
             </span>
             <button
               onClick={() => {
-                navigator.clipboard.writeText("dheerajcofficial@gmail.com");
+                navigator.clipboard.writeText("hello@tomlin7.com");
               }}
               data-haptic="success"
               className="bg-black hover:bg-[#151515] text-white font-bold text-[13px] px-5 py-2.5 rounded-full transition-all active:scale-95 flex items-center gap-1.5 shadow-sm my-0.5 cursor-pointer"

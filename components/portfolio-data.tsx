@@ -861,7 +861,7 @@ export const ProfileWindowContent = () => {
               />
               <h2 className="text-xl text-white">Dheeraj C.</h2>
               <p className="text-[12px] text-white/50">
-                dheerajcofficial@gmail.com
+                hello@tomlin7.com
               </p>
             </div>
 
@@ -1067,7 +1067,7 @@ export const ProfileWindowContent = () => {
 
             <div className="bg-[#2a2a2c] rounded-xl border border-white/5 overflow-hidden divide-y divide-white/5">
               <a
-                href="mailto:dheerajcofficial@gmail.com"
+                href="mailto:hello@tomlin7.com"
                 className="flex items-center justify-between px-4 py-3.5 hover:bg-white/5 transition-colors group"
               >
                 <div className="flex items-center space-x-3">
@@ -1079,7 +1079,7 @@ export const ProfileWindowContent = () => {
                       Email Address
                     </span>
                     <span className="text-[13px] text-white font-semibold group-hover:underline">
-                      dheerajcofficial@gmail.com
+                      hello@tomlin7.com
                     </span>
                   </div>
                 </div>
@@ -1735,7 +1735,7 @@ export const FinderWindowContent = ({
   const handleCopyLink = () => {
     if (!selectedItem) return;
     const project = allProjectsList.find((p) => p.id === selectedItem.id);
-    const link = project ? project.github : "dheerajcofficial@gmail.com";
+    const link = project ? project.github : "hello@tomlin7.com";
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -1936,7 +1936,7 @@ export const FinderWindowContent = ({
                     )}
                   </button>
                   <a
-                    href="mailto:dheerajcofficial@gmail.com"
+                    href="mailto:hello@tomlin7.com"
                     className="w-full text-left px-2 py-1.5 hover:bg-blue-600 rounded flex items-center justify-between block"
                   >
                     <span>Email Dheeraj</span>
