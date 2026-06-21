@@ -254,7 +254,7 @@ export default function MiscPage() {
       query.includes("tech") ||
       query.includes("stack")
     ) {
-      return "Here's my core technical stack:\n• Languages: Python, Go, Rust, C++, TypeScript, SQL\n• Frameworks: Node.js, FastAPI, Next.js, Django, OpenGL\n• Infrastructure: Supabase, PostgreSQL, Kubernetes, AWS\n• AI tools: PyTorch, LangChain, vector search DBs (Pinecone)";
+      return "Here's my core technical stack:\n• Languages: Python, Go (Golang), Modern C++ (C++17/20), TypeScript, Rust, Assembly (x86/ARM), SQL, Bash\n• Backend & Architecture: Microservices, REST/gRPC/GraphQL API Design, Protobuf, WebSockets, IPC, Ledgers\n• Data & Streaming: Apache Kafka, RabbitMQ (AMQP), Redis Pub/Sub, Asynchronous Event-Driven Architecture\n• Storage & Reliability: Distributed SQL (Cloud Spanner, CockroachDB), PostgreSQL, pgvector, Redis Cluster, Database Sharding, Connection Pooling, Rate-Limiting, Idempotency Patterns\n• AI & Agentic Infrastructure: Agentic AI, Multi-Agent Systems (LangGraph), Tool Calling, Model Context Protocol (MCP), Context Engineering, Retrieval-Augmented Generation (RAG), Vector Search Systems (Pinecone/Qdrant), LLMs, PyTorch\n• Systems & Tooling: Linux Systems Programming, LLVM, Concurrency & Multithreading\n• Infrastructure & DevOps: Docker, Kubernetes, OpenTelemetry, Grafana, CI/CD, GitHub Actions, Shell Scripting";
     }
     if (
       query.includes("hello") ||

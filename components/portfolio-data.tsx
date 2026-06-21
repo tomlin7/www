@@ -931,31 +931,35 @@ export const ProfileWindowContent = () => {
               {[
                 {
                   name: "Languages",
-                  value: "Python, C++, Go, TypeScript, Rust, SQL, Bash",
+                  value: "Python, Go (Golang), Modern C++ (C++17/20), TypeScript, Rust, Assembly (x86/ARM), SQL, Bash",
                 },
                 {
-                  name: "Frameworks & Backend",
-                  value: "Node.js, Django, FastAPI, Express.js, Next.js, React",
+                  name: "Backend & Arch",
+                  value: "Microservices, REST/gRPC/GraphQL API Design, Protobuf, WebSockets, IPC, Ledgers",
                 },
                 {
-                  name: "Systems & Graphics",
-                  value:
-                    "WebAssembly, compiler design, LLVM, OpenGL, GLFW, Glad",
+                  name: "Data & Streaming",
+                  value: "Apache Kafka, RabbitMQ (AMQP), Redis Pub/Sub, Asynchronous Event-Driven Architecture",
                 },
                 {
-                  name: "DevOps & Data",
-                  value:
-                    "PostgreSQL, Supabase, Redis, Docker, Kubernetes, AWS, Terraform, Kafka",
+                  name: "Storage & Reliability",
+                  value: "Distributed SQL (Cloud Spanner, CockroachDB), PostgreSQL, pgvector, Redis Cluster, Database Sharding, Connection Pooling, Rate-Limiting, Idempotency Patterns",
                 },
                 {
-                  name: "AI & Neural Research",
-                  value:
-                    "Gemini, Claude, LangChain, Pinecone, PyTorch, HuggingFace",
+                  name: "AI & Agentic Infra",
+                  value: "Agentic AI, Multi-Agent Systems (LangGraph), Tool Calling, Model Context Protocol (MCP), Context Engineering, Retrieval-Augmented Generation (RAG), Vector Search Systems (Pinecone/Qdrant), LLMs, PyTorch",
+                },
+                {
+                  name: "Systems & Tooling",
+                  value: "Linux Systems Programming, LLVM, Concurrency & Multithreading, WebAssembly, compiler design, OpenGL",
+                },
+                {
+                  name: "DevOps & Infra",
+                  value: "Docker, Kubernetes, OpenTelemetry, Grafana, CI/CD, GitHub Actions, Shell Scripting, AWS, GCP, Terraform",
                 },
                 {
                   name: "Work Environments",
-                  value:
-                    "Linux (Ubuntu / Arch), macOS, Windows, Neovim / VSCode",
+                  value: "Linux (Ubuntu / Arch), macOS, Windows, Neovim / VSCode",
                 },
               ].map((spec, i) => (
                 <div
