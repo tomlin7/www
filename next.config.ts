@@ -74,6 +74,11 @@ const nextConfig: NextConfig = {
         destination: "mailto:hello@tomlin7.com",
         permanent: true,
       },
+      {
+        source: "/rss",
+        destination: "/rss.xml",
+        permanent: true,
+      },
     ];
   },
 };
