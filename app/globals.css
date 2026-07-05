@@ -465,8 +465,14 @@ body {
 /* highlighted lines (if used) */
 .blog-code-block [data-highlighted-line] {
     background: rgba(255, 255, 255, 0.05);
-    border-left: 2px solid rgba(96, 165, 250, 0.6);
+    border-left: 2px solid rgba(255, 255, 255, 0.2);
     margin: 0 -1.25rem;
     padding: 0 1.25rem;
+}
+
+/* Monochrome — strip all Shiki token colours */
+.blog-code-block pre code span {
+    color: rgba(255, 255, 255, 0.78) !important;
+    font-style: normal !important;
 }
 
