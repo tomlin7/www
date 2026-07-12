@@ -3,14 +3,14 @@ import { getPostData, getSortedPostsData } from "@/lib/posts";
 import Link from "next/link";
 import {
   IconArrowLeft,
-  IconBook,
   IconCalendar,
   IconClock,
   IconTag,
-  IconExternalLink,
 } from "@tabler/icons-react";
 import { MDXRemote } from "next-mdx-remote/rsc";
-import "@/app/globals.css"; // Ensure global styles are loaded
+import rehypePrettyCode from "rehype-pretty-code";
+import "@/app/globals.css";
+import { CopyButton } from "@/components/CopyButton";
 
 export const dynamic = "force-static";
 
@@ -25,9 +25,36 @@ interface PostProps {
   params: Promise<{ slug: string }>;
 }
 
+const rehypePrettyCodeOptions = {
+  theme: "github-dark-dimmed",
+  keepBackground: false,
+};
+
 const customComponents = {
-  // Define custom components here that can be used directly in markdown/mdx
-  // Example: Card: (props) => <div className="p-5 bg-white/[0.03] border border-white/5 rounded-2xl" {...props} />
+  // Wrap <pre> to show a language badge and copy button
+  pre: (props: React.HTMLAttributes<HTMLPreElement> & { "data-language"?: string }) => {
+    const lang = props["data-language"] ?? "";
+    // Extract raw text from children for the copy button
+    const extractText = (node: React.ReactNode): string => {
+      if (typeof node === "string") return node;
+      if (Array.isArray(node)) return node.map(extractText).join("");
+      if (React.isValidElement(node) && node.props) {
+        return extractText((node.props as { children?: React.ReactNode }).children);
+      }
+      return "";
+    };
+    const codeText = extractText(props.children);
+
+    return (
+      <div className="blog-code-block">
+        <div className="blog-code-header">
+          <span className="blog-code-lang">{lang || "code"}</span>
+          <CopyButton text={codeText} />
+        </div>
+        <pre {...props} />
+      </div>
+    );
+  },
 };
 
 export default async function Post({ params }: PostProps) {
@@ -85,21 +112,16 @@ export default async function Post({ params }: PostProps) {
 
       {/* Article Content */}
       <div className="mb-8">
-        <article
-          className="prose prose-invert max-w-none text-[15px] leading-relaxed text-white/80 space-y-6
-            prose-headings:text-white prose-headings:font-bold prose-headings:tracking-tight
-            prose-h2:text-xl prose-h2:mt-8 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/5 prose-h2:pb-2
-            prose-h3:text-lg prose-h3:mt-6 prose-h3:mb-3
-            prose-p:mb-4
-            prose-a:text-blue-400 prose-a:underline hover:prose-a:text-blue-300
-            prose-strong:text-white
-            prose-ul:list-disc prose-ul:pl-6 prose-ul:space-y-2
-            prose-ol:list-decimal prose-ol:pl-6 prose-ol:space-y-2
-            prose-blockquote:border-l-4 prose-blockquote:border-white/10 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-white/60
-            prose-code:text-[13px] prose-code:bg-white/5 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
-            prose-pre:bg-[#111111] prose-pre:border prose-pre:border-white/5 prose-pre:p-4 prose-pre:rounded-xl prose-pre:font-mono prose-pre:overflow-x-auto"
-        >
-          <MDXRemote source={postData.content || ""} components={customComponents} />
+        <article className="blog-article">
+          <MDXRemote
+            source={postData.content || ""}
+            components={customComponents}
+            options={{
+              mdxOptions: {
+                rehypePlugins: [[rehypePrettyCode as never, rehypePrettyCodeOptions]],
+              },
+            }}
+          />
         </article>
       </div>
     </div>
