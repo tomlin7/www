@@ -23,6 +23,13 @@ import {
 } from "@tabler/icons-react";
 import Image from "next/image";
 import { allProjectsList } from "@/components/portfolio-data";
+import {
+  biscuitInstallLine,
+  educationMarketing,
+  employment,
+  highlightsLine,
+  homepageSkills,
+} from "@/lib/site-copy";
 
 const getProjectGradient = (id: string) => {
   const gradients: Record<string, string> = {
@@ -563,8 +570,7 @@ export default function AboutPage() {
               </motion.span>
             </h1>
             <p className="text-white/90 text-[18px] leading-[1.6] max-w-[800px]">
-              Computer Science student at BIT Mesra building AI-native systems
-              and full-stack applications.
+              {educationMarketing}
             </p>
           </div>
 
@@ -576,7 +582,7 @@ export default function AboutPage() {
               </span>
             </div>
             <p className="text-white text-[16px] font-medium tracking-normal">
-              250+ GitHub ★ · LeetCode Knight (Top 6%) · BIT Mesra CS '27
+              {highlightsLine}
             </p>
           </div>
         </div>
@@ -631,8 +637,7 @@ export default function AboutPage() {
                 </p>
               </div>
               <motion.a
-                href="/Resume.pdf"
-                download
+                href="/resume"
                 whileHover="hover"
                 whileTap={{ scale: 0.96 }}
                 data-haptic="success"
@@ -649,7 +654,7 @@ export default function AboutPage() {
                 />
 
                 <span className="relative z-10 flex items-center gap-1.5 transition-colors duration-300 group-hover:text-orange-600">
-                  Download Resume
+                  View Resume
                   <motion.span
                     className="inline-block"
                     variants={{
@@ -657,7 +662,7 @@ export default function AboutPage() {
                     }}
                     transition={{ type: "spring", stiffness: 300, damping: 10 }}
                   >
-                    ↓
+                    →
                   </motion.span>
                 </span>
               </motion.a>
@@ -690,8 +695,8 @@ export default function AboutPage() {
                 Biscuit
               </span>
               <p className="text-white/80 text-[14px] leading-relaxed font-normal">
-                An open-source AI code editor that autonomously understands
-                repositories, writes code, and executes multi-step workflows.
+                {biscuitInstallLine}. An AI code editor that understands
+                repositories, writes code, and runs multi-step workflows.
               </p>
             </div>
           </div>
@@ -733,45 +738,16 @@ export default function AboutPage() {
                 Employment
               </p>
               <div className="flex flex-col gap-3">
-                {[
-                  {
-                    company: "Morvion",
-                    role: "Software Engineer Intern",
-                    date: "Dec '25 – Mar '26",
-                    logo: "https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304675/morvion_logo_qw4vfy.jpg",
-                    link: "https://tomlin7.notion.site/Morvion-36c88f368552812c8553f551dc52b02c",
-                  },
-                  {
-                    company: "Hooman Digital",
-                    role: "Full-Stack Developer Intern",
-                    date: "Jul '25 – Oct '25",
-                    logo: "https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304319/hooman_digital_logo_qdclr3.jpg",
-                    link: "https://tomlin7.notion.site/Hooman-Digital-36c88f3685528137b698e0e25e09c558",
-                  },
-                  {
-                    company: "NIT Calicut",
-                    role: "Deep Learning Research Intern",
-                    date: "May '25 – Jul '25",
-                    logo: "https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304559/gceknewlogos_glexcj.png",
-                    link: "https://tomlin7.notion.site/NIT-Calicut-Research-Development-36c88f36855281d8ae14e6f9d61ec81f",
-                  },
-                  {
-                    company: "Ozi",
-                    role: "Software Engineer Intern",
-                    date: "Nov '24 – Feb '25",
-                    logo: "https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304733/ozi-logo_2025-10-07-072401_gxyx_fs76wl.png",
-                    link: "https://tomlin7.notion.site/OZi-36c88f36855281a4a5bbf4285e861068",
-                  },
-                ].map((exp, i, arr) => (
-                  <div key={i} className="flex flex-col gap-3">
+                {employment.map((exp, i, arr) => (
+                  <div key={exp.id} className="flex flex-col gap-3">
                     <a
                       href={exp.link}
                       target="_blank"
                       rel="noopener noreferrer"
                       data-haptic="nudge"
-                      className="group/item flex items-center justify-between gap-2 p-2 -m-2 rounded-2xl hover:bg-white/[0.03] transition-all duration-300"
+                      className="group/item flex items-start justify-between gap-2 p-2 -m-2 rounded-2xl hover:bg-white/[0.03] transition-all duration-300"
                     >
-                      <div className="flex items-center gap-2.5">
+                      <div className="flex items-start gap-2.5">
                         <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#1a1a1a] shrink-0 border border-white/5 transition-transform group-hover/item:scale-105 duration-300">
                           <Image
                             width={40}
@@ -788,11 +764,20 @@ export default function AboutPage() {
                           </p>
                           <p className="text-[12px] text-white/70 group-hover/item:text-white/80 transition-colors duration-300">
                             {exp.role}
+                            {exp.department ? ` · ${exp.department}` : ""}
+                          </p>
+                          {exp.project && (
+                            <p className="text-[11px] text-white/45 mt-0.5 leading-snug">
+                              {exp.project}
+                            </p>
+                          )}
+                          <p className="text-[11px] text-white/40 mt-0.5">
+                            {exp.location}
                           </p>
                         </div>
                       </div>
-                      <span className="text-[12px] text-white/50 group-hover/item:text-white/70 transition-colors duration-300 whitespace-nowrap shrink-0">
-                        {exp.date}
+                      <span className="text-[12px] text-white/50 group-hover/item:text-white/70 transition-colors duration-300 whitespace-nowrap shrink-0 pt-1">
+                        {exp.periodShort}
                       </span>
                     </a>
                     {i < arr.length - 1 && (
@@ -837,217 +822,14 @@ export default function AboutPage() {
               </span>
             </div>
             <p className="text-white/80 text-sm leading-snug">
-              Tools and technologies I work with, and I'm good at.
+              Languages, backends, and infra I use in internships, research, and
+              Biscuit.
             </p>
           </div>
 
           {/* Skill categories */}
           <div className="flex flex-col gap-3.5">
-            {[
-              {
-                label: "Languages",
-                skills: [
-                  {
-                    name: "Python",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
-                  },
-                  {
-                    name: "Golang",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original-wordmark.svg",
-                  },
-                  {
-                    name: "C++",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg",
-                  },
-                  {
-                    name: "JavaScript",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg",
-                  },
-                  {
-                    name: "TypeScript",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg",
-                  },
-                  {
-                    name: "Rust",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rust/rust-original.svg",
-                    invert: true,
-                  },
-                  {
-                    name: "Assembly",
-                    icon: "",
-                  },
-                  {
-                    name: "SQL",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
-                  },
-                  {
-                    name: "Bash",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bash/bash-original.svg",
-                  },
-                ],
-              },
-              {
-                label: "Backend & Protocols",
-                skills: [
-                  {
-                    name: "Node.js",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
-                  },
-                  {
-                    name: "Express.js",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg",
-                    invert: true,
-                  },
-                  {
-                    name: "Django",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/django/django-plain.svg",
-                  },
-                  {
-                    name: "FastAPI",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg",
-                  },
-                  {
-                    name: "Protobuf",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/google/default.svg",
-                  },
-                  {
-                    name: "WebSockets",
-                    icon: "",
-                  },
-                  {
-                    name: "gRPC",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/grpc/default.svg",
-                  },
-                  {
-                    name: "GraphQL",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/graphql/graphql-plain.svg",
-                  },
-                ],
-              },
-              {
-                label: "Databases & Messaging",
-                skills: [
-                  {
-                    name: "PostgreSQL",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
-                  },
-                  {
-                    name: "Cloud Spanner",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg",
-                  },
-                  {
-                    name: "CockroachDB",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/cockroach-labs/default.svg",
-                  },
-                  {
-                    name: "Supabase",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg",
-                  },
-                  {
-                    name: "Redis",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/redis/redis-original.svg",
-                  },
-                  {
-                    name: "Kafka",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/apachekafka/apachekafka-original.svg",
-                    invert: true,
-                  },
-                  {
-                    name: "RabbitMQ",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rabbitmq/rabbitmq-original.svg",
-                  },
-                ],
-              },
-              {
-                label: "AI & Vector Search",
-                skills: [
-                  {
-                    name: "LangChain",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/langchain/default.svg",
-                    invert: true,
-                  },
-                  {
-                    name: "MCP",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/model-context-protocol/default.svg",
-                  },
-                  {
-                    name: "Pinecone",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/pinecone/mono.svg",
-                    invert: true,
-                  },
-                  {
-                    name: "Qdrant",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/qdrant/default.svg",
-                  },
-                  {
-                    name: "PyTorch",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pytorch/pytorch-original.svg",
-                  },
-                  {
-                    name: "scikit-learn",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/scikitlearn/scikitlearn-original.svg",
-                  },
-                  {
-                    name: "Claude",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/anthropic/default.svg",
-                  },
-                  {
-                    name: "Gemini",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/gemini/default.svg",
-                  },
-                ],
-              },
-              {
-                label: "Systems & DevOps",
-                skills: [
-                  {
-                    name: "Linux",
-                    icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/linux/default.svg",
-                  },
-                  {
-                    name: "LLVM",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/llvm/llvm-original.svg",
-                  },
-                  {
-                    name: "WebAssembly",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/wasm/wasm-original.svg",
-                  },
-                  {
-                    name: "Docker",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
-                  },
-                  {
-                    name: "Kubernetes",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-original.svg",
-                  },
-                  {
-                    name: "Terraform",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/terraform/terraform-original.svg",
-                  },
-                  {
-                    name: "AWS",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-plain-wordmark.svg",
-                  },
-                  {
-                    name: "GCP",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg",
-                  },
-                  {
-                    name: "OpenTelemetry",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/opentelemetry/opentelemetry-original.svg",
-                  },
-                  {
-                    name: "Grafana",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/grafana/grafana-original.svg",
-                  },
-                  {
-                    name: "GitHub Actions",
-                    icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
-                    invert: true,
-                  },
-                ],
-              },
-            ].map(({ label, skills }) => (
+            {homepageSkills.map(({ label, skills }) => (
               <div key={label}>
                 <p className="text-[10px] text-white/40 uppercase tracking-wider font-semibold mb-1.5">
                   {label}
@@ -1062,7 +844,7 @@ export default function AboutPage() {
                         <img
                           src={s.icon}
                           alt={s.name}
-                          className={`w-3.5 h-3.5 object-contain flex-shrink-0 ${(s as any).invert ? "invert brightness-200" : ""}`}
+                          className={`w-3.5 h-3.5 object-contain flex-shrink-0 ${s.invert ? "invert brightness-200" : ""}`}
                         />
                       ) : (
                         <span className="text-[12.5px] leading-none shrink-0">

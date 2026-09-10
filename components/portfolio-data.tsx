@@ -47,6 +47,12 @@ import {
   IconFolderFilled,
   IconUsers,
 } from "@tabler/icons-react";
+import {
+  BISCUIT_STARS,
+  employment,
+  LEETCODE_PEAK_RATING,
+  LEETCODE_SOLVED,
+} from "@/lib/site-copy";
 
 export const finderMenuItems = [
   { label: "About This Mac", separator: true },
@@ -328,8 +334,8 @@ export const allProjectsList: Project[] = [
     category: "systems-languages",
     description:
       "A fast, extensible, native code editor with integrated agent capabilities, designed to be ultra-lightweight (<20 MB) with Tree-sitter highlighting.",
-    stars: 256,
-    forks: 32,
+    stars: BISCUIT_STARS,
+    forks: 34,
     github: "https://github.com/tomlin7/biscuit",
     technologies: [
       "Python",
@@ -345,9 +351,9 @@ export const allProjectsList: Project[] = [
     problemSolved:
       "Provides a highly performant and lightweight code editor that can be easily extended and integrated with AI agents, avoiding the heavy resource footprint of Electron-based editors.",
     impactCreated:
-      "Gained 256 stars and achieved a sub-20MB memory footprint, improving developer productivity by 25% by reducing cognitive load and automating repetitive coding tasks.",
+      `Gained ${BISCUIT_STARS}+ GitHub stars and a sub-20MB memory footprint as an open-source AI IDE (pip install biscuit-editor).`,
     recruiterPoints: [
-      "Developed a high-performance, native code editor (biscuit) with 250+ stars, demonstrating expertise in building scalable developer tools.",
+        `Developed a high-performance, native code editor (biscuit) with ${BISCUIT_STARS}+ GitHub stars (pip install biscuit-editor).`,
       "Integrated AI agent capabilities into the editor, enhancing developer productivity by 25% through intelligent code assistance and automation.",
       "Designed an extensible architecture supporting a rich plugin ecosystem, showcasing strong skills in API design and community-focused builds.",
     ],
@@ -711,64 +717,16 @@ export interface Experience {
   dateModified: string;
 }
 
-export const allExperiencesList: Experience[] = [
-  {
-    id: "exp_morvion",
-    title: "Software Engineer Intern",
-    company: "Morvion",
-    location: "ZH, Switzerland (Remote)",
-    period: "Dec 2025 – Mar 2026",
-    bullets: [
-      "Architected and deployed a full-scale CRM from scratch using Next.js, FastAPI, and PostgreSQL.",
-      "Engineered production-ready SaaS features, improving client onboarding speeds by 35%.",
-      "Optimized database queries and API endpoints, reducing page response latency by 20%.",
-    ],
-    tags: ["Work"],
-    dateModified: "March 15, 2026 at 6:00 PM",
-  },
-  {
-    id: "exp_hooman",
-    title: "Full-Stack Developer Intern",
-    company: "Hooman Digital",
-    location: "India (Remote)",
-    period: "Jul 2025 – Oct 2025",
-    bullets: [
-      "Architected chartor.ai, an AI-powered conversational search client for relational databases.",
-      "Standardized internal company infrastructure with automated Docker deployment pipelines.",
-      "Created custom dashboard widgets utilizing React and dynamic charting engines.",
-    ],
-    tags: ["Work"],
-    dateModified: "October 05, 2025 at 5:00 PM",
-  },
-  {
-    id: "exp_nitc",
-    title: "Deep Learning Research Intern",
-    company: "NIT Calicut",
-    location: "Calicut, India",
-    period: "May 2025 – Jul 2025",
-    bullets: [
-      "Developed CNN-Transformer fusion models for advanced computer vision and time-series analysis.",
-      "Collaborated on neural research, accelerating model training steps by 30% via PyTorch optimizations.",
-      "Preprocessed and cleaned large datasets of traffic and telemetry information.",
-    ],
-    tags: ["Work"],
-    dateModified: "July 20, 2025 at 4:30 PM",
-  },
-  {
-    id: "exp_ozi",
-    title: "Software Engineer Intern",
-    company: "Ozi",
-    location: "Gurugram, India (Remote)",
-    period: "Nov 2024 – Feb 2025",
-    bullets: [
-      "Architected the zero-to-one MVP for a social utility application.",
-      "Engineered foundational full-stack infrastructure, handling secure user authentication and profiles.",
-      "Designed real-time messaging services with persistent storage.",
-    ],
-    tags: ["Work"],
-    dateModified: "February 15, 2025 at 12:00 PM",
-  },
-];
+export const allExperiencesList: Experience[] = employment.map((e) => ({
+  id: e.id,
+  title: e.department ? `${e.role} (${e.department})` : e.role,
+  company: e.company,
+  location: e.location,
+  period: e.period,
+  bullets: e.project ? [e.project, ...e.bullets] : e.bullets,
+  tags: ["Work"],
+  dateModified: e.dateModified,
+}));
 
 export const ProfileWindowContent = () => {
   const [activeTab, setActiveTab] = useState("apple-account");
@@ -931,31 +889,15 @@ export const ProfileWindowContent = () => {
               {[
                 {
                   name: "Languages",
-                  value: "Python, Go (Golang), Modern C++ (C++17/20), TypeScript, Rust, Assembly (x86/ARM), SQL, Bash",
+                  value: "Python, Rust, TypeScript, C++, Go",
                 },
                 {
-                  name: "Backend & Arch",
-                  value: "Microservices, REST/gRPC/GraphQL API Design, Protobuf, WebSockets, IPC, Ledgers",
+                  name: "Product & backends",
+                  value: "React, Django, FastAPI",
                 },
                 {
-                  name: "Data & Streaming",
-                  value: "Apache Kafka, RabbitMQ (AMQP), Redis Pub/Sub, Asynchronous Event-Driven Architecture",
-                },
-                {
-                  name: "Storage & Reliability",
-                  value: "Distributed SQL (Cloud Spanner, CockroachDB), PostgreSQL, pgvector, Redis Cluster, Database Sharding, Connection Pooling, Rate-Limiting, Idempotency Patterns",
-                },
-                {
-                  name: "AI & Agentic Infra",
-                  value: "Agentic AI, Multi-Agent Systems (LangGraph), Tool Calling, Model Context Protocol (MCP), Context Engineering, Retrieval-Augmented Generation (RAG), Vector Search Systems (Pinecone/Qdrant), LLMs, PyTorch",
-                },
-                {
-                  name: "Systems & Tooling",
-                  value: "Linux Systems Programming, LLVM, Concurrency & Multithreading, WebAssembly, compiler design, OpenGL",
-                },
-                {
-                  name: "DevOps & Infra",
-                  value: "Docker, Kubernetes, OpenTelemetry, Grafana, CI/CD, GitHub Actions, Shell Scripting, AWS, GCP, Terraform",
+                  name: "Infra & research",
+                  value: "Docker, AWS SQS, PyTorch",
                 },
                 {
                   name: "Work Environments",
@@ -1018,11 +960,10 @@ export const ProfileWindowContent = () => {
                     LeetCode Competitive Rating
                   </h3>
                   <p className="text-xs text-blue-400 font-semibold">
-                    Knight (Top 6%)
+                    {LEETCODE_SOLVED} solved · peak rating {LEETCODE_PEAK_RATING}
                   </p>
                   <p className="text-[11px] text-white/40 font-medium mt-1">
-                    600+ problems solved, robust command of data structures &
-                    algorithms
+                    Accepted solutions and contest peak rating
                   </p>
                 </div>
               </div>
@@ -1262,7 +1203,7 @@ export const FinderWindowContent = ({
         id: "dir_experience",
         name: "Experience",
         kind: "Folder",
-        size: "4 items",
+        size: "3 items",
         tags: ["Work"],
         dateModified: "May 23, 2026 at 6:00 PM",
         isFolder: true,
@@ -1334,19 +1275,19 @@ export const FinderWindowContent = ({
         id: "biscuit",
         name: "biscuit.app",
         kind: "Systems App",
-        size: "256 stars",
+        size: `${BISCUIT_STARS} stars`,
         tags: ["Urgent", "Work"],
         dateModified: "May 23, 2026 at 11:15 AM",
         projectId: "biscuit",
       },
       {
-        id: "exp_morvion",
-        name: "Morvion.job",
+        id: "exp_hooman",
+        name: "Hooman.job",
         kind: "Document",
-        size: "3 points",
+        size: "5 points",
         tags: ["Work"],
-        dateModified: "March 15, 2026 at 6:00 PM",
-        experienceId: "exp_morvion",
+        dateModified: "September 30, 2025 at 5:00 PM",
+        experienceId: "exp_hooman",
       },
     ],
     shared: [],
@@ -1656,15 +1597,6 @@ export const FinderWindowContent = ({
     }
 
     // Job / internship items checks
-    if (item.id === "exp_morvion") {
-      return (
-        <img
-          src="https://res.cloudinary.com/dwmxbkhch/image/upload/f_auto,q_auto/v1779304675/morvion_logo_qw4vfy.jpg"
-          alt="Morvion"
-          className="w-10 h-10 object-cover rounded-lg group-hover:scale-105 transition-transform shadow-sm"
-        />
-      );
-    }
     if (item.id === "exp_hooman") {
       return (
         <img
@@ -2269,10 +2201,7 @@ export const FinderWindowContent = ({
                   (() => {
                     let notionLink =
                       "https://tomlin7.notion.site/36c88f368552811b8cc8f8ad6e70a8e0?v=36c88f36855281d69853000ca2e6234b&pvs=74";
-                    if (selectedItem.experienceId === "exp_morvion") {
-                      notionLink =
-                        "https://tomlin7.notion.site/Morvion-36c88f368552812c8553f551dc52b02c";
-                    } else if (selectedItem.experienceId === "exp_hooman") {
+                    if (selectedItem.experienceId === "exp_hooman") {
                       notionLink =
                         "https://tomlin7.notion.site/Hooman-Digital-36c88f3685528137b698e0e25e09c558";
                     } else if (selectedItem.experienceId === "exp_nitc") {
