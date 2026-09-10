@@ -63,7 +63,7 @@ const generateWillyResponse = (input: string): string => {
   const query = input.toLowerCase();
 
   if (query.includes("biscuit")) {
-    return "Biscuit is my native, lightweight code editor written in Python and Tree-sitter. It operates under 20MB, features integrated AI coding agents, and has collected 256+ stars on GitHub.";
+    return "Biscuit is my native, lightweight code editor written in Python and Tree-sitter. It operates under 20MB, features integrated AI coding agents, and has collected 268+ stars on GitHub (pip install biscuit-editor).";
   }
   if (query.includes("ted")) {
     return "ted is an agent-native IDE platform built with Tauri, Rust, and WebAssembly. It streamlines agentic code-manipulation loops, yielding 30% faster execution and a 40% reduction in startup lag.";

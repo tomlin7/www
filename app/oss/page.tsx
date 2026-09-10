@@ -25,20 +25,31 @@ export default function OssPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 6000);
+
     fetch(
       "https://api.github.com/search/issues?q=author:tomlin7+type:pr+is:public&sort=created&order=desc&per_page=10",
+      { signal: controller.signal },
     )
       .then((res) => res.json())
       .then((data) => {
         if (data.items) {
           setPrs(data.items);
         }
-        setLoading(false);
       })
       .catch((err) => {
         console.error(err);
+      })
+      .finally(() => {
+        clearTimeout(timer);
         setLoading(false);
       });
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
   }, []);
 
   return (
