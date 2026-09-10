@@ -10,8 +10,8 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/resume",
-        destination: "/Resume.pdf",
+        source: "/about",
+        destination: "/",
         permanent: true,
       },
       {

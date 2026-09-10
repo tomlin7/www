@@ -272,7 +272,7 @@ export default function ProjectsPage() {
       category: "systems-languages",
       description:
         "A fast, extensible, native code editor with integrated agent capabilities, designed to be ultra-lightweight (<20 MB) with Tree-sitter highlighting.",
-      stars: 256,
+      stars: 268,
       github: "https://github.com/tomlin7/biscuit",
       technologies: [
         "Python",
@@ -288,9 +288,9 @@ export default function ProjectsPage() {
       problemSolved:
         "Provides a highly performant and lightweight code editor that can be easily extended and integrated with AI agents, avoiding the heavy resource footprint of Electron-based editors.",
       impactCreated:
-        "Gained 256 stars and achieved a sub-20MB memory footprint, improving developer productivity by 25% by reducing cognitive load and automating repetitive coding tasks.",
+        "Gained 268+ GitHub stars and a sub-20MB memory footprint as an open-source AI IDE (pip install biscuit-editor).",
       recruiterPoints: [
-        "Developed a high-performance, native code editor (biscuit) with 250+ stars, demonstrating expertise in building scalable and user-centric developer tools.",
+        "Developed a high-performance, native code editor (biscuit) with 268+ GitHub stars (pip install biscuit-editor).",
         "Integrated AI agent capabilities into the editor, enhancing developer productivity by 25% through intelligent code assistance and automation.",
         "Designed an extensible architecture supporting a rich plugin ecosystem, showcasing strong skills in API design and fostering community contributions.",
       ],

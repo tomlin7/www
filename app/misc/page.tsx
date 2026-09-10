@@ -246,7 +246,7 @@ export default function MiscPage() {
       query.includes("internship") ||
       query.includes("intern")
     ) {
-      return "My professional experience includes:\n• Morvion (Software Engineer Intern, Dec '25 – Mar '26): Built scalable backend architectures.\n• Hooman Digital (Full-Stack Developer Intern, Jul '25 – Oct '25): Developed responsive client interfaces.\n• NIT Calicut (Deep Learning Research Intern, May '25 – Jul '25): Focused on computer vision and neural systems.\n• Ozi (Software Engineer Intern, Nov '24 – Feb '25): Built backend endpoints and scripting.";
+      return "My professional experience includes:\n• Hooman Digital LLP (AI/ML Engineer Intern, July 2025 – Sept 2025, Kolkata): LLM pipelines, SSE log streaming, AWS SQS.\n• NIT Calicut (Research Intern, Dept. of Computer Engineering, May 2025 – July 2025): A Transformer-Based Approach for Raw EEG Classification.\n• OZI (Software Development Engineer Intern, Nov 2024 – Jan 2025, Gurgaon): production MVP features and search APIs.";
     }
     if (
       query.includes("skills") ||
@@ -254,7 +254,7 @@ export default function MiscPage() {
       query.includes("tech") ||
       query.includes("stack")
     ) {
-      return "Here's my core technical stack:\n• Languages: Python, Go (Golang), Modern C++ (C++17/20), TypeScript, Rust, Assembly (x86/ARM), SQL, Bash\n• Backend & Architecture: Microservices, REST/gRPC/GraphQL API Design, Protobuf, WebSockets, IPC, Ledgers\n• Data & Streaming: Apache Kafka, RabbitMQ (AMQP), Redis Pub/Sub, Asynchronous Event-Driven Architecture\n• Storage & Reliability: Distributed SQL (Cloud Spanner, CockroachDB), PostgreSQL, pgvector, Redis Cluster, Database Sharding, Connection Pooling, Rate-Limiting, Idempotency Patterns\n• AI & Agentic Infrastructure: Agentic AI, Multi-Agent Systems (LangGraph), Tool Calling, Model Context Protocol (MCP), Context Engineering, Retrieval-Augmented Generation (RAG), Vector Search Systems (Pinecone/Qdrant), LLMs, PyTorch\n• Systems & Tooling: Linux Systems Programming, LLVM, Concurrency & Multithreading\n• Infrastructure & DevOps: Docker, Kubernetes, OpenTelemetry, Grafana, CI/CD, GitHub Actions, Shell Scripting";
+      return "Here's my core technical stack:\n• Languages: Python, Rust, TypeScript, C++, Go\n• Product & backends: React, Django, FastAPI\n• Infra & research: Docker, AWS SQS, PyTorch";
     }
     if (
       query.includes("hello") ||
@@ -280,7 +280,7 @@ export default function MiscPage() {
       return "Ember is a modular, real-time C++ game engine with OpenGL, GLFW, and an ImGui debug overlay that cuts prototyping cycles by 25%.";
     }
 
-    return "I'm Willy, a bot designed by Dheeraj. Try asking me about:\n• Key projects (like Biscuit, ted, Hypercode)\n• Work history (Morvion, Hooman Digital)\n• Tech stack and skills\n• Contact details";
+    return "I'm Willy, a bot designed by Dheeraj. Try asking me about:\n• Key projects (like Biscuit, ted, Hypercode)\n• Work history (Hooman Digital, NIT Calicut, OZI)\n• Tech stack and skills\n• Contact details";
   };
 
   // --- Guestbook Logic ---
