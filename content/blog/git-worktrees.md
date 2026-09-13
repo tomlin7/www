@@ -1,125 +1,134 @@
 ---
-title: "The Death of `git stash`: Why You Should Be Using Git Worktrees Instead"
+title: "Why I Stopped Using git stash for Everything (Git Worktrees)"
 date: "2026-07-05"
 category: "Engineering"
-readTime: "7 min read"
-description: "You've been stashing and popping for years, paying a hidden mental tax every time production breaks mid-feature. Git Worktrees — built into Git since 2015 — eliminate context switching entirely. Here's how, and why the whole industry is finally catching on."
+readTime: "5 min read"
+description: "How switching to git worktrees helped me stop losing context when reviewing teammate PRs or fixing quick bugs mid-task, plus practical commands and things to watch out for."
 image: "https://git-scm.com/images/logos/downloads/Git-Logo-White.png"
 ---
 
-Let's look at a scenario that happens to every developer at least once a day.
+When I started working on team projects, this happened to me almost every week:
 
-You're deep in the zone, halfway through building a complex new feature. Your working directory is a beautiful mess of uncommitted changes, half-written functions, and console logs. Suddenly, Slack chimes. A critical bug just hit production, and you need to drop everything to push a hotfix.
+I’m in the middle of writing a feature or working on a task. My code is half-done, uncommitted, with debug logs everywhere. Suddenly, a teammate asks: *"Hey, can you pull my branch and check if this looks good?"* or a quick bug needs to be checked on `main`.
 
-If you're working in a traditional, single-directory Git workflow, your immediate reaction is probably a familiar sequence of terminal commands:
+My default move was always `git stash`:
 
 ```bash
-git stash save "wip: broken login logic"
+git stash save "wip"
 git checkout main
-git pull origin main
-git checkout -b hotfix-urgent-bug
-# ...fix the bug, commit, push, wait for CI to pass...
-git checkout feature-branch
+# ...test things or fix stuff...
+git checkout my-feature-branch
 git stash pop
 ```
 
-Phew. You're back. But are you *really* back?
+Most of the time it worked, but sometimes:
+- I’d forget what I stashed or end up with 5 different `WIP` entries in `git stash list`.
+- My dev server or local build would get messed up switching between branches.
+- I'd occasionally get annoying stash conflicts on files I was literally just writing.
 
-Your IDE context is completely blown. Files you were working on are closed or reloaded. Your mental model of where you left off is shattered. If the hotfix changed core files, your local dev server might be throwing a fit until you delete `node_modules` or re-run your package installer. And let's not even talk about the underlying anxiety of running into a nasty stash conflict on your own unfinished code.
-
-It turns out we've been forcing ourselves through this context-switching nightmare for years when a better solution has been built directly into Git since 2015.
-
-It's called **Git Worktrees**.
+Last year I learned about **Git Worktrees**. It's built directly into Git, and it completely changed how I handle these situations.
 
 ---
 
 ## What is a Git Worktree?
 
-By default, when you clone a repository, Git links your history (the `.git` folder) to exactly one working directory. When you switch branches, Git swaps out the physical files in that single folder to match the target branch.
+Normally, your cloned repo is tied to **one** working directory. When you switch branches, Git swaps files in and out of that same folder.
 
-A **worktree** breaks this one-to-one relationship. It allows you to check out multiple branches of the same repository into **separate sibling directories** simultaneously, all while sharing a single, central `.git` history.
+A **worktree** lets you have **multiple branches checked out in separate folders at the same time**, while still sharing the same `.git` history.
 
-Instead of tearing down your current environment to fix a bug, you simply spin up a brand-new directory next to your project, fix the issue there, and delete it when you're done. Your original editor window remains completely untouched.
+Instead of putting your unfinished work away to switch branches, you just open another folder for the other branch. Your current editor window stays untouched.
 
 ---
 
-## Context Switching: The Worktree Way
+## The Workflow (Step-by-Step)
 
-Let's replay that exact same production emergency, but this time using worktrees. You're on your feature branch, your code is uncommitted, and the emergency call comes in.
+### 1. Create a worktree
 
-Instead of stashing, you run a single command:
+Say you're working in `my-project` on branch `feature-a`. You need to quickly test a colleague's PR or fix a bug on `main`.
+
+Run this from your repo root:
 
 ```bash
-git worktree add ../hotfix-workspace -b hotfix-bug main
+git worktree add ../my-project-hotfix -b bugfix main
 ```
 
-In less than a second, Git does something incredible:
+This does three things:
+1. Creates a new folder `../my-project-hotfix` outside your current directory.
+2. Creates a new branch called `bugfix` starting from `main`.
+3. Checks it out in that folder.
 
-1. It creates a brand-new folder called `hotfix-workspace` right next to your main project folder.
-2. It bases this folder on your `main` branch.
-3. It automatically creates and checks out a new branch called `hotfix-bug` inside that folder.
-
-Now, you open that new folder in a separate IDE window (or `cd` into it via your terminal).
+If you just want to check out an existing branch (like reviewing someone's branch `teammate-pr`):
 
 ```bash
-cd ../hotfix-workspace
-# ...make your changes, run tests...
+git worktree add ../review-pr teammate-pr
+```
+
+### 2. Do the work
+
+Open that folder in a new VS Code / editor window or terminal:
+
+```bash
+cd ../my-project-hotfix
+# make fixes, run tests, commit, push
 git add .
-git commit -m "fix: resolve critical button crash"
-git push origin hotfix-bug
+git commit -m "fix: typo in route config"
+git push origin bugfix
 ```
 
-You open the Pull Request, tag your reviewers, and switch your attention right back to your original IDE window. Your unfinished feature code is exactly where you left it. No stashing, no popping, zero friction.
+Meanwhile, your other editor window with your original feature is sitting right where you left it. Nothing was stashed, no terminal died.
 
-Once the PR is merged, clean-up is a breeze:
+### 3. Cleanup when done
+
+Once you've pushed your fix or finished reviewing, cleaning up takes 2 commands:
 
 ```bash
-cd ../main-project
-git worktree remove ../hotfix-workspace
+# 1. Remove the worktree folder
+git worktree remove ../my-project-hotfix
+
+# 2. Delete the branch locally if you don't need it anymore
+git branch -d bugfix
 ```
 
-The temporary directory vanishes, your central Git history stays perfectly synced, and your main workspace remains undisturbed.
+To see all currently active worktrees:
+
+```bash
+git worktree list
+```
+
+If you manually deleted a worktree folder using your file explorer instead of running `git worktree remove`, clean up Git's tracking with:
+
+```bash
+git worktree prune
+```
 
 ---
 
-## Why are Worktrees Suddenly Gaining Massive Popularity?
+## Things to Care About (What caught me off guard)
 
-If worktrees have been around for over a decade, why is the engineering community suddenly talking about them like they're the next big thing?
+Worktrees are super useful, but here are the practical gotchas I ran into:
 
-The answer lies in how modern software development has evolved:
+### 1. Your `.env` files are NOT copied
+Git only checks out tracked files. Any local `.env`, `.env.local`, or ignored config files won't exist in the new folder.
+You will need to manually copy your `.env` over before running your app:
 
-1. **The Rise of Parallel AI Coding:** With AI agents and advanced coding assistants capable of generating code, running tests, and reviewing PRs autonomously, development is becoming highly asynchronous. Developers and agents are increasingly running multiple coding sessions in parallel. Worktrees provide the perfect, isolated sandbox for this kind of concurrent workflow.
-2. **Tooling Integration:** Major developer tools have finally treated worktrees as first-class citizens. Modern IDEs like VS Code feature native worktree management, and agentic platforms (like the GitHub Copilot app) now use worktrees as their default execution mode to prevent interrupting human developers.
-3. **"Review Culture" over "Writing Culture":** Code maintenance now involves constant jumping between testing a peer's branch locally, verifying a bug report, and working on your own features. Worktrees turn a painful context switch into a simple multi-window layout.
+```bash
+cp ../my-project/.env.local ../my-project-hotfix/
+```
 
----
+### 2. Dependencies & Disk Space
+Because it's a physically separate directory, it doesn't share `node_modules` or build artifacts with your main repo.
+- You have to run `npm install` (or `bun install`, `pnpm install`, etc.) in the new folder.
+- If your project has a 1GB `node_modules` folder, 3 worktrees mean ~3GB of disk space. Don't leave 10 old worktrees hanging around.
 
-## The Catch: What to Watch Out For
-
-While worktrees feel like magic, they aren't completely free. There are a few engineering trade-offs you need to manage:
-
-### 1. Dependency Bloat
-
-Because each worktree is a physically separate directory on your machine, it requires its own independent copies of your dependencies. If you are working on a massive enterprise project where `npm install` or a heavy Docker layer takes up gigabytes of disk space, spinning up 4 or 5 parallel worktrees can drain your local storage incredibly quickly.
-
-### 2. The One-Branch Constraint
-
-To protect your repository against data corruption, Git enforces a strict rule: **you cannot check out the exact same branch in two different worktrees at the same time.** If you try to do this, Git will block the command. If you need to look at a branch that is already active elsewhere, you'll have to jump to that specific directory or create a new tracking branch.
-
-### 3. Folder Management & `.gitignore`
-
-If you choose to create your worktree directories *inside* your main repository folder rather than as sibling folders outside of it, you must remember to add them to your global `.gitignore` or local `.git/info/exclude`. Otherwise, Git will track your new workspaces as untracked directories, cluttering your status outputs.
+### 3. You can't checkout the same branch twice
+Git doesn't let two worktrees be on the exact same branch at the same time to prevent file conflicts. If `main` is checked out in your main repo, you can't checkout `main` in a worktree without detaching HEAD or creating a new branch off it (like `-b temp-main`).
 
 ---
 
-## The Verdict: Should You Switch?
+## Is `git stash` actually useless now?
 
-Like any architectural pattern in software engineering, the ultimate answer is: *it depends.*
+Not at all. I still use `git stash` when:
+- I want a quick 10-second check: *"Did my changes break this test, or was it already broken?"* (stash -> run test -> stash pop).
+- I have 2 uncommitted lines I want to carry over to another branch.
 
-If your daily workflow consists of linear feature development where you finish one task completely before moving to the next, a traditional branching model works perfectly fine.
-
-But if your day is defined by frequent interruptions, rapid code reviews, hotfix emergencies, or collaboration with automated AI developer tools, adopting Git worktrees is one of the highest-ROI workflow adjustments you can make. It entirely eliminates the mental tax of context switching, giving you the freedom to work truly in parallel.
-
----
-
-**Are you ready to drop `git stash`? Try running your first `git worktree add` on your next task and share your experience in the comments below!**
+For anything that takes more than 5 minutes—like testing someone's PR or fixing a bug while your feature is half-baked—**worktrees are just way less stressful**.
