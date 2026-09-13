@@ -32,7 +32,12 @@ export async function generateMetadata({ params }: PostProps): Promise<Metadata>
   const postData = await getPostData(slug);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tomlin7.com";
   const canonicalUrl = `${baseUrl}/blog/${slug}`;
-  const ogImage = postData.image || `${baseUrl}/opengraph-image`;
+  const rawImage = postData.image;
+  const ogImage = !rawImage
+    ? `${baseUrl}/blog/${slug}/opengraph-image`
+    : rawImage.startsWith("http")
+    ? rawImage
+    : `${baseUrl}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
   const publishedTime = postData.date ? new Date(postData.date).toISOString() : undefined;
 
   return {
@@ -111,6 +116,12 @@ export default async function Post({ params }: PostProps) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tomlin7.com";
   const postUrl = `${baseUrl}/blog/${slug}`;
   const publishedIso = postData.date ? new Date(postData.date).toISOString() : undefined;
+  const rawImage = postData.image;
+  const postImage = !rawImage
+    ? `${baseUrl}/blog/${slug}/opengraph-image`
+    : rawImage.startsWith("http")
+    ? rawImage
+    : `${baseUrl}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -139,7 +150,7 @@ export default async function Post({ params }: PostProps) {
       name: "Dheeraj",
       url: baseUrl,
     },
-    image: postData.image || `${baseUrl}/opengraph-image`,
+    image: postImage,
     articleSection: postData.category,
     keywords: [postData.category, "Software Engineering", "Tech", "Programming"].filter(Boolean),
   };
