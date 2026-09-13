@@ -4,7 +4,7 @@ date: "2026-07-05"
 category: "Engineering"
 readTime: "5 min read"
 description: "How switching to git worktrees helped me stop losing context when reviewing teammate PRs or fixing quick bugs mid-task, plus practical commands and things to watch out for."
-image: "https://fsck.sh/assets/images/posts/2024-07/2024-07-26-git-worktree-hero.jpeg"
+image: "/blog/git-worktree-hero.jpeg"
 ---
 
 When I started working on team projects, this happened to me almost every week:
