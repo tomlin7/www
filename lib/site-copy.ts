@@ -106,6 +106,14 @@ export const homepageSkills: {
     label: "Languages",
     skills: [
       {
+        name: "C++",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg",
+      },
+      {
+        name: "Go",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original-wordmark.svg",
+      },
+      {
         name: "Python",
         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
       },
@@ -119,21 +127,156 @@ export const homepageSkills: {
         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg",
       },
       {
-        name: "C++",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg",
+        name: "SQL",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
       },
       {
-        name: "Go",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/go/go-original-wordmark.svg",
+        name: "Bash",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/bash/bash-original.svg",
       },
     ],
   },
   {
-    label: "Product & backends",
+    label: "Systems",
     skills: [
+      {
+        name: "Linux",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/linux/default.svg",
+      },
+      {
+        name: "Concurrency",
+        icon: "",
+      },
+      {
+        name: "IPC",
+        icon: "",
+      },
+      {
+        name: "LLVM",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/llvm/llvm-original.svg",
+      },
+      {
+        name: "gRPC",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/grpc/default.svg",
+      },
+      {
+        name: "Protobuf",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/google/default.svg",
+      },
+      {
+        name: "GraphQL",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/graphql/graphql-plain.svg",
+      },
+    ],
+  },
+  {
+    label: "Infrastructure & Tools",
+    skills: [
+      {
+        name: "PostgreSQL",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
+      },
+      {
+        name: "CockroachDB",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/cockroach-labs/default.svg",
+      },
+      {
+        name: "Redis",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/redis/redis-original.svg",
+      },
+      {
+        name: "Kafka",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/apachekafka/apachekafka-original.svg",
+        invert: true,
+      },
+      {
+        name: "RabbitMQ",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/rabbitmq/rabbitmq-original.svg",
+      },
+      {
+        name: "Docker",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
+      },
+      {
+        name: "Kubernetes",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/kubernetes/kubernetes-original.svg",
+      },
+      {
+        name: "GCP",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/googlecloud/googlecloud-original.svg",
+      },
+      {
+        name: "AWS",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-plain-wordmark.svg",
+      },
+      {
+        name: "Grafana",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/grafana/grafana-original.svg",
+      },
+      {
+        name: "GitHub Actions",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
+        invert: true,
+      },
+      {
+        name: "Supabase",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/supabase/supabase-original.svg",
+      },
+    ],
+  },
+  {
+    label: "AI Engineering",
+    skills: [
+      {
+        name: "LangGraph",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/langchain/default.svg",
+        invert: true,
+      },
+      {
+        name: "MCP",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/model-context-protocol/default.svg",
+      },
+      {
+        name: "RAG",
+        icon: "",
+      },
+      {
+        name: "pgvector",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/postgresql/postgresql-original.svg",
+      },
+      {
+        name: "Pinecone",
+        icon: "https://cdn.jsdelivr.net/gh/glincker/thesvg@main/public/icons/pinecone/mono.svg",
+        invert: true,
+      },
+      {
+        name: "PyTorch",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pytorch/pytorch-original.svg",
+      },
+      {
+        name: "pandas",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pandas/pandas-original.svg",
+      },
+    ],
+  },
+  {
+    label: "Frameworks",
+    skills: [
+      {
+        name: "Tauri",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tauri/tauri-original.svg",
+      },
+      {
+        name: "Electron",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/electron/electron-original.svg",
+      },
       {
         name: "React",
         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
+      },
+      {
+        name: "Node.js",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
       },
       {
         name: "Django",
@@ -143,22 +286,10 @@ export const homepageSkills: {
         name: "FastAPI",
         icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/fastapi/fastapi-original.svg",
       },
-    ],
-  },
-  {
-    label: "Infra & research",
-    skills: [
       {
-        name: "Docker",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/docker/docker-original.svg",
-      },
-      {
-        name: "AWS SQS",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/amazonwebservices/amazonwebservices-plain-wordmark.svg",
-      },
-      {
-        name: "PyTorch",
-        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/pytorch/pytorch-original.svg",
+        name: "Express.js",
+        icon: "https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/express/express-original.svg",
+        invert: true,
       },
     ],
   },
