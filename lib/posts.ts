@@ -62,6 +62,10 @@ export async function getPostData(slug: string): Promise<PostData> {
     fullPath = path.join(postsDirectory, fileName);
   }
 
+  if (!fs.existsSync(fullPath)) {
+    throw new Error(`Post not found: ${slug}`);
+  }
+
   const fileContents = fs.readFileSync(fullPath, "utf8");
   const matterResult = matter(fileContents);
 
@@ -76,4 +80,19 @@ export async function getPostData(slug: string): Promise<PostData> {
     image: matterResult.data.image,
     mediumLink: matterResult.data.mediumLink,
   };
+}
+
+export function getPostRaw(slug: string): string | null {
+  let fileName = `${slug}.mdx`;
+  let fullPath = path.join(postsDirectory, fileName);
+  if (!fs.existsSync(fullPath)) {
+    fileName = `${slug}.md`;
+    fullPath = path.join(postsDirectory, fileName);
+  }
+
+  if (!fs.existsSync(fullPath)) {
+    return null;
+  }
+
+  return fs.readFileSync(fullPath, "utf8");
 }

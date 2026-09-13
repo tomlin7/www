@@ -828,6 +828,7 @@ export default function AboutPage() {
           </div>
 
           {/* Skill categories */}
+          <div className="flex flex-col gap-3.5">
             {homepageSkills.map(({ label, skills }) => (
               <div key={label}>
                 <p className="text-[10px] text-white/40 uppercase tracking-wider font-semibold mb-1.5">

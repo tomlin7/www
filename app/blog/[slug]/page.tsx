@@ -1,4 +1,5 @@
 import React from "react";
+import type { Metadata } from "next";
 import { getPostData, getSortedPostsData } from "@/lib/posts";
 import Link from "next/link";
 import {
@@ -6,6 +7,7 @@ import {
   IconCalendar,
   IconClock,
   IconTag,
+  IconMarkdown,
 } from "@tabler/icons-react";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import rehypePrettyCode from "rehype-pretty-code";
@@ -23,6 +25,52 @@ export async function generateStaticParams() {
 
 interface PostProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PostProps): Promise<Metadata> {
+  const { slug } = await params;
+  const postData = await getPostData(slug);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tomlin7.com";
+  const canonicalUrl = `${baseUrl}/blog/${slug}`;
+  const ogImage = postData.image || `${baseUrl}/opengraph-image`;
+  const publishedTime = postData.date ? new Date(postData.date).toISOString() : undefined;
+
+  return {
+    title: postData.title,
+    description: postData.description,
+    authors: [{ name: "Dheeraj (tomlin7)", url: baseUrl }],
+    alternates: {
+      canonical: canonicalUrl,
+      types: {
+        "text/markdown": `${baseUrl}/blog/${slug}.md`,
+      },
+    },
+    openGraph: {
+      title: postData.title,
+      description: postData.description,
+      url: canonicalUrl,
+      siteName: "tomlin7",
+      type: "article",
+      publishedTime,
+      authors: ["Dheeraj (tomlin7)"],
+      tags: postData.category ? [postData.category] : undefined,
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: postData.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: postData.title,
+      description: postData.description,
+      creator: "@tomfricks",
+      images: [ogImage],
+    },
+  };
 }
 
 const rehypePrettyCodeOptions = {
@@ -60,17 +108,75 @@ const customComponents = {
 export default async function Post({ params }: PostProps) {
   const { slug } = await params;
   const postData = await getPostData(slug);
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tomlin7.com";
+  const postUrl = `${baseUrl}/blog/${slug}`;
+  const publishedIso = postData.date ? new Date(postData.date).toISOString() : undefined;
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: postData.title,
+    description: postData.description,
+    datePublished: publishedIso,
+    dateModified: publishedIso,
+    inLanguage: "en-US",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": postUrl,
+    },
+    author: {
+      "@type": "Person",
+      name: "Dheeraj",
+      url: baseUrl,
+      sameAs: [
+        "https://github.com/tomlin7",
+        "https://linkedin.com/in/initdhee",
+        "https://x.com/tomfricks",
+      ],
+    },
+    publisher: {
+      "@type": "Person",
+      name: "Dheeraj",
+      url: baseUrl,
+    },
+    image: postData.image || `${baseUrl}/opengraph-image`,
+    articleSection: postData.category,
+    keywords: [postData.category, "Software Engineering", "Tech", "Programming"].filter(Boolean),
+  };
 
   return (
     <div className="max-w-[800px] mx-auto px-4 md:px-6 py-20 font-sans text-white/90">
-      {/* Back button */}
-      <Link
-        href="/blog"
-        className="inline-flex items-center gap-2 text-white/50 hover:text-white text-[13px] font-semibold tracking-normal mb-8 transition-colors group cursor-pointer"
-      >
-        <IconArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
-        <span>Back to Blog</span>
-      </Link>
+      {/* Structured Data for Search Engines and AI Crawlers */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
+
+      {/* Navigation & Utilities */}
+      <div className="flex items-center justify-between gap-4 mb-8">
+        <Link
+          href="/blog"
+          className="inline-flex items-center gap-2 text-white/50 hover:text-white text-[13px] font-semibold tracking-normal transition-colors group cursor-pointer"
+        >
+          <IconArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
+          <span>Back to Blog</span>
+        </Link>
+
+        {/* AI & Developer Markdown link */}
+        <a
+          href={`/blog/${slug}.md`}
+          target="_blank"
+          rel="alternate"
+          type="text/markdown"
+          className="inline-flex items-center gap-1.5 text-[11px] text-white/40 hover:text-white/80 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/15 px-2.5 py-1 rounded-md transition-all cursor-pointer font-mono"
+          title="Read clean markdown (LLM & AI friendly)"
+        >
+          <IconMarkdown className="w-3.5 h-3.5" />
+          <span>Raw .md</span>
+        </a>
+      </div>
 
       {/* Header Info */}
       <header className="space-y-4 pb-8 border-b border-white/5 mb-8">
@@ -81,7 +187,7 @@ export default async function Post({ params }: PostProps) {
           </span>
           <span className="flex items-center gap-1">
             <IconCalendar className="w-3.5 h-3.5" />
-            {postData.date}
+            <time dateTime={postData.date}>{postData.date}</time>
           </span>
           <span>•</span>
           <span className="flex items-center gap-1">

@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: __dirname,
+  },
   /* config options here */
   images: {
     remotePatterns: [
@@ -78,6 +81,14 @@ const nextConfig: NextConfig = {
         source: "/rss",
         destination: "/rss.xml",
         permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/blog/:slug.md",
+        destination: "/blog/:slug/raw",
       },
     ];
   },
