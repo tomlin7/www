@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: PostProps): Promise<Metadata>
   const postData = await getPostData(slug);
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tomlin7.com";
   const canonicalUrl = `${baseUrl}/blog/${slug}`;
-  const ogImage = postData.image || `${baseUrl}/opengraph-image`;
+  const ogImage = postData.image || `${baseUrl}/blog/${slug}/opengraph-image`;
   const publishedTime = postData.date ? new Date(postData.date).toISOString() : undefined;
 
   return {

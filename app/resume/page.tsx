@@ -7,10 +7,44 @@ import {
   resumeSkills,
 } from "@/lib/site-copy";
 
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://tomlin7.com";
+const ogImage = `${baseUrl}/api/og?title=${encodeURIComponent(
+  "Resume — Dheeraj C."
+)}&desc=${encodeURIComponent(
+  "Computer Engineering @ BIT Mesra. Systems, Graphics, AI Agents, and Full-Stack development. Maintainer of Biscuit."
+)}&badge=Resume`;
+
 export const metadata: Metadata = {
   title: "Resume — Dheeraj C.",
   description:
     "B.Tech Computer Engineering, BIT Mesra / Ranchi. AI/ML Engineer Intern, Research Intern, SDE Intern. Maintainer of Biscuit.",
+  alternates: {
+    canonical: "/resume",
+  },
+  openGraph: {
+    title: "Resume — Dheeraj C. | tomlin7",
+    description:
+      "B.Tech Computer Engineering, BIT Mesra / Ranchi. AI/ML Engineer Intern, Research Intern, SDE Intern. Maintainer of Biscuit.",
+    url: "/resume",
+    siteName: "tomlin7",
+    type: "profile",
+    images: [
+      {
+        url: ogImage,
+        width: 1200,
+        height: 630,
+        alt: "Resume — Dheeraj C.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Resume — Dheeraj C. | tomlin7",
+    description:
+      "B.Tech Computer Engineering, BIT Mesra / Ranchi. AI/ML Engineer Intern, Research Intern, SDE Intern. Maintainer of Biscuit.",
+    creator: "@tomfricks",
+    images: [ogImage],
+  },
 };
 
 export default function ResumePage() {
