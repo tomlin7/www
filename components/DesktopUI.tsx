@@ -488,7 +488,7 @@ export default function DesktopUI() {
       "https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853743597518c528b9b3_contacts.png",
       "https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853ddd826358438eda6d_safari.png",
       "https://uploads-ssl.webflow.com/5f7081c044fb7b3321ac260e/5f70853a55558a68e192ee08_messages.png",
-      "https://findicons.com/files/icons/569/longhorn_objects/128/trash.png",
+      "/icons/trash.svg",
       "https://cdn-icons-png.flaticon.com/512/337/337946.png",
     ];
 
@@ -1429,7 +1429,7 @@ export default function DesktopUI() {
             </DockItem>
             <DockItem tooltip="Trash" shake={true}>
               <img
-                src="https://findicons.com/files/icons/569/longhorn_objects/128/trash.png"
+                src="/icons/trash.svg"
                 alt="Trash"
                 className="w-full h-full object-contain"
               />
