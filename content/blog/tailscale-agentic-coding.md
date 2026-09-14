@@ -1,127 +1,117 @@
 ---
-title: "Accessing My Local AI Coding Agent from Anywhere with Tailscale"
+title: "How I Run Heavy AI Coding Agents from a Cheap Chromebook Using Tailscale"
 date: "2026-09-14"
 category: "Engineering"
 readTime: "4 min read"
-description: "How I use Tailscale, tmux, and a few CLI tools to turn my home desktop into a private remote AI coding machine without port forwarding or paying for cloud VMs."
+description: "I only carry a lightweight Chromebook to college lectures while my main laptop stays plugged in at my room. Here is how I use Tailscale, tmux, and agentic workflows to build anywhere."
 ---
 
-My home desktop has a fast CPU, decent RAM, and all my local git repos and API credentials already set up. But during the day, I’m often out with a lightweight laptop or just my phone.
+Right now I'm in college, and the only computer I bring to class is a lightweight Chromebook. It has barely enough RAM to keep 5 browser tabs open without stuttering. 
 
-I wanted a way to trigger and monitor long-running AI coding agents running on my main machine without paying for an expensive cloud VM or exposing open ports on my home router.
+Meanwhile, my main laptop sits plugged in back in my dorm room. It has all the RAM, my local git repositories, Gradle caches, API keys, and environment variables.
 
-A few months ago I set up **Tailscale**, and it solved this completely. Here is the simple setup I use.
+Whenever I tried compiling heavy Kotlin projects, running local Gradle builds, or letting an AI coding agent run multi-step tool loops (like Hermes or browser-based computer use agents), the Chromebook would immediately choke.
 
----
+A few months ago, a friend mentioned **Tailscale**. Setting it up took maybe five minutes, and it turned my cheap Chromebook into a terminal for my main machine from anywhere on campus.
 
-## What is Tailscale doing here?
-
-Normally, connecting to your home PC from the outside means messing with router port forwarding, dynamic DNS, or using public tunneling tools like ngrok.
-
-Tailscale creates a secure, private mesh network (using WireGuard) between your devices. Once installed:
-- My home PC and laptop get private 100.x.y.z IP addresses.
-- Traffic is encrypted peer-to-peer.
-- Only devices signed into my account can see or reach each other. Zero public internet exposure.
+Here’s the simple setup and what I learned.
 
 ---
 
-## The Stack
+## Why Tailscale instead of traditional tunnels?
 
-I combine three simple tools:
+On campus Wi-Fi, you can't touch the router. There is no port forwarding, dynamic IPs change constantly, and tools like ngrok give you random public URLs that anyone on the internet could technically hit if they found the link.
 
-1. **Tailscale**: Connects my laptop/phone to my desktop securely.
-2. **tmux**: Keeps the agent process running in the background even if my connection drops.
-3. **The Agent CLI / Web UI**: (e.g., Claude Code, an agentic loop, or a local MCP/dev server).
+Tailscale creates a secure, encrypted mesh network directly between my Chromebook and my laptop. 
+- My main laptop gets a stable, private IP (and a MagicDNS name like `dorm-laptop`).
+- Zero open router ports.
+- Only devices logged into my Tailscale account can communicate.
 
 ---
 
-## The Setup (Step-by-Step)
+## What I Actually Run Remotely
 
-### 1. Install Tailscale & Enable Tailscale SSH
+Having secure, fast access to my main laptop unlocked three things I could never do on a Chromebook:
 
-Install Tailscale on both your home PC and your laptop from [tailscale.com](https://tailscale.com).
+### 1. Heavy Kotlin & Gradle Builds
+If you've ever run `./gradlew build` on a dual-core budget laptop, you know the fan sounds like a jet engine before the IDE crashes. Now I just write the code over SSH and let my main laptop's CPU handle the compilation in seconds.
 
-On your home machine (Linux/macOS/WSL), enable Tailscale SSH so you don't even need to manage SSH keys:
+### 2. Autonomous Agents (Hermes / CLI Agents)
+I like testing agentic loops (like Hermes or Claude Code) where the agent reads files, edits diffs, and runs unit tests in a loop. Running this over Tailscale means I can kick off a task from a lecture hall, disconnect, and check back later.
 
-```bash
-sudo tailscale up --ssh
-```
-
-Now you can SSH into your desktop from your laptop using its MagicDNS name:
-
-```bash
-ssh my-desktop
-```
-
-### 2. Run the agent inside `tmux`
-
-If you close your laptop lid or lose Wi-Fi on the train, you don't want your agent to die mid-task. 
-
-On the host machine, start a named `tmux` session:
-
-```bash
-tmux new -s agent
-```
-
-Inside `tmux`, launch your agent or dev server:
-
-```bash
-# Example: starting an agent run
-claude
-```
-
-Detach from the session anytime with `Ctrl + b`, then `d`. Your agent keeps working quietly on your desktop.
-
-To check back in later from your phone or laptop:
-
-```bash
-tmux attach -t agent
-```
-
-### 3. Exposing a local Web UI or dev server privately
-
-Some agents come with a browser UI or spin up a local preview server on `localhost:3000`.
-
-To access that web UI securely on your phone or laptop without opening it to the public, use `tailscale serve`:
+### 3. Web UI / Computer Use Previews
+When an agent spins up a local dev server on `localhost:3000` or a browser automation dashboard, I can access it directly on my Chromebook via:
 
 ```bash
 tailscale serve http://localhost:3000
 ```
 
-This makes `http://my-desktop.your-tailnet.ts.net` accessible exclusively on your private Tailscale network.
+Now I open `http://dorm-laptop.tailnet-name.ts.net` on my Chromebook browser, and it routes securely through my private network.
 
 ---
 
-## Gotchas That Tripped Me Up
+## The Step-by-Step Setup
 
-Here are the real mistakes I made when setting this up:
+### Step 1: Install Tailscale with SSH enabled
 
-### 1. The desktop goes to sleep
-If your host PC goes to sleep after 30 minutes of inactivity, your agent obviously stops and Tailscale drops.
-- **Fix:** In your power settings, set "Sleep when plugged in" to Never, or configure Wake-on-LAN.
-
-### 2. Localhost vs 0.0.0.0 binding
-Some dev servers or web UIs bind strictly to `127.0.0.1`. If you want other devices on your Tailnet to connect directly to a port, ensure the service binds to `0.0.0.0` or use `tailscale serve` to forward it safely.
-
-### 3. Lingering background tasks
-AI agents can spawn background subagents, dev servers, or heavy Docker containers. When you detach and walk away, remember they are actively consuming local CPU/RAM.
-
----
-
-## Cleanup & Teardown
-
-When you're done with a remote session, keep your machine clean:
+On the main laptop (Linux / macOS / WSL):
 
 ```bash
-# Stop sharing the local port
-tailscale serve reset
+sudo tailscale up --ssh
+```
 
-# Kill the tmux session once the task is finished
-tmux kill-session -t agent
+Enabling `--ssh` means Tailscale handles authentication automatically—no copying SSH public/private keys between devices.
+
+On the Chromebook (via the Linux terminal):
+
+```bash
+ssh dorm-laptop
+```
+
+### Step 2: Use `tmux` so runs don't die
+
+Campus Wi-Fi drops constantly when moving between classrooms. If your SSH connection drops, your running agent will die unless it's in a persistent terminal session.
+
+Before starting any task, I open `tmux`:
+
+```bash
+tmux new -s dev
+```
+
+Inside `tmux`, I run the agent or build:
+
+```bash
+# Example: kick off your agent
+hermes
+```
+
+Whenever I pack up my Chromebook and close the lid, I just detach (`Ctrl + b`, then `d`). The agent keeps working on my laptop in my room.
+
+When I get to the library, I reconnect:
+
+```bash
+tmux attach -t dev
 ```
 
 ---
 
-## Summary
+## Things I Learned the Hard Way
 
-This setup costs \$0, requires zero port forwarding, and lets me treat my home desktop like a private, high-powered remote workstation from anywhere.
+### 1. Power settings will ruin your day
+The first day I tried this, I got to class and couldn't connect. My main laptop had gone to sleep after 15 minutes of idle time. 
+- **What worked:** In OS power settings, set "Sleep when plugged in" to **Never**, and keep the laptop plugged into the wall charger before leaving the room.
+
+### 2. Background agents consume real power
+If you leave a heavy agent in an open-ended loop compiling Kotlin or running Docker containers, your laptop will run hot all day. Make sure you check on it and kill idle sessions when done:
+
+```bash
+# Clean up when finished
+tmux kill-session -t dev
+tailscale serve reset
+```
+
+---
+
+## Takeaway
+
+You don't need a \$2,000 MacBook in your backpack to run heavy AI agents or complex builds. A \$150 Chromebook + Tailscale + your home machine does the exact same job, completely for free.
