@@ -4,6 +4,7 @@ date: "2026-09-14"
 category: "Engineering"
 readTime: "4 min read"
 description: "I only carry a lightweight Chromebook to college lectures while my main laptop stays plugged in at my room. Here is how I use Tailscale, tmux, and agentic workflows to build anywhere."
+image: "/blog/tailscale-hero.jpg"
 ---
 
 Right now I'm in college, and the only computer I bring to class is a lightweight Chromebook. It has barely enough RAM to keep 5 browser tabs open without stuttering. 
