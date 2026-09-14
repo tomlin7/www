@@ -94,6 +94,22 @@ When I get to the library, I reconnect:
 tmux attach -t dev
 ```
 
+### Step 3: Connecting from your phone (Zero laptop needed)
+
+While I usually use my Chromebook in lectures, the coolest part is that you don't even need a laptop at all. You can do this entirely from your phone.
+
+Tailscale has official apps for iOS and Android:
+1. Turn on Tailscale on your phone (it acts as a private VPN).
+2. Open a mobile SSH app like **Termius**, **JuiceSSH**, or **Prompt**.
+3. Connect straight to `dorm-laptop`.
+
+Now, while walking to lunch or standing in line, I can open Termius, run `tmux attach -t dev`, and check:
+- Did the Kotlin build pass?
+- Is Hermes or the AI agent asking for approval to run a shell command?
+- Did a test fail?
+
+If you ran `tailscale serve http://localhost:3000`, you can even open your phone's regular browser (Chrome or Safari) and navigate to `http://dorm-laptop.your-tailnet.ts.net` to test your web app UI directly on a real mobile screen.
+
 ---
 
 ## Things I Learned the Hard Way
@@ -113,6 +129,6 @@ tailscale serve reset
 
 ---
 
-## Takeaway
+## Summary
 
-You don't need a \$2,000 MacBook in your backpack to run heavy AI agents or complex builds. A \$150 Chromebook + Tailscale + your home machine does the exact same job, completely for free.
+For a college setup, this made my daily routine so much easier. I get to keep my main laptop safely plugged in at my desk, while still being able to check on builds or let an agent run tasks from my Chromebook or phone between lectures.
