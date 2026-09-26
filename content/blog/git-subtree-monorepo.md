@@ -4,7 +4,7 @@ date: "2026-09-27"
 category: "Engineering"
 readTime: "5 min read"
 description: "A year ago, I built a microfinance ledger with separate repos for the backend, web, and Android app. Here is how I merged them into a clean monorepo using git subtree so AI agents and cross-stack fixes became effortless."
-image: "/blog/git-subtree-hero.jpg"
+image: "/blog/git-subtree-hero.png"
 ---
 
 About a year ago, I built a small app to help my dad and his friends manage their microfinance ledger. It was a simple system, but as it grew, I ended up splitting it across three separate GitHub repositories:

@@ -1,0 +1,164 @@
+import sharp from "sharp";
+import fs from "fs";
+
+const svg = `
+<svg width="1200" height="675" viewBox="0 0 1200 675" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Arrowhead markers -->
+    <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 1 2 L 7 5 L 1 8" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </marker>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.05" />
+    </filter>
+  </defs>
+
+  <!-- Clean Off-White Background -->
+  <rect width="1200" height="675" fill="#f5f6f8" />
+
+  <!-- Subtle Minimal Dot Grid -->
+  <pattern id="dots" x="0" y="0" width="28" height="28" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1" fill="#e2e4e8" />
+  </pattern>
+  <rect width="1200" height="675" fill="url(#dots)" />
+
+  <!-- Title Badge Top Left -->
+  <g transform="translate(80, 50)">
+    <rect width="150" height="28" rx="14" fill="#e2e8f0" />
+    <text x="75" y="18" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace" font-size="11" font-weight="600" fill="#475569" letter-spacing="0.05em">GIT SUBTREE</text>
+  </g>
+  <text x="80" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="700" fill="#0f172a" letter-spacing="-0.02em">Merging 3 Standalone Repos into a Monorepo</text>
+
+  <!-- ================= LEFT: 3 SEPARATE REPOSITORIES ================= -->
+
+  <!-- Card 1: Backend -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="150" width="310" height="95" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <!-- Folder icon / tag -->
+    <rect x="100" y="172" width="28" height="28" rx="6" fill="#f1f5f9" />
+    <path d="M 107 181 L 112 181 L 114 183 L 121 183 L 121 192 L 107 192 Z" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linejoin="round" />
+    <text x="138" y="186" font-family="'JetBrains Mono', 'SF Mono', Menlo, monospace" font-size="14" font-weight="600" fill="#0f172a">ledger-backend</text>
+    <text x="138" y="204" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">API server, migrations, SQL</text>
+    <text x="138" y="224" font-family="'JetBrains Mono', Menlo, monospace" font-size="11" fill="#94a3b8">120+ commits • 1 yr history</text>
+  </g>
+
+  <!-- Card 2: Web Dashboard -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="275" width="310" height="95" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <!-- Folder icon / tag -->
+    <rect x="100" y="297" width="28" height="28" rx="6" fill="#f1f5f9" />
+    <path d="M 107 306 L 112 306 L 114 308 L 121 308 L 121 317 L 107 317 Z" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linejoin="round" />
+    <text x="138" y="311" font-family="'JetBrains Mono', 'SF Mono', Menlo, monospace" font-size="14" font-weight="600" fill="#0f172a">ledger-web</text>
+    <text x="138" y="329" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">React admin dashboard</text>
+    <text x="138" y="349" font-family="'JetBrains Mono', Menlo, monospace" font-size="11" fill="#94a3b8">85 commits • 1 yr history</text>
+  </g>
+
+  <!-- Card 3: Android App -->
+  <g filter="url(#shadow)">
+    <rect x="80" y="400" width="310" height="95" rx="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5" />
+    <!-- Folder icon / tag -->
+    <rect x="100" y="422" width="28" height="28" rx="6" fill="#f1f5f9" />
+    <path d="M 107 431 L 112 431 L 114 433 L 121 433 L 121 442 L 107 442 Z" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linejoin="round" />
+    <text x="138" y="436" font-family="'JetBrains Mono', 'SF Mono', Menlo, monospace" font-size="14" font-weight="600" fill="#0f172a">ledger-android</text>
+    <text x="138" y="454" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" fill="#64748b">Kotlin mobile client</text>
+    <text x="138" y="474" font-family="'JetBrains Mono', Menlo, monospace" font-size="11" fill="#94a3b8">95 commits • 1 yr history</text>
+  </g>
+
+  <!-- ================= CENTER: SUBTREE TRANSITION ================= -->
+
+  <!-- Top branch curve -->
+  <path d="M 390 197 H 455 Q 480 197 480 230 V 310 Q 480 322 510 322 H 540" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
+  
+  <!-- Middle branch line -->
+  <path d="M 390 322 H 540" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Bottom branch curve -->
+  <path d="M 390 447 H 455 Q 480 447 480 415 V 335 Q 480 322 510 322 H 540" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" />
+
+  <!-- Center Action Pill Card -->
+  <g filter="url(#shadow)">
+    <rect x="470" y="292" width="200" height="60" rx="10" fill="#0f172a" stroke="#1e293b" stroke-width="1" />
+    <text x="570" y="318" text-anchor="middle" font-family="'JetBrains Mono', Menlo, monospace" font-size="12" font-weight="600" fill="#38bdf8">git subtree add</text>
+    <text x="570" y="337" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11" font-weight="500" fill="#94a3b8">stitches commit trees</text>
+  </g>
+
+  <!-- Arrow to right -->
+  <path d="M 670 322 H 740" fill="none" stroke="#3b82f6" stroke-width="2.5" stroke-linecap="round" marker-end="url(#arrow-blue)" />
+
+  <!-- ================= RIGHT: THE UNIFIED MONOREPO ================= -->
+  <g filter="url(#shadow)">
+    <!-- Container Card -->
+    <rect x="750" y="140" width="370" height="365" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" />
+
+    <!-- Container Header -->
+    <rect x="750" y="140" width="370" height="52" rx="16" fill="#f8fafc" />
+    <rect x="750" y="176" width="370" height="16" fill="#f8fafc" />
+    <line x1="750" y1="192" x2="1120" y2="192" stroke="#e2e8f0" stroke-width="1" />
+
+    <!-- Window controls -->
+    <circle cx="775" cy="166" r="4.5" fill="#f87171" />
+    <circle cx="790" cy="166" r="4.5" fill="#fbbf24" />
+    <circle cx="805" cy="166" r="4.5" fill="#4ade80" />
+
+    <text x="945" y="171" text-anchor="middle" font-family="'JetBrains Mono', Menlo, monospace" font-size="13" font-weight="600" fill="#334155">ledger-monorepo/</text>
+
+    <!-- Tree View inside Monorepo -->
+    <g transform="translate(780, 215)">
+      <!-- Root folder branch lines -->
+      <line x1="12" y1="18" x2="12" y2="200" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="3 3" />
+
+      <!-- Subtree 1: backend -->
+      <g transform="translate(0, 0)">
+        <path d="M 12 18 H 30" stroke="#cbd5e1" stroke-width="1.5" />
+        <rect x="34" y="5" width="26" height="26" rx="5" fill="#eff6ff" />
+        <path d="M 40 14 L 44 14 L 46 16 L 53 16 L 53 23 L 40 23 Z" fill="none" stroke="#3b82f6" stroke-width="1.5" stroke-linejoin="round" />
+        <text x="68" y="22" font-family="'JetBrains Mono', Menlo, monospace" font-size="13.5" font-weight="600" fill="#0f172a">backend/</text>
+        <text x="145" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11.5" fill="#10b981" font-weight="500">✓ history preserved</text>
+      </g>
+
+      <!-- Subtree 2: web -->
+      <g transform="translate(0, 70)">
+        <path d="M 12 18 H 30" stroke="#cbd5e1" stroke-width="1.5" />
+        <rect x="34" y="5" width="26" height="26" rx="5" fill="#fdf4ff" />
+        <path d="M 40 14 L 44 14 L 46 16 L 53 16 L 53 23 L 40 23 Z" fill="none" stroke="#a855f7" stroke-width="1.5" stroke-linejoin="round" />
+        <text x="68" y="22" font-family="'JetBrains Mono', Menlo, monospace" font-size="13.5" font-weight="600" fill="#0f172a">web/</text>
+        <text x="110" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11.5" fill="#10b981" font-weight="500">✓ history preserved</text>
+      </g>
+
+      <!-- Subtree 3: android -->
+      <g transform="translate(0, 140)">
+        <path d="M 12 18 H 30" stroke="#cbd5e1" stroke-width="1.5" />
+        <rect x="34" y="5" width="26" height="26" rx="5" fill="#f0fdf4" />
+        <path d="M 40 14 L 44 14 L 46 16 L 53 16 L 53 23 L 40 23 Z" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linejoin="round" />
+        <text x="68" y="22" font-family="'JetBrains Mono', Menlo, monospace" font-size="13.5" font-weight="600" fill="#0f172a">android/</text>
+        <text x="140" y="22" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="11.5" fill="#10b981" font-weight="500">✓ history preserved</text>
+      </g>
+
+      <!-- Bottom Benefit Callout -->
+      <g transform="translate(0, 205)">
+        <rect x="10" y="0" width="300" height="42" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" />
+        <circle cx="28" cy="21" r="3.5" fill="#3b82f6" />
+        <text x="40" y="25" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="12" font-weight="500" fill="#334155">AI Agents see full stack in one window</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Bottom Informational Bar -->
+  <g transform="translate(80, 560)">
+    <rect width="1040" height="48" rx="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1" />
+    <text x="30" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" font-weight="600" fill="#334155">Why not Submodules?</text>
+    <text x="180" y="30" font-family="-apple-system, BlinkMacSystemFont, sans-serif" font-size="13" fill="#64748b">No empty folders on clone • No detached HEAD • Standard git clone for teammates</text>
+  </g>
+</svg>
+`;
+
+fs.writeFileSync("public/blog/git-subtree-diagram.svg", svg);
+
+sharp(Buffer.from(svg))
+  .png({ quality: 95 })
+  .toFile("public/blog/git-subtree-hero.png")
+  .then(() => console.log("Clean technical diagram generated!"))
+  .catch((err) => console.error(err));
