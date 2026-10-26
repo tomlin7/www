@@ -4,7 +4,7 @@ import { socials } from "@/lib/site";
 export function PageFooter() {
   return (
     <footer className="page-footer" data-koi-avoid>
-      <Link href="/">← back to the pond</Link>
+      <Link href="/">← home</Link>
       <div className="footer-socials">
         {socials.map(({ label, href }) => (
           <a

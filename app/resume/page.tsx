@@ -12,14 +12,10 @@ export const metadata = pageMetadata(
 export default function ResumePage() {
   return (
     <main id="main-content" className="reading-page">
-      <PageHeading
-        index="05"
-        title="A little background."
-        description="Dheeraj C. / Systems & Software Engineer / Bengaluru, India"
-      >
+      <PageHeading title="Resume" description="Dheeraj C. · Bengaluru, India">
         <div className="heading-links">
           <a className="text-link" href="/Resume.pdf" download>
-            download resume.pdf ↓
+            download pdf ↓
           </a>
           <a className="small-link" href="mailto:hello@tomlin7.com">
             hello@tomlin7.com ↗
@@ -27,23 +23,25 @@ export default function ResumePage() {
         </div>
       </PageHeading>
       {data.resume.map((section) => (
-        <section
-          className="resume-section"
+        <details
+          className="resume-section resume-disclosure"
           id={section.heading.replaceAll(" ", "-")}
           key={section.heading}
           data-koi-avoid
         >
-          <h2 className="section-label">{section.heading}</h2>
+          <summary>
+            <h2>{section.heading}</h2>
+          </summary>
           <div className="resume-text">
             {section.content.split(/\n\n+/).map((paragraph, index) => (
               <p key={index}>{paragraph}</p>
             ))}
           </div>
-        </section>
+        </details>
       ))}
       <p className="margin-note">
         <a className="text-link" href="/resume.txt">
-          plain text version ↗
+          plain text ↗
         </a>
       </p>
       <PageFooter />

@@ -10,17 +10,14 @@ export const metadata = pageMetadata(
 const contributions = [
   {
     name: "Zulip",
-    description: "A threaded, open-source team chat.",
     href: "https://github.com/search?q=author%3Atomlin7+org%3Azulip+type%3Apr&type=pullrequests",
   },
   {
     name: "prometheus-operator",
-    description: "Running Prometheus on Kubernetes.",
     href: "https://github.com/search?q=author%3Atomlin7+repo%3Aprometheus-operator%2Fprometheus-operator+type%3Apr&type=pullrequests",
   },
   {
     name: "KubeVirt",
-    description: "Virtual machines alongside Kubernetes workloads.",
     href: "https://github.com/search?q=author%3Atomlin7+org%3Akubevirt+type%3Apr&type=pullrequests",
   },
 ];
@@ -28,11 +25,7 @@ const contributions = [
 export default function OssPage() {
   return (
     <main id="main-content" className="reading-page">
-      <PageHeading
-        index="02"
-        title="Built in the open."
-        description="Maintaining my own tools and finding my way around other people's codebases."
-      />
+      <PageHeading title="Open source" />
       <section className="content-section" data-koi-avoid>
         <h2 className="section-label">maintaining</h2>
         <article className="open-project">
@@ -48,10 +41,7 @@ export default function OssPage() {
             </h3>
             <span className="row-category">python / tree-sitter</span>
           </div>
-          <p className="row-description">
-            A fast, extensible native code editor with integrated AI agents. A
-            small footprint, language tooling, and room to make it your own.
-          </p>
+          <p className="row-description">Native code editor with AI agents.</p>
           <a
             className="install-command"
             href="https://pypi.org/project/biscuit-editor/"
@@ -75,10 +65,7 @@ export default function OssPage() {
             </h3>
             <span className="row-category">python / tkinter</span>
           </div>
-          <p className="row-description">
-            An embeddable code editor widget for Tkinter, with support for 500+
-            languages, a canvas minimap, and Git diffs.
-          </p>
+          <p className="row-description">Embeddable code editor for Tkinter.</p>
           <a
             className="install-command"
             href="https://pypi.org/project/cupcake-editor/"
@@ -91,11 +78,7 @@ export default function OssPage() {
         </article>
       </section>
       <section className="content-section" data-koi-avoid>
-        <h2 className="section-label">contributing upstream</h2>
-        <p className="section-intro">
-          A few places I&apos;ve contributed. The links go to my authored pull
-          requests.
-        </p>
+        <h2 className="section-label">contributions</h2>
         <div className="contribution-list">
           {contributions.map((item) => (
             <a
@@ -107,7 +90,6 @@ export default function OssPage() {
             >
               <span>
                 <strong>{item.name}</strong>
-                <span className="row-description">{item.description}</span>
               </span>
               <span className="external-arrow" aria-hidden="true">
                 ↗

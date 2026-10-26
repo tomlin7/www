@@ -6,20 +6,16 @@ import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata(
   "Blog",
-  "Notes on things I build, things I break, and what I learn along the way.",
+  "Engineering notes by Dheeraj.",
   "/blog",
 );
 
 export default function BlogPage() {
   return (
     <main id="main-content" className="reading-page">
-      <PageHeading
-        index="03"
-        title="Notes, mostly."
-        description="Things I build, things I break, and what I learn along the way."
-      >
+      <PageHeading title="Blog">
         <a href="/rss.xml" className="small-link">
-          subscribe via rss ↗
+          rss ↗
         </a>
       </PageHeading>
       <div className="writing-list">
@@ -37,7 +33,6 @@ export default function BlogPage() {
                 <h2>{post.title}</h2>
                 <span aria-hidden="true">↗</span>
               </Link>
-              <p className="row-description">{post.description}</p>
               <p className="tech-stack">
                 {post.category.toLowerCase()} <span aria-hidden="true">/</span>{" "}
                 {post.readTime}
@@ -46,9 +41,6 @@ export default function BlogPage() {
           </article>
         ))}
       </div>
-      <p className="margin-note" data-koi-avoid>
-        Writing helps me find out what I actually understand.
-      </p>
       <PageFooter />
     </main>
   );

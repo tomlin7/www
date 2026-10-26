@@ -1425,3 +1425,43 @@ summary:hover {
     font-size: 12px;
   }
 }
+
+.resume-disclosure {
+  padding-top: 0;
+  margin-bottom: 0;
+}
+.resume-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 0;
+  list-style: none;
+  opacity: 0.65;
+}
+.resume-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+.resume-disclosure > summary h2 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+}
+.resume-disclosure > summary::after {
+  content: "+";
+  font-size: 12px;
+  opacity: 0.4;
+}
+.resume-disclosure[open] > summary::after {
+  content: "−";
+}
+.resume-disclosure > summary:hover,
+.resume-disclosure[open] > summary {
+  opacity: 1;
+}
+.resume-disclosure > .resume-text {
+  padding-bottom: 12px;
+}
+.resume-disclosure:target > summary {
+  opacity: 1;
+}
