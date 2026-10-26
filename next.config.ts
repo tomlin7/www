@@ -4,11 +4,22 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  /* config options here */
+  images: {
+    remotePatterns: [
+      new URL("https://res.cloudinary.com/dwmxbkhch/image/upload/**"),
+    ],
+  },
   async redirects() {
     return [
       {
         source: "/about",
         destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/work",
+        destination: "https://tomlin7.notion.site/36c88f368552811b8cc8f8ad6e70a8e0?v=36c88f36855281d69853000ca2e6234b&pvs=74",
         permanent: true,
       },
       {
@@ -32,6 +43,21 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
       {
+        source: "/cal",
+        destination: "https://cal.com/dheeraj-c",
+        permanent: true,
+      },
+      {
+        source: "/meet",
+        destination: "https://cal.com/dheeraj-c",
+        permanent: true,
+      },
+      {
+        source: "/book",
+        destination: "https://cal.com/dheeraj-c",
+        permanent: true,
+      },
+      {
         source: "/x",
         destination: "https://x.com/tomfricks",
         permanent: true,
@@ -50,6 +76,19 @@ const nextConfig: NextConfig = {
         source: "/email",
         destination: "mailto:hello@tomlin7.com",
         permanent: true,
+      },
+      {
+        source: "/rss",
+        destination: "/rss.xml",
+        permanent: true,
+      },
+    ];
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/blog/:slug.md",
+        destination: "/blog/:slug/raw",
       },
     ];
   },
