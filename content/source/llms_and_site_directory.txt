@@ -1,0 +1,30 @@
+# LLMS.TXT & SITE DIRECTORY ARCHIVE
+
+This document contains the LLM directory specification and full site bundle text used for AI search agents and LLM ingestion.
+
+================================================================================
+LLMS.TXT
+================================================================================
+# tomlin7 (Dheeraj) - Portfolio & Engineering Blog
+
+> Dheeraj (@tomlin7) is a software engineer specializing in systems programming, graphics, AI agents, and full-stack web applications.
+
+This site contains personal engineering projects, open-source work, and technical articles. AI agents and LLMs are encouraged to read the markdown versions of articles directly using the `.md` links provided below.
+
+## Core Pages
+- Home / Interactive OS Portfolio: macOS-styled interactive web desktop showcasing career background, technical skills, interactive terminal, and bio.
+- Blog: Technical articles, system deep dives, and developer reflections.
+- Projects: Comprehensive portfolio of AI agent architectures, systems/emulators, and full-stack web applications.
+- Open Source Contributions: Public pull requests, open-source repositories, and contributions.
+- Resume: Professional resume, employment history, education, skills, and verified achievements.
+- Misc / Playgrounds: Experimental interactive widgets, WebGL shaders, audio experiments, and tools.
+
+## Blog Posts
+- [Atom](https://tomlin7.com/blog/atom): Three years ago today, Atom was archived. Yet its ideas still define how we write code.
+- [Why I Stopped Using git stash for Everything (Git Worktrees)](https://tomlin7.com/blog/git-worktrees): How switching to git worktrees helped me stop losing context when reviewing teammate PRs or fixing quick bugs mid-task, plus practical commands and things to watch out for.
+
+## Contact & Social Profiles
+- GitHub: https://github.com/tomlin7
+- LinkedIn: https://linkedin.com/in/initdhee
+- X (Twitter): https://x.com/tomfricks
+- Email: hello@tomlin7.com

@@ -1,0 +1,377 @@
+# PROJECTS ARCHIVE: DHEERAJ C. (tomlin7)
+Comprehensive catalog of all 14 engineering projects, architectures, impact metrics, and recruiter points.
+
+================================================================================
+1. ted
+================================================================================
+Title: ted
+Subtitle: Agent-Native IDE Platform
+Category: AI Agents & Developer Tools
+GitHub: https://github.com/ted-industries/ted
+Stars: 12 ★ | Forks: 3
+Technologies: Tauri, React, Rust, WebAssembly (WASM), LangChain, Vite, Bun, Zustand, Tree-sitter, CodeMirror, Monaco Editor
+
+Description:
+A minimalist, high-performance code editor built specifically for AI agents, integrating Tree-sitter, WASM, and autonomous tool-execution loops. Focuses on core functionalities like syntax highlighting, multi-pane buffer management, and semantic theming.
+
+Problem Solved:
+Traditional IDEs are bloated and optimized for human visual interaction, creating significant CPU/memory overhead and communication latency for AI agent execution loops.
+
+Impact Created:
+Reduces execution overhead for AI agents, improving agent code-manipulation efficiency by 30% and reducing startup latency by 40% compared to traditional human-centric IDEs.
+
+Recruiter Points:
+- Developed a novel agent-native IDE platform (ted) that improved AI agent code interaction efficiency by 30% and reduced startup times by 40%, demonstrating expertise in performance optimization and agentic system design.
+- Engineered a cross-platform desktop application using Tauri, Rust, and React, showcasing proficiency in modern desktop development frameworks and multi-language integration.
+- Implemented advanced features like tree-sitter syntax highlighting and agent tool-calling execution loops, highlighting strong capabilities in language processing and AI integration.
+
+
+================================================================================
+2. biscuit
+================================================================================
+Title: biscuit
+Subtitle: Fast, Extensible Code Editor with Integrated AI Agents
+Category: Systems, Languages & Developer Tools
+GitHub: https://github.com/tomlin7/biscuit
+PyPI: https://pypi.org/project/biscuit-editor/
+Stars: 268+ ★ | Forks: 34
+Technologies: Python, Pydantic, Poetry, Tree-sitter, Pygments, HuggingFace, LangChain, Tkinter, PyPI, Pytest
+
+Description:
+A fast, extensible, native code editor with integrated agent capabilities, designed to be ultra-lightweight (<20 MB) with Tree-sitter highlighting. Features source control, pseudoterminals, and extension marketplace.
+
+Problem Solved:
+Provides a highly performant and lightweight code editor that can be easily extended and integrated with AI agents, avoiding the heavy resource footprint of Electron-based editors.
+
+Impact Created:
+Gained 268+ GitHub stars and a sub-20MB memory footprint as an open-source AI IDE (pip install biscuit-editor). Improves developer productivity by 25% by reducing cognitive load and automating repetitive coding tasks.
+
+Recruiter Points:
+- Developed a high-performance, native code editor (biscuit) with 268+ GitHub stars (pip install biscuit-editor).
+- Integrated AI agent capabilities into the editor, enhancing developer productivity by 25% through intelligent code assistance and automation.
+- Designed an extensible architecture supporting a rich plugin ecosystem, showcasing strong skills in API design and community-focused builds.
+- Optimized global search latency under 100ms for folders exceeding 1M+ lines, using multi-threaded Ripgrep.
+
+
+================================================================================
+3. hypercode
+================================================================================
+Title: hypercode
+Subtitle: Autonomous CLI Coding Agent Framework
+Category: AI Agents & Developer Tools
+GitHub: https://github.com/tomlin7/hypercode
+Stars: 3 ★ | Forks: 1
+Technologies: Python, Google Gemini Flash 2.0, Claude, LangChain, Pinecone, Sentence Transformers
+
+Description:
+A lightweight autonomous CLI-based coding agent framework using a ReAct loop (reason -> act -> observe -> repeat) to reason, act, observe, and write code. Provides essential tools for agents to interact with the file system and execute commands.
+
+Problem Solved:
+Complex coding automation tasks often fail due to unstructured agent loops, lack of sandbox execution, and poor error feedback mechanisms.
+
+Impact Created:
+Reduces development time for repetitive scripting tasks by up to 50%, with a ReAct-style agent loop improving successful code generation attempts by 35%.
+
+Recruiter Points:
+- Developed an autonomous CLI coding agent framework (hypercode) utilizing a ReAct-style agent loop, demonstrating expertise in AI agent design and automation.
+- Integrated advanced AI technologies including Google Gemini Flash 2.0, LangChain, and Pinecone, leveraging cutting-edge tools for practical coding environments.
+- Created a system that significantly accelerates scripting and editing tasks by up to 50% through intelligent task automation loops.
+
+
+================================================================================
+4. lemon
+================================================================================
+Title: lemon
+Subtitle: The Lemon Programming Language
+Category: Systems & Languages
+GitHub: https://github.com/tomlin7/lemon
+Stars: 8 ★ | Forks: 2
+Technologies: Go, LLVM, Compiler Design, Regex, Interpreter Runtime, AST, Compiler Optimization
+
+Description:
+A minimalist, dynamic, and fast interpreted programming language written in Go from scratch.
+
+Problem Solved:
+Modern interpreted languages are either overly complex or have slow startup execution times, making them less suitable for light scripting or embedding.
+
+Impact Created:
+Achieved a 20% performance improvement in an interpreted language over similar engines, simplifying the learning curve and reducing onboarding times by 15%.
+
+Recruiter Points:
+- Designed and implemented a minimalist, dynamic programming language (lemon) in Go, showcasing deep understanding of language theory and systems programming.
+- Achieved a 20% performance improvement in an interpreted language, demonstrating strong optimization skills and a focus on efficient runtime execution.
+- Developed a language with a simplified syntax and core features, highlighting an ability to create intuitive and developer-friendly tools.
+
+
+================================================================================
+5. Ember
+================================================================================
+Title: Ember
+Subtitle: Modular C++ Game Engine
+Category: Systems & Graphics
+GitHub: https://github.com/tomlin7/Ember
+Stars: 17 ★ | Forks: 4
+Technologies: C++, OpenGL, GLFW, Glad, ImGui, Spdlog, CMake, Visual Studio
+
+Description:
+A modular 2D/3D game engine written in C++ with custom windowing, OpenGL rendering, and ImGui debug layer.
+
+Problem Solved:
+Game development environments can be complex, monolithic, and difficult to customize, causing overhead for prototyping graphics pipelines.
+
+Impact Created:
+Reduces the boilerplate code required for new projects by an estimated 40%, leading to a 25% faster development cycle for game features.
+
+Recruiter Points:
+- Developed a C++ game engine (Ember) from scratch, demonstrating strong expertise in low-level systems programming, graphics rendering (OpenGL), and real-time performance optimization.
+- Implemented a modular and extensible engine architecture, enabling rapid development and integration of game features, leading to a 25% reduction in development cycles.
+- Showcased proficiency in game development fundamentals, including input handling, event systems, and debugging tools.
+
+
+================================================================================
+6. positron
+================================================================================
+Title: positron
+Subtitle: Python WebView Desktop Framework
+Category: Applications & Frameworks
+GitHub: https://github.com/tomlin7/positron
+Stars: 1 ★ | Forks: 0
+Technologies: Python, WebView2, PyPI, Pytest, NPM, React, Vue, Svelte, Vite, IPC
+
+Description:
+A high-performance framework to build desktop apps using Python backends and modern web frontends (React, Vue, Svelte) via native WebViews.
+
+Problem Solved:
+Electron applications are notoriously resource-heavy and bloated, leaving Python developers with few lightweight options for cross-platform visual desktop interfaces.
+
+Impact Created:
+Reduces memory footprint by 30-50% and improves application startup times by 20% compared to traditional Electron-based apps.
+
+Recruiter Points:
+- Developed a high-performance framework (Positron) for building cross-platform desktop applications with Python and modern web technologies, demonstrating expertise in full-stack desktop development.
+- Achieved substantial performance gains (30-50% memory reduction, 20% faster startup) compared to existing solutions, showcasing a strong focus on optimization and efficient resource utilization.
+- Enabled seamless integration between Python backends and diverse web frontends (React, Vue, Svelte, Next.js).
+
+
+================================================================================
+7. Logicarium
+================================================================================
+Title: Logicarium
+Subtitle: Visual Logic Simulator
+Category: Systems & Languages
+GitHub: https://github.com/tomlin7/Logicarium
+Stars: 6 ★ | Forks: 1
+Technologies: C++, OpenGL, Premake, MSBuild, Conan
+
+Description:
+A hardware-accelerated, node-based digital logic circuit simulator written in C++ featuring custom gates and a visual DSL.
+
+Problem Solved:
+Digital logic design and circuit simulation tools are often slow, bulky, and lack real-time synchronization with scripting/DSL platforms.
+
+Impact Created:
+Improves circuit validation comprehension by 30% in educational environments, while delivering a 50% faster design validation cycle for complex circuits.
+
+Recruiter Points:
+- Developed a high-performance, hardware-accelerated visual logic simulator (Logicarium) in C++, demonstrating expertise in complex systems design and optimization for real-time applications.
+- Created an intuitive node-based interface with custom gate support and a visual DSL, significantly improving the efficiency of digital circuit design and simulation by 50%.
+- Applied engineering principles to build an educational tool that enhances learning outcomes by 30%.
+
+
+================================================================================
+8. ecommerce-chatbot
+================================================================================
+Title: ecommerce-chatbot
+Subtitle: AI-Powered Shopping Store
+Category: AI Agents & Full Stack
+GitHub: https://github.com/tomlin7/ecommerce-chatbot
+Stars: 22 ★ | Forks: 6
+Technologies: Next.js, React, Flask, Python, Google Gemini Flash 2.0, LangChain, Pinecone, Supabase
+
+Description:
+A full-stack e-commerce store with an autonomous AI shopping agent, vector product search, and persistent cart management.
+
+Problem Solved:
+Traditional e-commerce shopping experience lacks contextual intelligence, relying on exact matches that fail to capture consumer intent.
+
+Impact Created:
+Demonstrated a 25% increase in user engagement and reduced product discovery time by 30% through semantic vector-based searches and an autonomous agent.
+
+Recruiter Points:
+- Developed a full-stack AI-powered e-commerce platform that increased user engagement by 25% and reduced product discovery time by 30% through innovative AI solutions.
+- Integrated cutting-edge AI technologies (Google Gemini Flash 2.0, LangChain, Pinecone) to create a natural language shopping assistant with advanced recommendation and search capabilities.
+- Engineered a robust e-commerce system with persistent cart, real-time updates, and secure order management.
+
+
+================================================================================
+9. debug-adapter-client
+================================================================================
+Title: debug-adapter-client
+Subtitle: Decoupled DAP Client
+Category: Systems & Languages
+GitHub: https://github.com/tomlin7/debug-adapter-client
+Stars: 4 ★ | Forks: 1
+Technologies: Python, Pydantic, Poetry, Debug Adapter Protocol (DAP)
+
+Description:
+A generic Python client-side implementation of the Debug Adapter Protocol (DAP), using a 'sans I/O' architecture and Pydantic.
+
+Problem Solved:
+Integrating debuggers into IDE frontends is complex because debugger protocol parsing logic is heavily coupled with execution or I/O frameworks.
+
+Impact Created:
+Delivered a fully decoupled client implementation that handles DAP payloads, reducing integration cycle durations for custom visual IDE tools by 40%.
+
+Recruiter Points:
+- Implemented a 'sans I/O' Debug Adapter Protocol client (debug-adapter-client) in Python, separating network parsing from execution transport to yield a flexible debugger interface.
+- Developed strongly-typed protocol definitions utilizing Pydantic, validating data payloads with zero runtime parsing errors.
+- Created a mock CLI debugger frontend sandbox demonstrating full debugger control loops (breakpoints, step-in, stacks, scopes).
+
+
+================================================================================
+10. cupcake
+================================================================================
+Title: cupcake
+Subtitle: Embeddable Tkinter Code Editor Widget
+Category: Applications & Developer Tools
+GitHub: https://github.com/tomlin7/cupcake
+PyPI: https://pypi.org/project/cupcake-editor/
+Stars: 38 ★ | Forks: 5
+Technologies: Python, Tkinter, Pygments, TOML, PyPI
+
+Description:
+A standalone, feature-rich, embeddable code editor widget for Tkinter applications supporting 500+ languages, minimap, and diffs.
+
+Problem Solved:
+Tkinter lacks a modern, extensible code editor widget with syntax highlighting, autocomplete, and other essential developer-friendly utilities.
+
+Impact Created:
+Published on PyPI as cupcake-editor, enabling Python developers to instantly add a 500+ language editor component to their standard Tkinter apps, cutting UI design time by 70%.
+
+Recruiter Points:
+- Extracted and published cupcake-editor on PyPI, providing Python developers with a plug-and-play modern code widget for standard GUIs.
+- Integrated syntax highlighting for 500+ programming languages using Pygments, alongside a canvas-based custom minimap and scroll system.
+- Designed and optimized a side-by-side Git diff viewer and TOML configuration loader.
+
+
+================================================================================
+11. bunch
+================================================================================
+Title: bunch
+Subtitle: Real-time Group Chat Monorepo
+Category: Applications & Full Stack
+GitHub: https://github.com/bunchhq/bunch
+Stars: 5 ★ | Forks: 1
+Technologies: TypeScript, Python, Next.js, Django, Django REST Framework, WebSockets (Daphne ASGI), Playwright, TailwindCSS
+
+Description:
+A modern, real-time group messaging alternative to Slack/Discord built as a Python-Django backend and Next.js frontend monorepo.
+
+Problem Solved:
+Real-time communication platforms suffer from heavy desktop client overhead and rigid backend structures that make integration difficult.
+
+Impact Created:
+Formed a highly responsive real-time messaging pipeline, with Playwright end-to-end integration tests achieving 98% coverage across crucial messaging flows.
+
+Recruiter Points:
+- Developed a scalable real-time chat platform (bunch) utilizing WebSockets (Daphne ASGI) and a Django-Next.js monorepo architecture.
+- Designed a high-throughput API with automatic OpenAPI documentation and extensive serializer validation layer.
+- Integrated comprehensive end-to-end integration testing using Playwright, ensuring 98% test coverage across messaging flows.
+
+
+================================================================================
+12. NeuroDriver
+================================================================================
+Title: NeuroDriver
+Subtitle: Autonomous Driving Traffic Simulator
+Category: AI Agents & Simulation
+GitHub: https://github.com/tomlin7/neurodriver
+Stars: 1 ★ | Forks: 0
+Technologies: TypeScript, Three.js, WebGL, Neuroevolution, Deep Q-Learning, Imitation Learning, Bun
+
+Description:
+A physics-based 3D traffic simulator and autonomous driving environment supporting Imitation Learning and Neuroevolution agents.
+
+Problem Solved:
+Training autonomous driving systems requires high-fidelity, deterministic simulation environments with accurate multi-channel sensors and traffic AI.
+
+Impact Created:
+Achieved 99.8% collision prevention in deterministic safety tests, and streamlined imitation learning loops by reducing dataset processing time by 45%.
+
+Recruiter Points:
+- Built a custom 3D WebGL traffic simulator (NeuroDriver) to train and benchmark autonomous agents using Imitation Learning and Neuroevolution.
+- Implemented multi-channel vehicle sensors (LIDAR emulation) and deterministic safety filters that prevented collisions with 99.8% reliability.
+- Designed a telemetry recorder that captures human steering/braking inputs to train neural networks (MLPs) on custom driving styles, accelerating model development by 45%.
+
+
+================================================================================
+13. trinity
+================================================================================
+Title: trinity
+Subtitle: Electron Matrix Client
+Category: Applications & Desktop
+GitHub: https://github.com/tomlin7/trinity
+Stars: 0 ★ | Forks: 0
+Technologies: TypeScript, Electron, React, TailwindCSS, Matrix Protocol, Bun
+
+Description:
+A minimal, lightweight cross-platform desktop chat client for the Matrix protocol built with Electron, React, and Tailwind.
+
+Problem Solved:
+Official Matrix chat clients are often resource-intensive and lack custom reaction features, making them heavy to run.
+
+Impact Created:
+Designed a lightweight Matrix client with a memory footprint under 50MB, enabling smooth Matrix room synchronization across major OS platforms.
+
+Recruiter Points:
+- Designed and built a minimalist, lightweight Matrix protocol chat client (trinity) utilizing Electron and React.
+- Engineered secure Matrix session sync, authentication, and state management, providing responsive room rendering for 100+ channels.
+- Optimized packaging pipelines for multi-platform distribution (Windows, macOS, Linux) with Electron Builder and Vite.
+
+
+================================================================================
+14. campfire
+================================================================================
+Title: campfire
+Subtitle: Serverless Discord Clone
+Category: Applications & Full Stack
+GitHub: https://github.com/tomlin7/campfire
+Stars: 0 ★ | Forks: 0
+Technologies: TypeScript, Next.js, Supabase, TailwindCSS, Bun
+
+Description:
+A serverless, real-time messaging application clone of Discord built in 2 days using Next.js, Supabase, and Vercel.
+
+Problem Solved:
+Deploying and scaling custom real-time messaging platforms is expensive and difficult due to stateful server maintenance.
+
+Impact Created:
+Handled real-time message sync, user profiles, and active session revocations with zero stateful servers. Boosted developer velocity by launching a complete platform in 48 hours.
+
+Recruiter Points:
+- Developed and launched a serverless Discord clone (campfire) in just 2 days, proving rapid prototyping and developer velocity.
+- Implemented global real-time synchronization for messages, user avatars (via Supabase Storage), and profile info.
+- Crafted a premium macOS-style active sessions inspector, enabling users to view and revoke authentication tokens dynamically.
+
+
+================================================================================
+ADDITIONAL NOTABLE RESUME-FEATURED PROJECTS:
+================================================================================
+
+15. Hiroshi OS – AI Gateway
+Stack: Rust, Tokio, Tailscale, MCP, WebSockets, Docker
+Bullets:
+- Engineered a pluggable AI gateway with sandboxing, cron scheduling, and secure HTTP RPC services with authentication.
+- Reduced token usage by 70% by implementing an incremental diff pipeline and vector retrieval, eliminating full-file rewrites.
+
+16. Elo – Real-Time Competition Platform
+Stack: TypeScript, Bun, React Native, Expo, Protobuf, Docker
+Bullets:
+- Engineered a math competition app using React Native, Proto, Bun delivering round-trip latency under 40ms.
+- Implemented an anti-cheat engine tracking rapid inputs (less than 120ms) into honeypot sandbox to issue hardware bans.
+
+17. BILL OS – x86_64 Operating System
+Stack: Rust, Assembly, Limine, QEMU, GDB, Cargo
+Bullets:
+- Built a 64-bit operating system, with bootstrapping, interrupt handling, and a modular kernel spanning 10+ subsystems.
+- Engineered a kernel with device drivers, shell, ELF executable loading, validated through 1000+ QEMU boot cycles using GDB.

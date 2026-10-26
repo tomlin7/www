@@ -6,6 +6,11 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
+      { source: "/rss", destination: "/rss.xml", permanent: true },
+      { source: "/work", destination: "/projects", permanent: true },
+      { source: "/cal", destination: "https://cal.com/dheeraj-c", permanent: true },
+      { source: "/meet", destination: "https://cal.com/dheeraj-c", permanent: true },
+      { source: "/book", destination: "https://cal.com/dheeraj-c", permanent: true },
       {
         source: "/about",
         destination: "/",
@@ -52,6 +57,9 @@ const nextConfig: NextConfig = {
         permanent: true,
       },
     ];
+  },
+  async rewrites() {
+    return [{source: "/blog/:slug.md", destination: "/blog/:slug/raw"}];
   },
 };
 

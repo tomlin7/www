@@ -1,0 +1,24 @@
+# OPEN SOURCE CONTRIBUTIONS: DHEERAJ C. (tomlin7)
+
+## Biscuit (Lead Maintainer)
+- Repository: https://github.com/tomlin7/biscuit
+- PyPI Package: https://pypi.org/project/biscuit-editor/ (`pip install biscuit-editor`)
+- Stats: 268+ GitHub Stars, 34 forks
+- Description: Open-source, fast, extensible native AI code editor under 20MB.
+
+## Upstream Open-Source Contributions
+- Zulip:
+  - Authored pull requests to Zulip
+  - Search: https://github.com/search?q=author%3Atomlin7+org%3Azulip+type%3Apr&type=pullrequests
+- prometheus-operator:
+  - Authored pull requests to prometheus-operator
+  - Search: https://github.com/search?q=author%3Atomlin7+repo%3Aprometheus-operator%2Fprometheus-operator+type%3Apr&type=pullrequests
+- KubeVirt:
+  - Authored pull requests to KubeVirt
+  - Search: https://github.com/search?q=author%3Atomlin7+org%3Akubevirt+type%3Apr&type=pullrequests
+
+## Additional Published Packages
+- cupcake-editor on PyPI:
+  - Repository: https://github.com/tomlin7/cupcake
+  - PyPI: https://pypi.org/project/cupcake-editor/ (`pip install cupcake-editor`)
+  - Description: Embeddable Tkinter code editor widget supporting 500+ languages with canvas minimap and Git diffs.

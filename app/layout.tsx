@@ -4,6 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { SiteShell } from "@/components/site-shell";
+import { pageMetadata, siteDescription, siteUrl } from "@/lib/site";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -21,11 +23,26 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
+  ...pageMetadata("Dheeraj (tomlin7)", siteDescription, "/"),
   metadataBase: new URL(baseUrl),
-  title: "Dheeraj (tomlin7)",
-  description: "Systems & Software Engineer",
+  title: {
+    default: "Dheeraj (tomlin7) | Systems & Software Engineer",
+    template: "%s | tomlin7",
+  },
+  description: siteDescription,
   authors: [{ name: "Dheeraj", url: baseUrl }],
   creator: "Dheeraj (tomlin7)",
+  publisher: "Dheeraj (tomlin7)",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -36,10 +53,45 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("h-full antialiased font-sans dark", inter.variable, geistMono.variable)}
+      className={cn(
+        "h-full antialiased font-sans dark",
+        inter.variable,
+        geistMono.variable,
+      )}
     >
       <body className="min-h-full w-full antialiased">
-        {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@graph": [
+                {
+                  "@type": "Person",
+                  "@id": `${siteUrl}/#person`,
+                  name: "Dheeraj C.",
+                  alternateName: "tomlin7",
+                  url: siteUrl,
+                  jobTitle: "Systems & Software Engineer",
+                  sameAs: [
+                    "https://github.com/tomlin7",
+                    "https://linkedin.com/in/initdhee",
+                    "https://x.com/tomfricks",
+                  ],
+                },
+                {
+                  "@type": "WebSite",
+                  "@id": `${siteUrl}/#website`,
+                  url: siteUrl,
+                  name: "tomlin7",
+                  description: siteDescription,
+                  publisher: { "@id": `${siteUrl}/#person` },
+                },
+              ],
+            }).replace(/</g, "\\u003c"),
+          }}
+        />
+        <SiteShell>{children}</SiteShell>
         <Analytics />
         <SpeedInsights />
       </body>

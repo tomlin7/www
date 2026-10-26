@@ -1,0 +1,62 @@
+# SKILLS & TECHNOLOGIES: DHEERAJ C. (tomlin7)
+
+## Languages
+- Python
+- Go
+- Rust
+- TypeScript / JavaScript
+- C++
+- SQL (PostgreSQL, CockroachDB, pgvector)
+- Bash / Shell Scripting
+- Assembly (x86_64)
+
+## Systems Programming & Low-Level
+- Linux (Ubuntu, Arch Linux, WSL)
+- Concurrency & Multi-threading
+- Inter-Process Communication (IPC)
+- LLVM & Compiler Design (AST, Regex, Lexing, Parsing, Optimization)
+- Operating System Kernels & Drivers (Limine bootloader, QEMU, GDB, x86_64 interrupts)
+- Computer Graphics & Rendering (OpenGL, GLFW, Glad, ImGui)
+- gRPC & Protocol Buffers (Protobuf)
+- Tree-sitter (AST parsing, grammar definitions, syntax highlighters)
+- Debug Adapter Protocol (DAP)
+- WebAssembly (WASM)
+
+## Infrastructure & Cloud & DevOps
+- Docker & Containerization
+- Kubernetes
+- AWS (SQS, EC2, S3, DynamoDB)
+- Google Cloud Platform (GCP)
+- Redis (Caching & Queues)
+- Apache Kafka
+- RabbitMQ
+- Supabase (Postgres, Auth, Storage, Realtime)
+- GitHub Actions & CI/CD Pipelines
+- Grafana & Observability
+- Tailscale (Mesh Networking)
+- Git & Jujutsu (Version Control)
+
+## AI Engineering & Machine Learning
+- LangChain & LangGraph
+- Model Context Protocol (MCP)
+- Retrieval-Augmented Generation (RAG)
+- Vector Databases: pgvector, Pinecone
+- LLM APIs & Integration: Google Gemini Flash 2.0, Anthropic Claude
+- PyTorch (CNN-Transformer fusion architectures, multi-channel spatial-temporal tensors)
+- Sentence Transformers
+- Hugging Face Transformers & Ecosystem
+- Imitation Learning, Neuroevolution & Deep Q-Learning
+- pandas & NumPy
+
+## Frameworks & Web Development
+- Next.js (App Router, Server Components, SSR)
+- React & React Native (Expo)
+- Tauri (Desktop)
+- Electron (Desktop)
+- Node.js, Bun, Vite
+- Python Backends: FastAPI, Django, Django REST Framework, Flask
+- Express.js
+- Tokio (Rust async runtime)
+- Styling: TailwindCSS, Framer Motion
+- Testing: Playwright, Pytest
+- GUI Widgets: Tkinter, Pygments, WebView2, CodeMirror, Monaco Editor

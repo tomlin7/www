@@ -1,0 +1,55 @@
+# PROFILE & BIO: DHEERAJ C. (tomlin7)
+
+Name: Dheeraj C.
+Username: tomlin7
+Role: Systems & Software Engineer
+Location: Bengaluru (Bangalore), India
+Email: hello@tomlin7.com
+Phone: +91 8304981017
+Website: https://tomlin7.com
+
+## Tagline / Focus
+Systems programming, graphics, AI agents, and full-stack engineering.
+Building things close to the metal & devtools.
+
+## Bio
+I work on sophisticated agentic code editors, devtools, game engines, rendering pipelines, compilers, and scalable backend services. I care about performance, clean architecture, and understanding how systems actually work under the hood.
+
+## Education
+Birla Institute of Technology (BIT), Mesra, Ranchi
+Degree: Bachelor of Technology (B.Tech)
+Major: Computer Science and Engineering (CSE)
+Years: 2023 – 2027
+
+## Completed Coursework
+- Operating Systems
+- Compiler Design
+- Data Structures & Algorithms
+- Database Management Systems (DBMS)
+- Artificial Intelligence
+- Machine Learning
+- Soft Computing
+- Discrete Mathematics
+- Data Communication
+- Computer Networks
+- Cryptography
+- Network Security
+- Design and Analysis of Algorithms (DAA)
+- C++ Programming
+- Java Programming
+
+## Key Metrics & Highlights
+- GitHub Stars: 268+ ★ (Maintainer of Biscuit - open-source AI IDE)
+- LeetCode: 409 Solved · Peak Rating 1893
+- Hackathons: Monad Blitz Bangalore V4 Winner
+- Certifications:
+  - Meta Backend Developer
+  - IBM Full Stack
+  - Google Cloud AI Professional
+
+## Internet Profiles & Social Links
+- GitHub: https://github.com/tomlin7
+- LinkedIn: https://linkedin.com/in/initdhee
+- X (Twitter): https://x.com/tomfricks
+- Notion: https://tomlin7.notion.site
+- PyPI: https://pypi.org/project/biscuit-editor/
