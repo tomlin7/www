@@ -242,7 +242,7 @@ a:focus-visible {
     gap: 2px;
     background: #1a1917;
     font-family: Georgia, "Times New Roman", serif;
-    font-size: clamp(30px, min(9vw, 9svh), 90px);
+    font-size: clamp(36px, 10vw, 100px);
     line-height: 1.15;
   }
   .light .mobile-menu {

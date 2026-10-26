@@ -2,15 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { KoiPond, type PondStats } from "@/lib/koi-pond";
-import Link from "next/link";
-
-const sections = [
-  { label: "projects", href: "/projects" },
-  { label: "oss", href: "/oss" },
-  { label: "blog", href: "/blog" },
-  { label: "misc", href: "/misc" },
-  { label: "resume", href: "/resume" },
-];
 
 const links = [
   { label: "github", href: "https://github.com/tomlin7" },
@@ -89,10 +80,15 @@ export function PondHome() {
         <a href="/" aria-current="page">
           home
         </a>
-        {sections.map(({ label, href }) => (
-          <Link key={label} href={href}>
+        {links.map(({ label, href }) => (
+          <a
+            key={label}
+            href={href}
+            target={href.startsWith("https") ? "_blank" : undefined}
+            rel="noopener noreferrer"
+          >
             {label}
-          </Link>
+          </a>
         ))}
         <button
           className="theme-toggle"
@@ -134,12 +130,22 @@ export function PondHome() {
           <a href="#introduction" onClick={() => setMenuOpen(false)}>
             Home
           </a>
-          {sections.map(({ label, href }) => (
-            <Link key={label} href={href} onClick={() => setMenuOpen(false)}>
-              {label === "oss"
-                ? "OSS"
-                : label[0].toUpperCase() + label.slice(1)}
-            </Link>
+          {links.map(({ label, href }) => (
+            <a
+              key={label}
+              href={href}
+              onClick={() => setMenuOpen(false)}
+              target={href.startsWith("https") ? "_blank" : undefined}
+              rel="noopener noreferrer"
+            >
+              {label === "x"
+                ? "X"
+                : label === "github"
+                  ? "GitHub"
+                  : label === "linkedin"
+                    ? "LinkedIn"
+                    : "Email"}
+            </a>
           ))}
           <button
             className="theme-toggle"
