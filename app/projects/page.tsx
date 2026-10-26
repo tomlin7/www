@@ -1,6 +1,5 @@
-import { PageHeading } from "@/components/page-heading";
-import { PageFooter } from "@/components/page-footer";
-import { ProjectList } from "@/components/project-list";
+import { ProjectReel } from "@/components/project-reel";
+import { projects } from "@/lib/projects";
 import { pageMetadata } from "@/lib/site";
 
 export const metadata = pageMetadata(
@@ -10,15 +9,5 @@ export const metadata = pageMetadata(
 );
 
 export default function ProjectsPage() {
-  return (
-    <main id="main-content" className="reading-page wide-page">
-      <PageHeading
-        index="01"
-        title="Projects"
-        description="Things I've built to understand how they work. Some became tools I keep coming back to."
-      />
-      <ProjectList />
-      <PageFooter />
-    </main>
-  );
+  return <ProjectReel projects={projects} />;
 }

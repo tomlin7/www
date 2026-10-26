@@ -9,18 +9,20 @@ import { navigation } from "@/lib/site";
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const home = pathname === "/";
+  const visual = pathname === "/gallery" || pathname.startsWith("/projects");
   const canvas = useRef<HTMLCanvasElement>(null);
   const pond = useRef<KoiPond | null>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLElement>(null);
   const [light, setLight] = useState(false);
+  const themeRef = useRef(false);
   const [menuPath, setMenuPath] = useState<string | null>(null);
   const menuOpen = menuPath === pathname;
   const [stats, setStats] = useState<PondStats>({ koi: 0, pellets: 0 });
 
   useEffect(() => {
     if (!canvas.current) return;
-    const controller = new KoiPond(canvas.current, false, setStats);
+    const controller = new KoiPond(canvas.current, themeRef.current, setStats);
     pond.current = controller;
     void document.fonts.ready.then(() => {
       if (pond.current === controller) controller.measureContent();
@@ -29,9 +31,10 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
       controller.destroy();
       pond.current = null;
     };
-  }, []);
+  }, [visual]);
 
   useEffect(() => {
+    themeRef.current = light;
     pond.current?.setTheme(light);
     document.documentElement.style.setProperty(
       "--background",
@@ -128,11 +131,13 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div
-      className={`site-shell${home ? " is-home" : " is-content"}${light ? " light" : ""}`}
+      className={`site-shell${home ? " is-home" : " is-content"}${visual ? " is-visual" : ""}${light ? " light" : ""}`}
     >
-      <div className="pond-backdrop" aria-hidden="true">
-        <canvas ref={canvas} className="pond-canvas" />
-      </div>
+      {!visual && (
+        <div className="pond-backdrop" aria-hidden="true">
+          <canvas ref={canvas} className="pond-canvas" />
+        </div>
+      )}
       <a className="skip-link" href="#main-content">
         skip to content
       </a>

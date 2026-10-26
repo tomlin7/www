@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import data from "@/content/portfolio.json";
 import { navigation, siteUrl } from "@/lib/site";
+import { projects } from "@/lib/projects";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [
@@ -14,6 +15,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: new Date(`${post.date}T00:00:00Z`),
       changeFrequency: "monthly" as const,
       priority: 0.8,
+    })),
+    ...projects.map((project) => ({
+      url: `${siteUrl}/projects/${project.slug}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
     })),
   ];
 }

@@ -1,0 +1,84 @@
+{
+  "intro": "a little outside the code.",
+  "description": "A space for sketches, studies, and things made by hand.",
+  "instagram": null,
+  "works": [
+    {
+      "id": "artwork-01",
+      "title": "Artwork 01",
+      "src": null,
+      "alt": "First artwork",
+      "width": 1400,
+      "height": 1100,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    },
+    {
+      "id": "artwork-02",
+      "title": "Artwork 02",
+      "src": null,
+      "alt": "Second artwork",
+      "width": 850,
+      "height": 1100,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    },
+    {
+      "id": "artwork-03",
+      "title": "Artwork 03",
+      "src": null,
+      "alt": "Third artwork",
+      "width": 1000,
+      "height": 700,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    },
+    {
+      "id": "artwork-04",
+      "title": "Artwork 04",
+      "src": null,
+      "alt": "Fourth artwork",
+      "width": 850,
+      "height": 1100,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    },
+    {
+      "id": "artwork-05",
+      "title": "Artwork 05",
+      "src": null,
+      "alt": "Fifth artwork",
+      "width": 850,
+      "height": 1200,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    },
+    {
+      "id": "artwork-06",
+      "title": "Artwork 06",
+      "src": null,
+      "alt": "Sixth artwork",
+      "width": 1400,
+      "height": 1100,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    },
+    {
+      "id": "artwork-07",
+      "title": "Artwork 07",
+      "src": null,
+      "alt": "Seventh artwork",
+      "width": 850,
+      "height": 1050,
+      "dimensions": null,
+      "year": null,
+      "notes": []
+    }
+  ]
+}

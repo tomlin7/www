@@ -8,6 +8,7 @@ export const siteDescription =
 export const navigation = [
   { label: "home", href: "/" },
   { label: "projects", href: "/projects" },
+  { label: "gallery", href: "/gallery" },
   { label: "oss", href: "/oss" },
   { label: "blog", href: "/blog" },
   { label: "misc", href: "/misc" },
