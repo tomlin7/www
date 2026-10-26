@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- All scene assets resolve within this isolated document. -->
+    <base href="/picnic/" />
+    <title>Dheeraj C. — Systems & Software Engineer</title>
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="canonical" href="https://tomlin7.com/" />
+
+    <meta
+      name="description"
+      content="Dheeraj’s interactive picnic portfolio: projects, systems, software, and curiosity."
+    />
+    <!-- the link preview: the picnic itself, with a postmark on the card -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@500&family=Yellowtail&display=swap"
+      rel="stylesheet"
+    />
+    <!-- one typeface per letter of the section title -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Source+Serif+4:wght@700&family=Kalam:wght@400&family=Abril+Fatface&family=Archivo+Black&family=Bebas+Neue&family=Bowlby+One&family=Bungee&family=Cherry+Bomb+One&family=DM+Serif+Display:ital@1&family=Fraunces:ital,opsz,wght@1,9..144,900&family=Instrument+Serif:ital@1&family=Rubik+Mono+One&family=Shrikhand&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        background: #c8283a;
+      }
+      body {
+        font-family: "Geist", system-ui, sans-serif;
+        color: #2b2824;
+        overflow-x: hidden;
+      }
+      #track {
+        position: relative;
+        width: 1px;
+      }
+      #scene {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+        opacity: 0;
+        transition: opacity 0.9s ease;
+      }
+      body.on #scene {
+        opacity: 1;
+      }
+      /* while it loads: one of the stamps tossed like a coin, up, over and down, a different project each time it
+     lands. Once the picnic is ready it lands one last time and glides off right, to where the stamps are, as the
+     red melts away into the picnic underneath */
+      #load {
+        position: fixed;
+        inset: 0;
+        z-index: 7;
+        perspective: 1400px;
+        pointer-events: none;
+      }
+      #load .bg {
+        position: absolute;
+        inset: 0;
+        background: #c8283a;
+      }
+      .nogl #load {
+        display: none;
+      }
+      #load .coin {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform-style: preserve-3d;
+      }
+      #load img {
+        position: absolute;
+        left: 0;
+        top: 0;
+        display: block;
+        width: 220px;
+        height: auto;
+        translate: -50% -50%;
+        backface-visibility: hidden;
+        filter: drop-shadow(0 1px 1px rgba(70, 20, 25, 0.3))
+          drop-shadow(0 12px 20px rgba(70, 20, 25, 0.28));
+      }
+      #load img + img {
+        rotate: y 180deg;
+      }
+      #load .sh {
+        position: absolute;
+        left: 50%;
+        top: calc(50% + 86px);
+        width: 200px;
+        height: 26px;
+        margin-left: -100px;
+        border-radius: 50%;
+        background: rgba(70, 20, 25, 0.32);
+        filter: blur(10px);
+      }
+      @media (max-width: 600px) {
+        #load img {
+          width: 160px;
+        }
+        #load .sh {
+          top: calc(50% + 62px);
+          width: 150px;
+          margin-left: -75px;
+        }
+      }
+      /* the words, for screen readers and search; the scene draws them as print */
+      .copy {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      /* tabbing to a link brings the words into view, so focus is never invisible */
+      .copy:focus-within {
+        position: fixed;
+        left: 16px;
+        top: 16px;
+        z-index: 2;
+        width: auto;
+        height: auto;
+        max-height: calc(100% - 32px);
+        overflow: auto;
+        clip-path: none;
+        padding: 16px 20px;
+        border-radius: 12px;
+        background: rgba(251, 247, 238, 0.97);
+        line-height: 1.5;
+      }
+      /* the way to the minimal portfolio: on the hero only, it fades away as soon as the postcard starts to turn */
+      #minimal {
+        position: fixed;
+        right: 16px;
+        top: 16px;
+        z-index: 4;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 40px;
+        padding: 0 16px;
+        border-radius: 999px;
+        background: rgba(251, 247, 238, 0.94);
+        color: #2b2824;
+        font:
+          500 15px/1 "Geist",
+          system-ui,
+          sans-serif;
+        text-decoration: none;
+        box-shadow:
+          0 1px 2px rgba(70, 20, 25, 0.2),
+          0 8px 20px rgba(70, 20, 25, 0.16);
+        opacity: 0;
+        visibility: hidden;
+        translate: 0 -6px;
+        transition:
+          opacity 0.5s ease,
+          translate 0.5s ease,
+          visibility 0s 0.5s,
+          transform 0.2s ease;
+      }
+      body.on #minimal.on {
+        opacity: 1;
+        visibility: visible;
+        translate: 0 0;
+        transition:
+          opacity 0.6s ease,
+          translate 0.6s ease,
+          visibility 0s,
+          transform 0.2s ease;
+      }
+      #minimal:hover {
+        transform: translateY(-1px);
+      }
+      #minimal:focus-visible {
+        outline: 2px solid #2b2824;
+        outline-offset: 2px;
+      }
+      .nogl #minimal {
+        display: none;
+      }
+      /* the sound pill: three dots at rest; with the sound on they stretch and fall like a level meter */
+      #sound {
+        position: fixed;
+        right: 16px;
+        bottom: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        width: 56px;
+        height: 36px;
+        padding: 0;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(251, 247, 238, 0.94);
+        color: #2b2824;
+        cursor: pointer;
+        box-shadow:
+          0 1px 2px rgba(70, 20, 25, 0.2),
+          0 8px 20px rgba(70, 20, 25, 0.16);
+        opacity: 0;
+        transition:
+          opacity 0.9s ease 0.6s,
+          transform 0.2s ease;
+      }
+      body.on #sound {
+        opacity: 1;
+      }
+      #sound:hover {
+        transform: translateY(-1px);
+      }
+      #sound:focus-visible {
+        outline: 2px solid #2b2824;
+        outline-offset: 2px;
+      }
+      #sound i {
+        display: block;
+        width: 6px;
+        height: 6px;
+        border-radius: 3px;
+        background: currentColor;
+        transition: height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      #sound[aria-pressed="true"] i {
+        transition-duration: var(--d, 0.16s);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #sound i {
+          transition: none;
+        }
+      }
+      .nogl #sound {
+        display: none;
+      }
+      /* leaving an email on the sticker sheet's blank: a cream card that pops up beside it */
+      .sr {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      #logo {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 3;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+        width: min(340px, calc(100vw - 32px));
+        padding: 8px;
+        border-radius: 30px;
+        background: #fff8e4;
+        box-shadow:
+          0 1px 2px rgba(60, 40, 0, 0.25),
+          0 14px 34px rgba(60, 40, 0, 0.22);
+        opacity: 0;
+        scale: 0.96;
+        pointer-events: none;
+        transform-origin: 50% 100%;
+        transition:
+          opacity 0.18s ease,
+          scale 0.18s ease;
+      }
+      #logo.on {
+        opacity: 1;
+        scale: 1;
+        pointer-events: auto;
+      }
+      #logo input {
+        flex: 1;
+        min-width: 0;
+        height: 44px;
+        padding: 0 16px;
+        border: 1.5px solid #141210;
+        border-radius: 999px;
+        background: #fff;
+        color: #141210;
+        font:
+          500 16px/1 "Geist",
+          system-ui,
+          sans-serif;
+      }
+      #logo input::placeholder {
+        color: #8a8170;
+      }
+      #logo input:focus {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(255, 190, 18, 0.7);
+      }
+      #logo button {
+        height: 44px;
+        padding: 0 20px;
+        border: 0;
+        border-radius: 999px;
+        background: #141210;
+        color: #ffbe12;
+        font:
+          600 15px/1 "Geist",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+      }
+      #logo button:disabled {
+        opacity: 0.6;
+        cursor: default;
+      }
+      #logo button:focus-visible {
+        outline: 2px solid #141210;
+        outline-offset: 2px;
+      }
+      #logo .err {
+        flex-basis: 100%;
+        margin: 0 10px 2px;
+        font:
+          500 13px/1.3 "Geist",
+          system-ui,
+          sans-serif;
+        color: #b42318;
+      }
+      #logo .err:empty {
+        display: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #logo {
+          transition: none;
+        }
+      }
+      /* the paints under the colouring page, and the brush ring that follows the cursor over it */
+      #paints {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 2;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 8px 10px;
+        padding: 8px;
+        border-radius: 30px;
+        background: #fff8e4;
+        box-shadow:
+          0 1px 2px rgba(60, 40, 0, 0.22),
+          0 12px 30px rgba(60, 40, 0, 0.18);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s ease;
+      }
+      #paints.on {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #paints .sw,
+      #paints .sz,
+      #paints .act {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      #paints .sz button[data-s] {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: transparent;
+        cursor: pointer;
+      }
+      #paints .sz button[data-s]:hover {
+        background: rgba(20, 18, 16, 0.06);
+      }
+      #paints .sz button[data-s] i {
+        width: var(--d);
+        height: var(--d);
+        border-radius: 50%;
+        box-shadow: 0 0 0 1.5px #141210;
+      }
+      #paints .sz button[data-s][aria-pressed="true"] {
+        outline: 2.5px solid #141210;
+        outline-offset: -1px;
+      }
+      #paints .sw {
+        padding: 0 2px;
+      }
+      #paints .sw button {
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        border: 0;
+        border-radius: 50%;
+        background: var(--c);
+        cursor: pointer;
+        box-shadow: inset 0 0 0 1.5px rgba(20, 18, 16, 0.18);
+        transition: transform 0.15s ease;
+      }
+      #paints .sw button:hover {
+        transform: translateY(-2px);
+      }
+      #paints .sw button[aria-pressed="true"] {
+        outline: 2.5px solid #141210;
+        outline-offset: 2.5px;
+      }
+      #paints .tool {
+        height: 36px;
+        padding: 0 16px;
+        border: 1.5px solid #141210;
+        border-radius: 999px;
+        background: transparent;
+        color: #141210;
+        font:
+          600 14px/1 "Geist",
+          system-ui,
+          sans-serif;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      #paints .tool:hover {
+        background: rgba(20, 18, 16, 0.06);
+      }
+      #paints .tool[aria-pressed="true"] {
+        background: #141210;
+        color: #fff8e4;
+      }
+      #paints .save {
+        background: #141210;
+        color: #ffbe12;
+      }
+      #paints .save:hover {
+        background: #2b2824;
+      }
+      #paints button:focus-visible {
+        outline: 2.5px solid #141210;
+        outline-offset: 2.5px;
+      }
+      @media (max-width: 600px) {
+        #paints {
+          width: calc(100vw - 24px);
+          border-radius: 26px;
+        }
+        #paints .sw button,
+        #paints .sz button[data-s] {
+          width: 40px;
+          height: 40px;
+        }
+        #paints .tool {
+          height: 40px;
+          padding: 0 14px;
+        }
+      }
+      #brush {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 2;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+        background: color-mix(in srgb, var(--c, #3f9a4f) 55%, transparent);
+        box-shadow: 0 0 0 1.5px #141210;
+        transition: opacity 0.15s ease;
+      }
+      #brush.on {
+        opacity: 1;
+      }
+      #brush.erase {
+        box-shadow:
+          0 0 0 1.5px #141210,
+          inset 0 0 0 3px rgba(255, 255, 255, 0.9);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #paints,
+        #brush {
+          transition: none;
+        }
+      }
+      /* the nav: a stamp in the corner; it opens into a sheet of stamps, the one you are on postmarked */
+      #nav {
+        position: fixed;
+        left: 16px;
+        top: 16px;
+        z-index: 4;
+        opacity: 0;
+        transition: opacity 0.9s ease 0.6s;
+      }
+      body.on #nav {
+        opacity: 1;
+      }
+      #nav button {
+        padding: 0;
+        border: 0;
+        background: none;
+        cursor: pointer;
+      }
+      #nav img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      #nav .open {
+        display: block;
+        width: 60px;
+        height: 73px;
+        rotate: -4deg;
+        filter: drop-shadow(0 1px 1px rgba(70, 20, 25, 0.28))
+          drop-shadow(0 6px 12px rgba(70, 20, 25, 0.22));
+        transition:
+          rotate 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+          translate 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+          scale 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+          filter 0.25s ease;
+      }
+      #nav .open[aria-expanded="true"] {
+        rotate: 6deg;
+        scale: 0.96;
+      }
+      /* the sheet slides out to the right of the stamp, unrolling from it */
+      #nav .sheet {
+        position: absolute;
+        left: 72px;
+        top: -6px;
+        display: grid;
+        grid-template-columns: repeat(5, 84px);
+        gap: 14px;
+        padding: 18px;
+        border-radius: 18px;
+        background: #fff8e4;
+        box-shadow:
+          0 1px 2px rgba(60, 40, 0, 0.22),
+          0 14px 34px rgba(60, 40, 0, 0.22);
+        transform-origin: -14px 42px;
+        opacity: 0;
+        scale: 0.6 0.9;
+        translate: -24px 0;
+        visibility: hidden;
+        transition:
+          opacity 0.16s ease,
+          scale 0.24s ease-in,
+          translate 0.24s ease-in,
+          visibility 0s linear 0.24s;
+      }
+      #nav .sheet.on {
+        opacity: 1;
+        scale: 1;
+        translate: 0 0;
+        visibility: visible;
+        transition:
+          opacity 0.14s ease,
+          scale 0.5s cubic-bezier(0.2, 1.25, 0.35, 1),
+          translate 0.5s cubic-bezier(0.2, 1.25, 0.35, 1),
+          visibility 0s;
+      }
+      /* the stamps are dealt out one after another, flicked in from the left and spinning to rest */
+      #nav .st {
+        position: relative;
+        width: 84px;
+        height: 102px;
+        rotate: calc(var(--r) - 24deg);
+        translate: -46px 6px;
+        scale: 0.55;
+        opacity: 0;
+        filter: drop-shadow(0 1px 1px rgba(60, 40, 0, 0.25))
+          drop-shadow(0 4px 8px rgba(60, 40, 0, 0.16));
+        transition:
+          translate 0.18s ease-in,
+          rotate 0.18s ease-in,
+          scale 0.18s ease-in,
+          opacity 0.12s ease,
+          filter 0.25s ease;
+      }
+      #nav .sheet.on .st {
+        rotate: var(--r);
+        translate: 0 0;
+        scale: 1;
+        opacity: 1;
+        transition:
+          translate 0.55s cubic-bezier(0.2, 1.5, 0.4, 1) var(--d),
+          rotate 0.6s cubic-bezier(0.2, 1.7, 0.4, 1) var(--d),
+          scale 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) var(--d),
+          opacity 0.14s ease var(--d),
+          filter 0.25s ease;
+      }
+      /* hovered: picked up off the sheet, straightened, a little wobble as it comes up */
+      @media (hover: hover) {
+        #nav .open:hover {
+          rotate: 0deg;
+          translate: 0 -3px;
+          scale: 1.06;
+          filter: drop-shadow(0 2px 2px rgba(70, 20, 25, 0.24))
+            drop-shadow(0 12px 18px rgba(70, 20, 25, 0.24));
+        }
+        #nav .open:hover img {
+          animation: nav-wob 0.5s ease;
+        }
+        #nav .sheet.on .st:hover {
+          rotate: 0deg;
+          translate: 0 -8px;
+          scale: 1.08;
+          filter: drop-shadow(0 3px 3px rgba(60, 40, 0, 0.2))
+            drop-shadow(0 14px 18px rgba(60, 40, 0, 0.22));
+          transition:
+            translate 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+            rotate 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+            scale 0.35s cubic-bezier(0.2, 1.6, 0.4, 1),
+            filter 0.25s ease;
+        }
+        #nav .sheet.on .st:hover img {
+          animation: nav-wob 0.5s ease;
+        }
+      }
+      #nav .sheet.on .st:active {
+        scale: 0.96;
+        transition-duration: 0.08s;
+      }
+      @keyframes nav-wob {
+        0% {
+          rotate: 0deg;
+        }
+        30% {
+          rotate: -4deg;
+        }
+        60% {
+          rotate: 2.5deg;
+        }
+        85% {
+          rotate: -1deg;
+        }
+        100% {
+          rotate: 0deg;
+        }
+      }
+      /* the postmark on the part you are in, struck down onto the stamp */
+      #nav .st .pm {
+        position: absolute;
+        right: -16px;
+        top: -6px;
+        width: 66px;
+        height: 38px;
+        opacity: 0;
+        rotate: -12deg;
+        pointer-events: none;
+      }
+      #nav .st[aria-current="true"] .pm {
+        opacity: 0.85;
+      }
+      #nav .sheet.on .st[aria-current="true"] .pm {
+        animation: nav-pm 0.4s cubic-bezier(0.3, 1.4, 0.5, 1)
+          calc(var(--d) + 0.3s) both;
+      }
+      @keyframes nav-pm {
+        from {
+          opacity: 0;
+          scale: 1.6;
+        }
+        to {
+          opacity: 0.85;
+          scale: 1;
+        }
+      }
+      #nav button:focus-visible {
+        outline: 2.5px solid #141210;
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      @media (max-width: 600px) {
+        #nav .open {
+          width: 52px;
+          height: 63px;
+        }
+        #nav .sheet {
+          left: 62px;
+          top: -4px;
+          grid-template-columns: repeat(3, 64px);
+          gap: 10px;
+          padding: 12px;
+          border-radius: 16px;
+          transform-origin: -12px 36px;
+        }
+        #nav .st {
+          width: 64px;
+          height: 78px;
+        }
+        #nav .st .pm {
+          right: -12px;
+          top: -5px;
+          width: 50px;
+          height: 29px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #nav .sheet,
+        #nav .st,
+        #nav .open {
+          transition: none !important;
+        }
+        #nav img,
+        #nav .pm {
+          animation: none !important;
+        }
+      }
+      .nogl #nav {
+        display: none;
+      }
+      /* sitting still a while: a quiet nudge at the bottom that the page goes on by scrolling. A mouse whose
+     wheel rolls down, or on a touch screen a fingertip sliding up. It fades the moment you scroll */
+      #more {
+        position: fixed;
+        left: 50%;
+        bottom: 16px;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        height: 48px;
+        padding: 0 18px 0 14px;
+        border-radius: 999px;
+        color: #2b2824;
+        font:
+          500 15px/1 "Geist",
+          system-ui,
+          sans-serif;
+        background: rgba(251, 247, 238, 0.94);
+        box-shadow:
+          0 1px 2px rgba(70, 20, 25, 0.2),
+          0 8px 20px rgba(70, 20, 25, 0.16);
+        pointer-events: none;
+        opacity: 0;
+        transform: translateX(-50%);
+        translate: 0 8px;
+        transition:
+          opacity 0.6s ease,
+          translate 0.6s ease;
+      }
+      #more.on {
+        opacity: 1;
+        translate: 0 0;
+        transition:
+          opacity 0.9s ease,
+          translate 0.9s cubic-bezier(0.2, 1, 0.3, 1);
+      }
+      #more .m {
+        position: relative;
+        width: 16px;
+        height: 24px;
+        border: 1.75px solid #2b2824;
+        border-radius: 9px;
+      }
+      #more .m i {
+        position: absolute;
+        left: 50%;
+        top: 5px;
+        width: 3px;
+        height: 6px;
+        margin-left: -1.5px;
+        border-radius: 2px;
+        background: #2b2824;
+        animation: more-wheel 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      @keyframes more-wheel {
+        0% {
+          opacity: 0;
+          translate: 0 -2px;
+        }
+        20% {
+          opacity: 1;
+        }
+        65% {
+          opacity: 0;
+          translate: 0 7px;
+        }
+        100% {
+          opacity: 0;
+          translate: 0 7px;
+        }
+      }
+      #more .t {
+        display: none;
+        position: relative;
+        width: 12px;
+        height: 28px;
+      }
+      #more .t i {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #2b2824;
+        animation: more-swipe 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      @keyframes more-swipe {
+        0% {
+          opacity: 0;
+          translate: 0 0;
+          scale: 0.7;
+        }
+        15% {
+          opacity: 1;
+          scale: 1;
+        }
+        70% {
+          opacity: 0;
+          translate: 0 -16px;
+          scale: 0.85;
+        }
+        100% {
+          opacity: 0;
+          translate: 0 -16px;
+        }
+      }
+      @media (hover: none) {
+        #more .m {
+          display: none;
+        }
+        #more .t {
+          display: block;
+        }
+      }
+      #more b {
+        font-weight: 500;
+      }
+      /* on a stamp in the Work row, it asks you to open it instead: a pointer pressing, a ring going out around it */
+      #more .p,
+      #more .v,
+      #more.tap .m,
+      #more.tap .t,
+      #more.tap .s {
+        display: none;
+      }
+      #more.tap .p {
+        display: block;
+        position: relative;
+        width: 20px;
+        height: 20px;
+      }
+      #more.tap .v.k {
+        display: inline;
+      }
+      @media (hover: none) {
+        #more.tap .v.k {
+          display: none;
+        }
+        #more.tap .v.f {
+          display: inline;
+        }
+      }
+      #more .p svg {
+        position: absolute;
+        inset: 0;
+        width: 20px;
+        height: 20px;
+        fill: #2b2824;
+        stroke: #fbf7ee;
+        stroke-width: 1.4;
+        stroke-linejoin: round;
+        animation: more-press 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+      }
+      #more .p i {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 20px;
+        height: 20px;
+        margin: -10px 0 0 -10px;
+        border: 1.75px solid #2b2824;
+        border-radius: 50%;
+        opacity: 0;
+        animation: more-ring 1.8s cubic-bezier(0.2, 0.6, 0.3, 1) infinite;
+      }
+      @keyframes more-press {
+        0%,
+        30% {
+          scale: 1;
+        }
+        40% {
+          scale: 0.86;
+        }
+        55%,
+        100% {
+          scale: 1;
+        }
+      }
+      @keyframes more-ring {
+        0%,
+        36% {
+          opacity: 0;
+          scale: 0.5;
+        }
+        42% {
+          opacity: 0.7;
+        }
+        80%,
+        100% {
+          opacity: 0;
+          scale: 1.5;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #more i,
+        #more svg {
+          animation: none;
+        }
+        #more .m i {
+          opacity: 1;
+        }
+        #more .t i {
+          opacity: 1;
+        }
+      }
+      body.case #more,
+      .nogl #more {
+        display: none;
+      }
+      .nogl .copy {
+        position: fixed;
+        inset: 0;
+        width: auto;
+        height: auto;
+        clip-path: none;
+        white-space: normal;
+        background: #f4eee0;
+        padding: 48px 24px;
+        max-width: 640px;
+        margin: auto;
+        line-height: 1.5;
+      }
+      /* a case study: a letter in a frame over the scene, and the stamp being carried onto it */
+      /* a letter is open: the page behind can't be scrolled (its scrollbar keeps its room, so nothing shifts) */
+      html {
+        scrollbar-gutter: stable;
+      }
+      html:has(body.case) {
+        overflow: hidden;
+      }
+      #case {
+        position: fixed;
+        inset: 0;
+        z-index: 5;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        background: transparent;
+        color-scheme: light;
+      }
+      body.case #nav,
+      body.case #sound {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+      }
+      #fly {
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: 6;
+        pointer-events: none;
+        transform-origin: 50% 50%;
+        will-change: transform;
+      }
+      #fly .card {
+        position: absolute;
+        inset: 0;
+        transform-style: preserve-3d;
+      }
+      #fly canvas {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+      }
+      #fly canvas.b {
+        transform: rotateY(180deg);
+      }
+    </style>
+    <script src="data.js"></script>
+  </head>
+  <body>
+    <div id="load" aria-hidden="true">
+      <div class="bg"></div>
+      <div class="sh"></div>
+      <div class="coin"><img alt="" /><img alt="" /></div>
+    </div>
+    <script>
+      (() => {
+        const u = window.PicnicData.all.map((project) => project.id),
+          a = document.getElementById("load"),
+          i = a.querySelector(".coin"),
+          m = a.querySelector(".sh"),
+          [f, p] = i.querySelectorAll("img"),
+          n = (s) => "stamps/mini/" + u[s % u.length] + ".svg";
+        ((f.src = n(0)), (p.src = n(1)));
+        const c = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let g = 1,
+          t = 0,
+          y = !1,
+          r = null,
+          l = null,
+          d = "translateY(0) rotateY(0deg) rotateZ(-4deg)";
+        const o = 1050,
+          b = () => {
+            y ||
+              ((d = `translateY(0) rotateY(${t * 180 + 180}deg) rotateZ(-4deg)`),
+              (r = i.animate(
+                [
+                  {
+                    transform: `translateY(0) rotateY(${t * 180}deg) rotateZ(-4deg)`,
+                  },
+                  {
+                    transform: `translateY(-160px) rotateY(${t * 180 + 90}deg) rotateZ(6deg)`,
+                    easing: "cubic-bezier(0.3, 0, 0.6, 1)",
+                  },
+                  {
+                    transform: `translateY(0) rotateY(${t * 180 + 180}deg) rotateZ(-4deg)`,
+                  },
+                ],
+                {
+                  duration: o,
+                  easing: "cubic-bezier(0.25, 0.8, 0.5, 1)",
+                  fill: "forwards",
+                },
+              )),
+              (l = m.animate(
+                [
+                  { transform: "scale(1)", opacity: 1 },
+                  { transform: "scale(.55)", opacity: 0.45 },
+                  { transform: "scale(1)", opacity: 1 },
+                ],
+                { duration: o, easing: "ease-in-out" },
+              )),
+              setTimeout(
+                () => {
+                  (g++, ((t % 2 === 0 ? f : p).src = n(g)));
+                },
+                o / 2 + 40,
+              ),
+              setTimeout(() => {
+                (t++, b());
+              }, o + 300));
+          };
+        c || setTimeout(b, 350);
+        const h = async () => {
+          ((y = !0),
+            r &&
+              r.playState === "running" &&
+              ((r.playbackRate = 2.2),
+              l && (l.playbackRate = 2.2),
+              await r.finished.catch(() => {})));
+          const s = "cubic-bezier(0.55, 0, 0.25, 1)",
+            e = c ? 500 : 1300;
+          (c
+            ? a.animate([{ opacity: 1 }, { opacity: 0 }], {
+                duration: e,
+                fill: "forwards",
+              })
+            : (i.animate(
+                [
+                  { transform: d },
+                  {
+                    transform: d
+                      .replace(
+                        "translateY(0)",
+                        "translate(calc(50vw + 260px), -8vh)",
+                      )
+                      .replace("rotateZ(-4deg)", "rotateZ(14deg) scale(0.8)"),
+                  },
+                ],
+                { duration: e, easing: s, fill: "forwards" },
+              ),
+              m.animate([{ opacity: 1 }, { opacity: 0 }], {
+                duration: e * 0.4,
+                fill: "forwards",
+              })),
+            a.querySelector(".bg").animate([{ opacity: 1 }, { opacity: 0 }], {
+              duration: e,
+              easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+              fill: "forwards",
+            }),
+            setTimeout(() => a.remove(), e + 50));
+        };
+        const watchReady = () => {
+          if (document.body.classList.contains("on")) {
+            h();
+            return;
+          }
+          new MutationObserver((s, e) => {
+            document.body.classList.contains("on") && (e.disconnect(), h());
+          }).observe(document.body, {
+            attributes: !0,
+            attributeFilter: ["class"],
+          });
+        };
+        if (document.body) watchReady();
+        else
+          document.addEventListener("DOMContentLoaded", watchReady, {
+            once: true,
+          });
+      })();
+    </script>
+    <div id="track"></div>
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <a id="minimal" class="on" href="/minimal" target="_top"
+      >Minimal portfolio &rarr;</a
+    >
+    <div id="more" aria-hidden="true">
+      <span class="m"><i></i></span><span class="t"><i></i></span
+      ><span class="p"
+        ><i></i
+        ><svg viewBox="0 0 24 24">
+          <path d="M6.5 6l11 6.4-4.9 1.1-2.3 4.5z" /></svg></span
+      ><b class="s">Scroll</b><b class="v k">Click to view</b
+      ><b class="v f">Tap to view</b>
+    </div>
+    <button
+      id="sound"
+      type="button"
+      aria-pressed="false"
+      aria-label="Sound off"
+    >
+      <i aria-hidden="true"></i><i aria-hidden="true"></i
+      ><i aria-hidden="true"></i>
+    </button>
+    <main class="copy">
+      <h1>Dheeraj C.</h1>
+      <p>
+        Systems &amp; Software Engineer. Building devtools and things close to
+        the metal.
+      </p>
+      <p>
+        I build code editors, compilers, graphics experiments, and AI agents.
+        Studying Computer Science at BIT Mesra.
+      </p>
+      <h2>Explore</h2>
+      <ul>
+        <li><a href="/projects" target="_top">All 17 projects</a></li>
+        <li><a href="/oss" target="_top">Open source</a></li>
+        <li><a href="/blog" target="_top">Writing</a></li>
+        <li><a href="/resume" target="_top">Resume</a></li>
+        <li><a href="/minimal" target="_top">Minimal portfolio</a></li>
+      </ul>
+    </main>
+    <script src="paint.js"></script>
+    <script src="print.js"></script>
+    <script src="colour.js"></script>
+    <script src="adapt.js"></script>
+    <script src="scene.js"></script>
+    <script src="nature.js"></script>
+    <script src="butterflies.js"></script>
+    <script src="sound.js"></script>
+    <script src="props.js"></script>
+    <script src="picnic.js"></script>
+    <script src="case.js"></script>
+  </body>
+</html>

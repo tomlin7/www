@@ -8,7 +8,13 @@ import { navigation } from "@/lib/site";
 
 export function SiteShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const home = pathname === "/";
+  if (pathname === "/") return <>{children}</>;
+  return <PortfolioChrome>{children}</PortfolioChrome>;
+}
+
+function PortfolioChrome({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const home = pathname === "/minimal";
   const canvas = useRef<HTMLCanvasElement>(null);
   const pond = useRef<KoiPond | null>(null);
   const menuButton = useRef<HTMLButtonElement>(null);
