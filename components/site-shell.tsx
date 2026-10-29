@@ -42,7 +42,7 @@ export function SiteShell({ children }: { children: React.ReactNode }) {
     );
     document.documentElement.style.setProperty(
       "--foreground",
-      light ? "#262523" : "#fff7f0",
+      light ? "#25282c" : "#ecebea",
     );
     document
       .querySelector('meta[name="theme-color"]')
