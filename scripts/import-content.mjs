@@ -22,8 +22,11 @@ function copyText(directory, relative = "") {
 }
 copyText(source);
 fs.mkdirSync("public", { recursive: true });
-fs.copyFileSync(path.join(source, "Resume.pdf"), "public/Resume.pdf");
-fs.copyFileSync(path.join(source, "resume.txt"), "public/resume.txt");
+// Reviewed current downloads take precedence over the historical archive.
+if (!fs.existsSync("content/current-resume.json")) {
+  fs.copyFileSync(path.join(source, "Resume.pdf"), "public/Resume.pdf");
+  fs.copyFileSync(path.join(source, "resume.txt"), "public/resume.txt");
+}
 const read = (name) =>
   fs.readFileSync(path.join(source, name), "utf8").replace(/\r\n/g, "\n");
 const field = (text, name) =>

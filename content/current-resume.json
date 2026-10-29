@@ -1,0 +1,26 @@
+[
+  {
+    "heading": "professional experience",
+    "content": "Valura.Ai · SDE Intern, CTO's Office\nBengaluru · Aug 2026 – Present\nBuilding internal AI gateway infrastructure and TypeScript/Python tools and test scaffolding for payment-to-portfolio ledger workflows.\n\nMorvion · Full-Stack Developer Intern\nRemote · Dec 2025 – Feb 2026\nBuilt a request-to-quote marketplace, Venue/Organizer/Admin dashboards, CRM email classification, and Stripe billing and webhooks.\n\nHooman Digital LLP · AI/ML Engineer Intern\nKolkata · Jul 2025 – Sep 2025\nBuilt financial-ticker extraction pipelines, SSE log streaming, and asynchronous AWS SQS/DynamoDB workers.\n\nOZI · Software Development Engineer Intern\nGurgaon · Nov 2024 – Feb 2025\nBuilt catalog, search, and deep-link APIs; improved backend queries and caching."
+  },
+  {
+    "heading": "research experience",
+    "content": "NIT Calicut · Research Intern\nDepartment of Computer Engineering · May 2025 – Jul 2025\nImplemented spatial/temporal Transformers and CNN-Transformer hybrids in PyTorch for raw EEG classification, with five-fold cross-subject validation."
+  },
+  {
+    "heading": "education",
+    "content": "Birla Institute of Technology, Mesra\nB.Tech in Computer Science and Engineering · 2023 – May 2027\nCGPA: 8.44/10\nCoursework: Data Structures & Algorithms, Operating Systems, DBMS, Computer Networks."
+  },
+  {
+    "heading": "featured projects",
+    "content": "Hiroshi · Rust, SQLite, GPUIX\nDurable AI execution, tool workflows, replay, cancellation, and crash recovery. Desktop and broader multi-agent workflow remain in development.\n\nhookrelay · Go, PostgreSQL\nSigned webhook delivery, retries, dead-letter queue, replay, and stale-claim recovery. At-least-once delivery.\n\nquorumkv · Go, Raft, WAL\nConsensus and quorum-confirmed ReadIndex reads; 500/500 recorded consistent-read histories passed Porcupine under failures.\n\nlsmstore · Go\nWAL, SSTables, bloom filters, compaction, and crash testing.\n\nToollearn / Toolrecover · Python, PyTorch, PEFT\nTool-use adaptation, recovery, and preference-training experiments. Pretrained-model quality improvements remain unmeasured.\n\nKernelbench · PyTorch, Triton\nInference kernel experiments and distributed CPU checks. CUDA and multi-GPU validation remain pending.\n\nBiscuit · Python, Tree-sitter, pytest\nOpen-source code editor with plugin tooling and automated checks."
+  },
+  {
+    "heading": "open source & certifications",
+    "content": "Creator and maintainer of Biscuit and cupcake-editor.\nContributions to Zulip, prometheus-operator, and KubeVirt.\nMeta Backend Developer, IBM Full Stack, Google Cloud AI Professional."
+  },
+  {
+    "heading": "technical skills",
+    "content": "Languages: Python, Go, Rust, TypeScript, C++, SQL, Bash\nBackend: Django, FastAPI, PostgreSQL, SQLite, Redis, gRPC, Protobuf\nDesktop / Web: Next.js, React, React Native, Tauri, Tokio\nResearch: PyTorch, Transformers, PEFT/LoRA, model evaluation, MCP\nInfrastructure / Testing: Linux, Docker, Kubernetes, AWS, GitHub Actions, pytest, property testing, fault injection"
+  }
+]

@@ -1,84 +1,65 @@
-================================================================================
-                                DHEERAJ C.
-                     hello@tomlin7.com · Bengaluru, India
-                   Website: tomlin7.com · GitHub: tomlin7
-================================================================================
-
-EDUCATION
---------------------------------------------------------------------------------
-Birla Institute of Technology, Mesra, Ranchi
-Bachelor of Technology (B.Tech), Computer Science & Engineering (2023 – 2027)
-
-Coursework: Operating Systems, Compiler Design, Data Structures & Algorithms,
-DBMS, Artificial Intelligence, Machine Learning, Computer Networks, Cryptography,
-Network Security, Soft Computing, Discrete Mathematics, C++, Java
-
-
-ACHIEVEMENTS & CERTIFICATIONS
---------------------------------------------------------------------------------
-• Maintainer of Biscuit — open-source AI IDE (268+ GitHub stars; pip install biscuit-editor).
-• LeetCode: 409 problems solved · Peak contest rating 1893.
-• Open-Source: Authored PRs accepted into Zulip, prometheus-operator, and KubeVirt.
-• Hackathon Winner: Monad Blitz Bangalore V4.
-• Professional Certifications: Meta Backend Developer, IBM Full Stack, Google Cloud AI Professional.
-
+Dheeraj C.
+Bengaluru, India · hello@tomlin7.com
+https://tomlin7.com
 
 PROFESSIONAL EXPERIENCE
---------------------------------------------------------------------------------
-Hooman Digital LLP                                              Kolkata, India
-AI/ML Engineer Intern                                      Jul 2025 – Sep 2025
-• Built an LLM pipeline extracting and tracking financial tickers from live market data with 98% accuracy.
-• Replaced WebSockets with Server Sent Events (SSE) for one-way log streaming, reducing infrastructure cost by 40%.
-• Designed an event-driven backend using AWS SQS to absorb traffic spikes while serving 400+ monthly active users.
-• Engineered scalable backend infrastructure components, improving system throughput and reducing query latency by 15%.
-• Collaborated with frontend and product teams to design, implement, and ship production features across multiple releases.
+Valura.Ai · SDE Intern, CTO's Office
+Bengaluru · Aug 2026 – Present
+Building internal AI gateway infrastructure and TypeScript/Python tools and test scaffolding for payment-to-portfolio ledger workflows.
 
-OZI                                                             Gurgaon, India
-Software Development Engineer Intern                       Nov 2024 – Jan 2025
-• Built core MVP features powering a production platform with 15,000+ curated products and 100K+ Android downloads.
-• Developed deep-linking and search APIs to improve content discovery and user navigation across the application.
-• Optimized backend data access through query tuning and caching, reducing API response latency by 20%.
-• Worked directly with the founding team to rapidly prototype, ship, and iterate on production features in a startup.
+Morvion · Full-Stack Developer Intern
+Remote · Dec 2025 – Feb 2026
+Built a request-to-quote marketplace, Venue/Organizer/Admin dashboards, CRM email classification, and Stripe billing and webhooks.
 
+Hooman Digital LLP · AI/ML Engineer Intern
+Kolkata · Jul 2025 – Sep 2025
+Built financial-ticker extraction pipelines, SSE log streaming, and asynchronous AWS SQS/DynamoDB workers.
+
+OZI · Software Development Engineer Intern
+Gurgaon · Nov 2024 – Feb 2025
+Built catalog, search, and deep-link APIs; improved backend queries and caching.
 
 RESEARCH EXPERIENCE
---------------------------------------------------------------------------------
-NIT Calicut (Dept. of Computer Engineering)                     Calicut, India
-Research Intern                                            May 2025 – Jul 2025
-Project: A Transformer-Based Approach for Raw EEG Classification
-• Improved biometric classification accuracy by 25% by building state-of-the-art CNN-Transformer fusion models.
-• Engineered 5+ EEG classifier fusion models handling spatial-temporal multi-channel tensors using PyTorch.
+NIT Calicut · Research Intern
+Department of Computer Engineering · May 2025 – Jul 2025
+Implemented spatial/temporal Transformers and CNN-Transformer hybrids in PyTorch for raw EEG classification, with five-fold cross-subject validation.
 
+EDUCATION
+Birla Institute of Technology, Mesra
+B.Tech in Computer Science and Engineering · 2023 – May 2027
+CGPA: 8.44/10
+Coursework: Data Structures & Algorithms, Operating Systems, DBMS, Computer Networks.
 
 FEATURED PROJECTS
---------------------------------------------------------------------------------
-Biscuit – AI Code Editor (Python, LangChain, RAG, MCP, React, Pydantic)
-• Built a modular IDE using microkernel architecture, featuring source control, pseudoterminals, and extension marketplace.
-• Introduced semantic code intelligence for 20+ languages using Tree-sitter and LSP (268+ GitHub stars; pip install biscuit-editor).
-• Optimized global search latency under 100ms for folders exceeding 1M+ lines, using multi-threaded Ripgrep.
+Hiroshi · Rust, SQLite, GPUIX
+Durable AI execution, tool workflows, replay, cancellation, and crash recovery. Desktop and broader multi-agent workflow remain in development.
 
-Hiroshi OS – AI Gateway (Rust, Tokio, Tailscale, MCP, WebSockets, Docker)
-• Engineered a pluggable AI gateway with sandboxing, cron scheduling, and secure HTTP RPC services with authentication.
-• Reduced token usage by 70% by implementing an incremental diff pipeline and vector retrieval, eliminating full-file rewrites.
+hookrelay · Go, PostgreSQL
+Signed webhook delivery, retries, dead-letter queue, replay, and stale-claim recovery. At-least-once delivery.
 
-Elo – Real-Time Competition Platform (TypeScript, Bun, React Native, Expo, Protobuf, Docker)
-• Engineered a math competition app using React Native, Proto, Bun delivering round-trip latency under 40ms.
-• Implemented an anti-cheat engine tracking rapid inputs (<120ms) into honeypot sandbox to issue hardware bans.
+quorumkv · Go, Raft, WAL
+Consensus and quorum-confirmed ReadIndex reads; 500/500 recorded consistent-read histories passed Porcupine under failures.
 
-BILL OS – x86_64 Operating System (Rust, Assembly, Limine, QEMU, GDB, Cargo)
-• Built a 64-bit operating system with bootstrapping, interrupt handling, and a modular kernel spanning 10+ subsystems.
-• Engineered a kernel with device drivers, shell, ELF executable loading, validated through 1000+ QEMU boot cycles using GDB.
+lsmstore · Go
+WAL, SSTables, bloom filters, compaction, and crash testing.
 
-ted – Agent-Native IDE Platform (Tauri, Rust, WASM, React, Tree-sitter)
-• Developed a novel agent-native IDE platform improving AI agent code interaction efficiency by 30% and reducing startup times by 40%.
-• Implemented tree-sitter syntax highlighting and autonomous agent tool-calling execution loops.
+Toollearn / Toolrecover · Python, PyTorch, PEFT
+Tool-use adaptation, recovery, and preference-training experiments. Pretrained-model quality improvements remain unmeasured.
 
+Kernelbench · PyTorch, Triton
+Inference kernel experiments and distributed CPU checks. CUDA and multi-GPU validation remain pending.
+
+Biscuit · Python, Tree-sitter, pytest
+Open-source code editor with plugin tooling and automated checks.
+
+OPEN SOURCE & CERTIFICATIONS
+Creator and maintainer of Biscuit and cupcake-editor.
+Contributions to Zulip, prometheus-operator, and KubeVirt.
+Meta Backend Developer, IBM Full Stack, Google Cloud AI Professional.
 
 TECHNICAL SKILLS
---------------------------------------------------------------------------------
-• Languages: Python, Go, Rust, TypeScript, C++, SQL, Bash, x86_64 Assembly
-• Systems & Core: Linux, Concurrency, IPC, LLVM, OpenGL, Limine, QEMU, Tree-sitter, DAP
-• AI & ML: LangChain, LangGraph, MCP, RAG, PyTorch, pgvector, Pinecone, Gemini, Claude
-• Web & Frameworks: Next.js, React, React Native, FastAPI, Django, Express.js, Tokio, Tauri, Electron
-• Cloud & Tools: AWS (SQS, EC2, S3), Docker, Kubernetes, Kafka, Redis, Supabase, Git, Jujutsu
-================================================================================
+Languages: Python, Go, Rust, TypeScript, C++, SQL, Bash
+Backend: Django, FastAPI, PostgreSQL, SQLite, Redis, gRPC, Protobuf
+Desktop / Web: Next.js, React, React Native, Tauri, Tokio
+Research: PyTorch, Transformers, PEFT/LoRA, model evaluation, MCP
+Infrastructure / Testing: Linux, Docker, Kubernetes, AWS, GitHub Actions, pytest, property testing, fault injection

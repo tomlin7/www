@@ -8,14 +8,13 @@ export default function HomePage() {
         <h1>Hey, I&apos;m Dheeraj.</h1>
         <p>Systems &amp; Software Engineer.</p>
         <p>
-          Previously at{" "}
-          <Link href="/resume#professional-experience">Hooman Digital</Link>,{" "}
-          <Link href="/resume#professional-experience">OZI</Link>, and{" "}
+          At <Link href="/resume#professional-experience">Valura.Ai</Link>.
+          Previously <Link href="/resume#professional-experience">OZI</Link> and{" "}
           <Link href="/resume#research-experience">NIT Calicut</Link>.
         </p>
         <p>
-          Building <Link href="/projects#biscuit">biscuit</Link> and{" "}
-          <Link href="/projects#ted">ted</Link>.
+          Building <Link href="/projects/hiroshi-os">Hiroshi</Link> and{" "}
+          <Link href="/projects/biscuit">biscuit</Link>.
         </p>
         <div className="social-links">
           {socials.map(({ label, href }, i) => (

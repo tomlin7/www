@@ -1,4 +1,4 @@
-import data from "@/content/portfolio.json";
+import data from "@/lib/portfolio";
 import { PageHeading } from "@/components/page-heading";
 import { PageFooter } from "@/components/page-footer";
 import { pageMetadata } from "@/lib/site";

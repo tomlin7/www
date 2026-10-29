@@ -1,7 +1,8 @@
-import data from "@/content/portfolio.json";
+import data from "@/lib/portfolio";
+import { projects as collection } from "@/lib/projects";
 
 export function GET() {
-  const projects = [...data.projects, ...data.additionalProjects]
+  const projects = collection
     .map(
       (project) =>
         `## ${project.title}\n${project.subtitle}\n${"description" in project ? project.description : ""}\n${project.technologies.join(", ")}\n${project.notes.join("\n")}`,

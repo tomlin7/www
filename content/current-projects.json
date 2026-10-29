@@ -1,0 +1,434 @@
+[
+  {
+    "title": "Hiroshi OS",
+    "subtitle": "Durable AI execution engine",
+    "description": "A Rust engine and GPUIX desktop for model and tool workflows.",
+    "github": "https://github.com/hiroshi-os/Hiroshi",
+    "technologies": [
+      "Rust",
+      "SQLite",
+      "GPUIX"
+    ],
+    "notes": [
+      "SQLite persistence, typed HTTP and replay feeds, provider adapters, tool execution, cancellation, context compaction, and crash recovery.",
+      "The desktop and broader multi-agent workflow are still in development."
+    ]
+  },
+  {
+    "title": "hookrelay",
+    "subtitle": "Webhook delivery",
+    "description": "Signed webhook delivery with retries and replay.",
+    "github": "https://github.com/hiroshi-os/hookrelay",
+    "technologies": [
+      "Go",
+      "PostgreSQL"
+    ],
+    "notes": [
+      "SKIP LOCKED workers, HMAC signatures, jittered retries, a dead-letter queue, replay, and stale-claim recovery.",
+      "A recorded single-host fault run delivered 10,000 events across five process restarts. Delivery is at-least-once."
+    ]
+  },
+  {
+    "title": "quorumkv",
+    "subtitle": "Raft key-value store",
+    "description": "A key-value store with Raft consensus and quorum-confirmed reads.",
+    "github": "https://github.com/hiroshi-os/quorumkv",
+    "technologies": [
+      "Go",
+      "Raft",
+      "WAL",
+      "Porcupine"
+    ],
+    "notes": [
+      "Implemented elections, replication, conflict-index rollback, quorum commits, a write-ahead log, and ReadIndex.",
+      "The recorded in-process fault run passed 500/500 consistent-read histories. Plain local reads can be stale."
+    ]
+  },
+  {
+    "title": "lsmstore",
+    "subtitle": "LSM storage engine",
+    "description": "A single-node storage engine built around a write-ahead log and SSTables.",
+    "github": "https://github.com/hiroshi-os/lsmstore",
+    "technologies": [
+      "Go",
+      "LSM",
+      "WAL"
+    ],
+    "notes": [
+      "Skiplist memtables, SSTables, bloom filters, leveled compaction, and crash/property tests.",
+      "After fixing a flush bug, the recorded process-kill suite lost none of 8,428 acknowledged writes across 220 runs."
+    ]
+  },
+  {
+    "title": "Bagrry",
+    "subtitle": "Local-first AI notepad",
+    "description": "A desktop notepad with local storage, transcription, and AI tools.",
+    "github": "https://github.com/tomlin7/Bagrry",
+    "technologies": [
+      "TypeScript",
+      "Rust",
+      "Tauri",
+      "React",
+      "SQLite",
+      "MCP"
+    ],
+    "notes": [
+      "Embedded SQLite, audio transcription, and model-assisted note enhancement.",
+      "Local REST and MCP interfaces expose notes and search to other tools."
+    ]
+  },
+  {
+    "title": "Kale",
+    "subtitle": "LLVM compilation pipeline",
+    "description": "A compiler experiment from parsing to native code generation.",
+    "github": "https://github.com/tomlin7/kale",
+    "technologies": [
+      "Python",
+      "LLVM",
+      "LLVMLite"
+    ],
+    "notes": [
+      "Lexer, recursive-descent parser, AST modules, and LLVM IR generation.",
+      "Symbol resolution, stack-frame allocation, and native code generation using LLVMLite."
+    ]
+  },
+  {
+    "title": "ringcache",
+    "subtitle": "Distributed in-memory cache",
+    "description": "A replicated cache with consistent hashing, TTLs, and LRU eviction.",
+    "github": "https://github.com/hiroshi-os/ringcache",
+    "technologies": [
+      "Go",
+      "Docker",
+      "Consistent hashing"
+    ],
+    "notes": [
+      "Three-node setup with two replicas and failure demonstrations.",
+      "In-memory and last-writer-wins; writes require one acknowledgement. It is not durable or linearizable."
+    ]
+  },
+  {
+    "title": "logship",
+    "subtitle": "Partitioned commit log",
+    "description": "A segmented event log with consumer groups and replication.",
+    "github": "https://github.com/hiroshi-os/logship",
+    "technologies": [
+      "Go",
+      "CRC",
+      "Docker"
+    ],
+    "notes": [
+      "Sparse indexes, partitions, group rebalancing, replica watermarks, and broker-failure experiments.",
+      "Membership is static. Network splits can permit dual writes; this is not a consensus-backed log."
+    ]
+  },
+  {
+    "title": "ledgerd",
+    "subtitle": "Double-entry ledger",
+    "description": "A transactional ledger with idempotent payment workflows.",
+    "github": "https://github.com/hiroshi-os/ledgerd",
+    "technologies": [
+      "Go",
+      "PostgreSQL"
+    ],
+    "notes": [
+      "Double-entry accounting, transactional idempotency, a payment state machine, and property/failure tests.",
+      "Uses a simulated processor rather than real payment rails."
+    ]
+  },
+  {
+    "title": "tenderlens",
+    "subtitle": "Tender ingestion and search",
+    "description": "Source adapters, deduplication, search, and alerts for public tenders.",
+    "github": "https://github.com/hiroshi-os/tenderlens",
+    "technologies": [
+      "Python",
+      "Django",
+      "PostgreSQL",
+      "Celery"
+    ],
+    "notes": [
+      "Incremental ingestion, full-text search, and alert workers.",
+      "Source availability and captcha restrictions limit ingestion coverage."
+    ]
+  },
+  {
+    "title": "Toollearn",
+    "subtitle": "Tool-use adaptation experiments",
+    "description": "A reproducible harness for small-model tool-use adaptation.",
+    "github": "https://github.com/hiroshi-os/toollearn",
+    "technologies": [
+      "Python",
+      "PyTorch",
+      "Transformers",
+      "PEFT / LoRA"
+    ],
+    "notes": [
+      "Virtual file tools, completion-masked training, teacher trajectory collection, and baseline/adapter evaluation.",
+      "Tiny-model training and checkpoint reload were exercised locally. Pretrained-model quality gains remain unmeasured."
+    ]
+  },
+  {
+    "title": "Toolrecover",
+    "subtitle": "Reward and preference experiments",
+    "description": "Controlled experiments in tool recovery, policy optimization, and preferences.",
+    "github": "https://github.com/hiroshi-os/toolrecover",
+    "technologies": [
+      "Python",
+      "PyTorch",
+      "DPO"
+    ],
+    "notes": [
+      "Recovery simulator, private state verifier, supervised baseline, grouped policy updates, DPO, and reward-model training.",
+      "Local runs did not establish an RL improvement. Human-data and AI-judge GPU studies remain pending."
+    ]
+  },
+  {
+    "title": "Kernelbench",
+    "subtitle": "Inference kernel experiments",
+    "description": "RMSNorm and softmax experiments with reproducible measurement tooling.",
+    "github": "https://github.com/hiroshi-os/kernelbench",
+    "technologies": [
+      "Python",
+      "PyTorch",
+      "Triton"
+    ],
+    "notes": [
+      "Masked kernels, numerical-error reports, eager/compiled comparisons, and distributed gradient checks.",
+      "Two-process CPU/Gloo validation ran on Windows. CUDA kernel execution and multi-GPU NCCL validation remain pending; no GPU speedup is claimed."
+    ]
+  },
+  {
+    "title": "T3D",
+    "subtitle": "Desktop code editor",
+    "description": "A desktop editor with native terminals and a bounded AI tool loop.",
+    "github": "https://github.com/tomlin7/T3D",
+    "technologies": [
+      "TypeScript",
+      "React",
+      "Tauri",
+      "Rust",
+      "Monaco"
+    ],
+    "notes": [
+      "PTY terminals, split editing, Git integration, extension packaging, and workspace file tools.",
+      "Model/tool rounds support cancellation and partial results. Workspace path checks are not a complete security sandbox."
+    ]
+  },
+  {
+    "title": "shipgate",
+    "subtitle": "Release gate demo",
+    "description": "Health-gated staging-to-production promotion with approvals.",
+    "github": "https://github.com/hiroshi-os/shipgate",
+    "technologies": [
+      "Go",
+      "Next.js",
+      "SQLite"
+    ],
+    "notes": [
+      "Promotion flow, rollback hooks, and an audit trail.",
+      "A demo with limited authentication; further polish is pending."
+    ]
+  },
+  {
+    "title": "linejudge",
+    "subtitle": "Code review pipeline",
+    "description": "Webhook-driven review jobs with static checks and an optional model stage.",
+    "github": "https://github.com/hiroshi-os/linejudge",
+    "technologies": [
+      "Go",
+      "Webhooks",
+      "LLM integration"
+    ],
+    "notes": [
+      "A review pipeline and evaluation harness.",
+      "Recorded scores use a mock provider on five fixtures. They do not measure real-model review quality; further polish is pending."
+    ]
+  },
+  {
+    "title": "fencepost",
+    "subtitle": "Leased job queue · in progress",
+    "description": "A PostgreSQL job queue with leases and fencing.",
+    "github": "https://github.com/hiroshi-os/fencepost/pull/1",
+    "technologies": [
+      "Go",
+      "PostgreSQL"
+    ],
+    "notes": [
+      "Implementation is in PR #1 in the October 26 review; the default branch contains only a README.",
+      "Includes cron and a chaos harness. Fenced effects require a participating sink."
+    ]
+  },
+  {
+    "title": "pagedb",
+    "subtitle": "Page storage engine · in progress",
+    "description": "A B+tree storage experiment with MVCC and recovery.",
+    "github": "https://github.com/hiroshi-os/pagedb/pull/1",
+    "technologies": [
+      "Rust",
+      "B+tree",
+      "MVCC",
+      "WAL"
+    ],
+    "notes": [
+      "Implementation and reports are in PR #1 in the October 26 review; the default branch contains only a README.",
+      "Includes a double-write buffer. Snapshot isolation does not imply serializability."
+    ]
+  },
+  {
+    "title": "shardvault",
+    "subtitle": "Erasure-coded storage · in progress",
+    "description": "An erasure-coded object store with fault experiments.",
+    "github": "https://github.com/hiroshi-os/shardvault/pull/1",
+    "technologies": [
+      "Go",
+      "Erasure coding"
+    ],
+    "notes": [
+      "Implementation and recorded chaos tests are in PR #1 in the October 26 review; the default branch contains only a README.",
+      "An S3-like interface does not imply an AWS deployment."
+    ]
+  },
+  {
+    "title": "postings",
+    "subtitle": "Search index · in progress",
+    "description": "A Java search indexing core, server, and benchmark harness.",
+    "github": "https://github.com/hiroshi-os/postings/pull/1",
+    "technologies": [
+      "Java 21",
+      "Gradle"
+    ],
+    "notes": [
+      "Implementation is in PR #1 in the October 26 review; the default branch contains only a README.",
+      "Includes tests; performance has not been established by the reviewed documentation."
+    ]
+  },
+  {
+    "title": "steerlb",
+    "subtitle": "L7 proxy · in progress",
+    "description": "An HTTP load-balancing experiment with failure scenarios.",
+    "github": "https://github.com/hiroshi-os/steerlb/pull/1",
+    "technologies": [
+      "Go",
+      "HTTP"
+    ],
+    "notes": [
+      "Implementation is in PR #1 in the October 26 review; the default branch contains only a README.",
+      "Recorded kill/restart and retry-storm regressions remain unresolved."
+    ]
+  },
+  {
+    "title": "bidready",
+    "subtitle": "Document retrieval workflows",
+    "description": "PDF ingestion, retrieval, and cited document workflows.",
+    "github": "https://github.com/hiroshi-os/bidready",
+    "technologies": [
+      "Python",
+      "FastAPI",
+      "LangGraph",
+      "FAISS"
+    ],
+    "notes": [
+      "OCR, BM25 retrieval, citations, and verification.",
+      "Default-branch evaluation uses mock/rule behavior. Model-improvement work was unmerged in the October 26 review."
+    ]
+  },
+  {
+    "title": "agentbank",
+    "subtitle": "Virtual ledger and tools",
+    "description": "A virtual ledger exposed through REST and MCP.",
+    "github": "https://github.com/hiroshi-os/agentbank",
+    "technologies": [
+      "TypeScript",
+      "SQLite",
+      "MCP"
+    ],
+    "notes": [
+      "Payroll and card workflows with tests.",
+      "Uses simulated currency rather than real financial rails."
+    ]
+  },
+  {
+    "title": "Hypr",
+    "subtitle": "Terminal coding agent",
+    "description": "A terminal agent with schema-validated tools and MCP support.",
+    "github": "https://github.com/hiroshi-os/Hypr",
+    "technologies": [
+      "TypeScript",
+      "Bun",
+      "MCP"
+    ],
+    "notes": [
+      "Tool execution and daemon modules. No latency benchmark is claimed."
+    ]
+  },
+  {
+    "title": "Hiro",
+    "subtitle": "Desktop automation",
+    "description": "A desktop automation application with native commands and model providers.",
+    "github": "https://github.com/hiroshi-os/Hiro",
+    "technologies": [
+      "Rust",
+      "Tauri"
+    ],
+    "notes": [
+      "Native automation commands and provider integration. Safety and performance guarantees have not been independently established."
+    ]
+  },
+  {
+    "title": "Parable",
+    "subtitle": "Desktop editor",
+    "description": "A desktop editor with Git integration and a model tool-call loop.",
+    "github": "https://github.com/hiroshi-os/Parable",
+    "technologies": [
+      "TypeScript",
+      "Tauri"
+    ],
+    "notes": [
+      "Search, sandboxing, LSP, and planning are listed as future work in the reviewed README."
+    ]
+  },
+  {
+    "title": "inkwell",
+    "subtitle": "Publishing application",
+    "description": "A publishing application with a Go API, web frontend, and Android client.",
+    "github": "https://github.com/hiroshi-os/inkwell",
+    "technologies": [
+      "Go",
+      "SQL",
+      "Next.js",
+      "Android"
+    ],
+    "notes": [
+      "CRUD, authentication, and a feed. The reviewed version uses LIKE search and demo authentication."
+    ]
+  },
+  {
+    "title": "gene",
+    "subtitle": "Local retrieval assistant",
+    "description": "A Kotlin application with local retrieval and an optional model gateway.",
+    "github": "https://github.com/hiroshi-os/gene",
+    "technologies": [
+      "Kotlin",
+      "FastAPI",
+      "Groq"
+    ],
+    "notes": [
+      "The optional server does not yet include authentication or a database."
+    ]
+  },
+  {
+    "title": "HyperCode",
+    "subtitle": "Terminal ReAct agent",
+    "description": "A small terminal agent with file and command tools.",
+    "github": "https://github.com/hiroshi-os/HyperCode",
+    "technologies": [
+      "Python",
+      "ReAct",
+      "TUI"
+    ],
+    "notes": [
+      "A compact experiment in model-driven file and command execution."
+    ]
+  }
+]

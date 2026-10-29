@@ -1,10 +1,12 @@
 import { PageHeading } from "@/components/page-heading";
 import { PageFooter } from "@/components/page-footer";
 import { pageMetadata } from "@/lib/site";
+import Link from "next/link";
+import { projects } from "@/lib/projects";
 
 export const metadata = pageMetadata(
   "Open source",
-  "Biscuit, published Python packages, and contributions to Zulip, prometheus-operator, and KubeVirt.",
+  "Biscuit, Hiroshi, systems tools, research experiments, and open-source contributions.",
   "/oss",
 );
 const contributions = [
@@ -76,6 +78,42 @@ export default function OssPage() {
             <span aria-hidden="true">↗</span>
           </a>
         </article>
+      </section>
+      <section className="content-section" data-koi-avoid>
+        <h2 className="section-label">systems & tools</h2>
+        <div className="contribution-list">
+          {projects
+            .filter((project) =>
+              [
+                "hiroshi-os",
+                "hookrelay",
+                "quorumkv",
+                "lsmstore",
+                "toollearn",
+                "toolrecover",
+                "kernelbench",
+              ].includes(project.slug),
+            )
+            .map((project) => (
+              <Link
+                className="contribution-row"
+                key={project.slug}
+                href={`/projects/${project.slug}`}
+              >
+                <span>
+                  <strong>{project.title}</strong>
+                </span>
+                <span className="external-arrow" aria-hidden="true">
+                  ↗
+                </span>
+              </Link>
+            ))}
+        </div>
+        <p className="margin-note">
+          <Link className="text-link" href="/projects">
+            all projects ↗
+          </Link>
+        </p>
       </section>
       <section className="content-section" data-koi-avoid>
         <h2 className="section-label">contributions</h2>

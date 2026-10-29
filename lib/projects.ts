@@ -1,5 +1,6 @@
 import data from "@/content/projects.json";
 import media from "@/content/project-media.json";
+import current from "@/content/current-projects.json";
 
 export type Project = {
   slug: string;
@@ -23,7 +24,16 @@ type ProjectSource = Pick<
   Partial<
     Pick<Project, "description" | "github" | "package" | "problem" | "impact">
   >;
-const source: ProjectSource[] = [...data.projects, ...data.additionalProjects];
+// Current entries override archive records by title, preserving existing URLs.
+const updatedTitles = new Set(
+  current.map((project) => project.title.toLowerCase()),
+);
+const source: ProjectSource[] = [
+  ...current,
+  ...[...data.projects, ...data.additionalProjects].filter(
+    (project) => !updatedTitles.has(project.title.toLowerCase()),
+  ),
+];
 export const projects: Project[] = source.map((project) => {
   const slug = project.title
     .toLowerCase()
