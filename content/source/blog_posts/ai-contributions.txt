@@ -12,6 +12,8 @@ Looking at my GitHub ([@tomlin7](https://github.com/tomlin7)):
 - **2021**: 2000+ contributions.
 - **2026**: 4000+ contributions.
 
+![GitHub Contributions 2026 vs 2021](/blog/ai-contributions.png)
+
 Back then me and my friends would get burned out while trying to add new features to our side projects. Stuck, tried and failed. 
 
 Also I used to merge halfassed features (which somehow work, but not really). Because you don't always get someone to really point you at the right resource. 
